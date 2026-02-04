@@ -1,0 +1,15 @@
+{
+  "id": "{mod_id}",
+  "name": "{ModName}",
+  "display_name": "{Mod Display Name}",
+  "author": [
+    "{AuthorName}"
+  ],
+  "description": "{Short description for mod list - one sentence}",
+  "prefix": "{mod_prefix}",
+  "main_file": "main.lua",
+  "priority": 0,
+  "badge_colour": "ffffff",
+  "badge_text_colour": "000000",
+  "version": "0.1.0"
+}

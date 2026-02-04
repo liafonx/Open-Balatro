@@ -1,0 +1,53 @@
+{
+  "description": "Balatro mod development hooks - Protect agent files, suggest config updates, validate completion",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "This is a Balatro mod repository. Check for INIT.md (project rules) and AGENT.md (repo docs). If found, remind the user: 'Loaded Balatro mod context. Use balatro-mod-dev skill for patterns and references.' If not found, suggest running /init-balatro-mod command.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|Replace",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if this file modification affects a protected Balatro mod file. Protected files are: 'AGENT.md', 'docs/AGENT.md', 'INIT.md', 'mod.config.json', 'README.md', 'README_zh.md', 'CHANGELOG.md', 'CHANGELOG_zh.md'. If the file path matches any of these, respond with: 'BLOCK: This is a protected file. Please confirm you want to modify it.' Otherwise, respond with 'ALLOW'.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt", 
+            "prompt": "A file was just created. Check if this is a Balatro mod source file (.lua, .toml, or a new directory). If the mod has a mod.config.json and this file should be included, suggest: 'Consider adding this file to mod.config.json include_files.' Otherwise, no action needed.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before completing, verify: 1) If this is a fork and changes are ready, ask if user wants to draft a PR message. 2) If debugging failed 3+ times, suggest documenting in docs/knowledge-base.md. Return 'approve' to complete or suggest next action.",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

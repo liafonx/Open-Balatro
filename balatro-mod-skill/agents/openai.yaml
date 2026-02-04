@@ -1,0 +1,4 @@
+interface:
+  display_name: "Balatro Mod Development"
+  short_description: "Create and debug Balatro mods with Steamodded and Lovely"
+  default_prompt: "Use $balatro-mod-dev to help me with Balatro mod development."

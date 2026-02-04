@@ -1,0 +1,9 @@
+{
+    "name": "{ModName}",
+    "version_number": "0.1.0",
+    "website_url": "https://github.com/{username}/{repo}",
+    "description": "{Short description for Thunderstore - one sentence}",
+    "dependencies": [
+        "Steamodded-Steamodded-0.9.8"
+    ]
+}
