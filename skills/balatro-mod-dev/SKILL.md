@@ -1,6 +1,7 @@
 ---
 name: balatro-mod-dev
-description: Reference for Balatro mod development: game source navigation, Lovely patches, SMODS APIs, mobile support, UI architecture, and debugging existing or new mods.
+description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
+version: 1.0.1
 ---
 
 # Balatro Mod Development
