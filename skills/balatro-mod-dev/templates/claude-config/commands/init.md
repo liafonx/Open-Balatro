@@ -8,6 +8,16 @@ argument-hint: "[--force to skip detection]"
 
 You are setting up a Balatro mod development environment. **Auto-detect everything first, then confirm with user.**
 
+## IMPORTANT: File Placement Rules
+
+When creating `.md` or `.txt` files, only these belong in root:
+- `README.md`, `README_zh.md`
+- `CHANGELOG.md`, `CHANGELOG_zh.md`
+- `AGENT.md`, `INIT.md`
+- `LICENSE`, `LICENSE.md`
+
+**ALL other `.md`/`.txt` files MUST go in `docs/`** (e.g., `docs/DESIGN.md`, `docs/knowledge-base.md`)
+
 ## Step 1: Auto-Detect Repository Type
 
 Check these indicators to determine repo type:
@@ -69,7 +79,12 @@ Create full skeleton:
 ### For OWN Existing Repository
 Evaluate and fix structure:
 - [ ] Delete `References/` folder if exists (legacy symlink approach - no longer needed)
-- [ ] Move unorganized docs (*.md, *.txt in root) to `docs/` folder
+- [ ] **Move extra docs to `docs/`** - only keep these `.md`/`.txt` in root:
+  - `README.md`, `README_zh.md`
+  - `CHANGELOG.md`, `CHANGELOG_zh.md`
+  - `AGENT.md`, `INIT.md`
+  - `LICENSE`, `LICENSE.md`
+  - Move ALL other `.md`/`.txt` files to `docs/`
 - [ ] Check if manifest follows SMODS conventions
 - [ ] Check if AGENT.md exists and is complete
 - [ ] Check if INIT.md exists with correct rules

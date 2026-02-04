@@ -12,10 +12,6 @@
 [*][b]Feature 3[/b] — Description.
 [/list]
 
-[size=4][b]Screenshots[/b][/size]
-
-[url=https://raw.githubusercontent.com/{username}/{repo}/main/images/screenshot1.jpeg][img]https://raw.githubusercontent.com/{username}/{repo}/main/images/screenshot1.jpeg[/img][/url]
-
 [size=4][b]Installation[/b][/size]
 
 [list=1]
@@ -27,14 +23,6 @@
 [/list]
 
 [color=orange][b]⚠️ Important:[/b][/color] Make sure [font=Courier New]Mods/{ModName}/[/font] contains mod files directly (like [font=Courier New]main.lua[/font]), not another nested [font=Courier New]{ModName}[/font] folder.
-
-[size=4][b]Quick Start[/b][/size]
-
-[b]Controls[/b]
-[list]
-[*][b]Action 1[/b]: [font=Courier New]Key[/font] / [font=Courier New]Button[/font]
-[*][b]Action 2[/b]: [font=Courier New]Key[/font] / [font=Courier New]Button[/font]
-[/list]
 
 [size=4][b]Configuration[/b][/size]
 Configure settings in the Steamodded mod menu:

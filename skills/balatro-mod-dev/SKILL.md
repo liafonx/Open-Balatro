@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.0.3
+version: 1.0.4
 ---
 
 # Balatro Mod Development
@@ -28,6 +28,16 @@ Both Claude and Codex use the same file structure:
 | `INIT.md` | Project instructions, rules, constraints for AI agents |
 | `AGENT.md` | Repository structure, functionality, mod-specific details |
 | `mod.config.json` | File lists for sync/release scripts |
+
+## File Placement Rules
+
+Only these `.md`/`.txt` files belong in root:
+- `README.md`, `README_zh.md`
+- `CHANGELOG.md`, `CHANGELOG_zh.md`
+- `AGENT.md`, `INIT.md`
+- `LICENSE`, `LICENSE.md`
+
+**ALL other `.md`/`.txt` files MUST go in `docs/`**
 
 ## External References (No Symlinks Needed)
 
