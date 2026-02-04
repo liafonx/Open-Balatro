@@ -27,8 +27,7 @@
   
   "thunderstore_additions": [
     "CHANGELOG.md",
-    "icon.png",
-    "manifest.json"
+    "icon.png"
   ],
   
   "sync": {

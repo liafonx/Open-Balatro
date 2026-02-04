@@ -140,22 +140,49 @@ Use `agent-md-template.md`, fill with detected metadata.
   - `./scripts/sync_to_mods.sh` to test locally
   ```
 
-**mod.config.json**:
+**mod.config.json** (FOLLOW THIS STRUCTURE EXACTLY):
 ```json
 {
   "$version": "2.0.0",
-  "mod_name": "{detected or asked}",
+  "mod_name": "{ModID}",
   "mod_json": "{ModID}.json",
   "paths": {
     "mods_dir": "~/Library/Application Support/Balatro/Mods",
     "logs_dir": "~/Library/Application Support/Balatro/Mods/lovely/log",
     "release_dir": "release"
   },
-  "include_files": [merged from existing + template defaults],
+  "include_files": [
+    "main.lua",
+    "lovely.toml",
+    "{ModID}.json",
+    "manifest.json",
+    "README.md",
+    "README_zh.md",
+    "localization/***",
+    "assets/***",
+    "Utils/***"
+  ],
+  "thunderstore_additions": [
+    "CHANGELOG.md",
+    "icon.png"
+  ],
   "sync": { "watch_enabled": true },
   "release": { "formats": ["github", "thunderstore"] }
 }
 ```
+
+**CRITICAL: include_files vs thunderstore_additions**
+
+| List | Purpose | Files |
+|------|---------|-------|
+| `include_files` | Sync to game + GitHub release | All mod code, manifests, README(_zh).md |
+| `thunderstore_additions` | Thunderstore-only extras | CHANGELOG.md, icon.png |
+
+**DO NOT include in either list:**
+- `CHANGELOG_zh.md` (not needed)
+- Duplicate files in both lists
+
+**README files go in include_files**, NOT thunderstore_additions.
 
 **Merging include_files from existing scripts:**
 If existing scripts have `BASE_FILES` array:
