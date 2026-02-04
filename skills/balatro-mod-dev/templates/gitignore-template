@@ -20,6 +20,10 @@ logs/
 # ========================================
 # Development Tools
 # ========================================
+.agent/
+.agents/
+.claude/
+.codex/
 .cursor/
 .vscode/
 *.code-workspace
