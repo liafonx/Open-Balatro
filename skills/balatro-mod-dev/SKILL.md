@@ -1,6 +1,6 @@
 ---
 name: balatro-mod-dev
-description: Comprehensive reference for Balatro mod development including game source navigation, Lovely patch syntax, SMODS API patterns, mobile compatibility, and UI architecture. Use when working on Balatro mods, creating new mods, debugging existing mods, adding mobile compatibility, finding injection points in game source, or understanding SMODS/Lovely patterns.
+description: Reference for Balatro mod development: game source navigation, Lovely patches, SMODS APIs, mobile support, UI architecture, and debugging existing or new mods.
 ---
 
 # Balatro Mod Development

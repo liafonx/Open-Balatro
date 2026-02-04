@@ -23,7 +23,11 @@ Extract mod key from current repo (no user input needed):
 
 ```bash
 # Try to get mod name from {ModName}.json in repo root
-ls *.json | grep -v "manifest.json\|mod.config.json\|package.json" | head -1 | sed 's/.json//'
+if ls *.json >/dev/null 2>&1; then
+  ls *.json | grep -v "manifest.json\|mod.config.json\|package.json" | head -1 | sed 's/.json//'
+else
+  echo "Error: No mod JSON found in repository root (*.json)" >&2
+fi
 
 # Or extract from AGENT.md if it contains mod name
 grep -m1 "mod_id\|ModName\|mod name" AGENT.md

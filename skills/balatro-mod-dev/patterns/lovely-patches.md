@@ -97,11 +97,25 @@ times = 1
 ```
 
 **IMPORTANT: Escaping Rules**
-- Single backslash `\` in TOML string escapes the next character
-- To match a literal `(`, use `\(` in the pattern
-- To match a literal `.`, use `\\.` (double backslash)
-- Common mistake: `\\(\\)` matches literal backslashes, NOT parentheses
+Lovely regex patterns are TOML strings, so there are *two* layers of escaping:
+1. TOML string escaping (what you type in `lovely.toml`)
+2. Regex escaping (what the regex engine actually sees)
 
+**TOML vs regex examples**
+- Literal `.` (dot), which is special in regex:
+  - TOML: `pattern = "G\\.ARGS\\.save_run"`
+  - Regex engine sees: `G\.ARGS\.save_run`
+- Literal `(` (parenthesis), which starts a capture group in regex:
+  - TOML: `pattern = "\\(hello\\) world"`
+  - Regex engine sees: `\(hello\) world`
+
+**Rules to remember**
+- In TOML **basic strings** (double quotes), backslash `\` starts an escape.
+- To send a single backslash to the regex engine, you must write **`\\`** in TOML.
+- So to match a literal `(` in regex, the engine needs `\(` → in TOML you write **`"\\("`**.
+- To match a literal `.` in regex, the engine needs `\.` → in TOML you write **`"\\."`**.
+- Common mistake: `\\(\\)` in the **regex engine** means “backslash + parentheses”.
+  - If you write `pattern = "\\\\(\\\\)"` in TOML, the engine sees `\\(\\)` (two literal backslashes and parentheses), **not** just `()` or `\(`.
 ### 3. Module Injection
 
 Load a Lua file as a require-able module.

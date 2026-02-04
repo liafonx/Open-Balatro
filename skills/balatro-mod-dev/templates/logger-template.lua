@@ -35,10 +35,10 @@ local function should_log(level)
     end
     
     -- info and debug require debug mode to be enabled
-    -- TODO: Replace {MOD_GLOBAL} with your mod's global table name
-    if {MOD_GLOBAL} and {MOD_GLOBAL}.config and {MOD_GLOBAL}.config.debug_mode then
-        return true
-    end
+    -- TODO: Replace `MyModGlobal` with your mod's global table name and uncomment this block:
+    -- if MyModGlobal and MyModGlobal.config and MyModGlobal.config.debug_mode then
+    --     return true
+    -- end
     
     return false
 end

@@ -32,7 +32,7 @@ grep -o '"version": "[^"]*"' *.json | head -1
 git describe --tags --abbrev=0 2>/dev/null || echo "no tags"
 
 # Get commits since last tag
-git log $(git describe --tags --abbrev=0 2>/dev/null)..HEAD --oneline 2>/dev/null
+tag=$(git describe --tags --abbrev=0 2>/dev/null) && git log "$tag"..HEAD --oneline 2>/dev/null || git log --oneline 2>/dev/null
 ```
 
 ### Step 2: Determine Action
