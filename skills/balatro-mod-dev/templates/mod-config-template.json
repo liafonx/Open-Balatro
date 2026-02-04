@@ -1,52 +1,44 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
+  "$version": "2.0.0",
+  
   "mod_name": "{{MOD_NAME}}",
   "mod_json": "{{MOD_NAME}}.json",
   "description": "{{DESCRIPTION}}",
+  
+  "paths": {
+    "mods_dir": "~/Library/Application Support/Balatro/Mods",
+    "logs_dir": "~/Library/Application Support/Balatro/Mods/lovely/log",
+    "release_dir": "release"
+  },
   
   "include_files": [
     "main.lua",
     "config.lua",
     "lovely.toml",
+    "lovely/***",
     "{{MOD_NAME}}.json",
     "localization/***",
-    "assets/***"
+    "assets/***",
+    "Utils/***",
+    "README.md",
+    "README_zh.md"
   ],
   
   "thunderstore_additions": [
-    "README.md",
     "CHANGELOG.md",
     "icon.png",
     "manifest.json"
   ],
   
-  "exclude_from_release": [
-    "References/",
-    "scripts/",
-    "docs/",
-    "jkrs/",
-    "logs/",
-    "release/",
-    "images/",
-    "raw_icon/",
-    ".git/",
-    ".github/",
-    ".gitignore",
-    ".cursor/",
-    "agent.md",
-    "AGENT.md"
-  ],
+  "sync": {
+    "watch_enabled": true,
+    "watch_debounce_ms": 500
+  },
   
-  "test_saves": null,
+  "release": {
+    "formats": ["github", "thunderstore"]
+  },
   
-  "scripts": {
-    "sync": {
-      "target_dir": "~/Library/Application Support/Balatro/Mods/{{MOD_NAME}}",
-      "watch_enabled": true
-    },
-    "release": {
-      "output_dir": "release/",
-      "formats": ["github", "thunderstore"]
-    }
-  }
+  "test_saves": null
 }

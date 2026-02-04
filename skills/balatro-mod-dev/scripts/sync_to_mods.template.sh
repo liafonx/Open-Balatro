@@ -1,6 +1,8 @@
 #!/bin/bash
 # Syncs mod files to the game's Mods directory using rsync.
-# Reads configuration from mod.config.json
+# Reads all configuration from mod.config.json (single source of truth)
+#
+# Config Version: 2.0.0
 #
 # Usage:
 #   ./scripts/sync_to_mods.sh                    # One-time sync
@@ -17,17 +19,26 @@ CONFIG_FILE="$DEV_DIR/mod.config.json"
 # Check for config file
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "Error: mod.config.json not found in $DEV_DIR"
-    echo "Please create mod.config.json with mod_name and include_files"
+    echo "Please create mod.config.json with required configuration"
     exit 1
 fi
 
-# Read config using jq
+# Check for jq
 if ! command -v jq &> /dev/null; then
     echo "Error: jq is required. Install with: brew install jq"
     exit 1
 fi
 
+# ============================================
+# Read all config from mod.config.json
+# ============================================
 MOD_NAME=$(jq -r '.mod_name' "$CONFIG_FILE")
+MODS_DIR=$(jq -r '.paths.mods_dir // "~/Library/Application Support/Balatro/Mods"' "$CONFIG_FILE")
+WATCH_ENABLED=$(jq -r '.sync.watch_enabled // true' "$CONFIG_FILE")
+
+# Expand ~ in paths
+MODS_DIR="${MODS_DIR/#\~/$HOME}"
+
 if [[ -z "$MOD_NAME" || "$MOD_NAME" == "null" ]]; then
     echo "Error: mod_name not found in mod.config.json"
     exit 1
@@ -36,9 +47,8 @@ fi
 # Read include_files as array
 readarray -t INCLUDE_LIST < <(jq -r '.include_files[]' "$CONFIG_FILE")
 
-# Parse arguments
+# Parse arguments (can override config)
 WATCH_MODE=false
-MODS_DIR="$HOME/Library/Application Support/Balatro/Mods"
 
 for arg in "$@"; do
     case $arg in

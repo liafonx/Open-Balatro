@@ -68,13 +68,21 @@ Create full skeleton:
 
 ### For OWN Existing Repository
 Evaluate and fix structure:
+- [ ] Delete `References/` folder if exists (legacy symlink approach - no longer needed)
+- [ ] Move unorganized docs (*.md, *.txt in root) to `docs/` folder
 - [ ] Check if manifest follows SMODS conventions
 - [ ] Check if AGENT.md exists and is complete
 - [ ] Check if INIT.md exists with correct rules
-- [ ] Check if mod.config.json has correct file lists
+- [ ] Check if mod.config.json has `$version` field and uses v2.0.0 schema (with `paths` object)
+- [ ] Check if scripts use Config Version 2.0.0 (read from mod.config.json `paths` and `sync`/`release` settings)
 - [ ] Check if scripts/ folder exists and is executable
 - [ ] Check if .gitignore includes agent folders
 - [ ] List any structural issues to fix
+
+**Script Version Check:**
+Look for `# Config Version: 2.0.0` in scripts. If missing or older:
+- Offer to update scripts to latest version from skill templates
+- Keep any custom modifications (ask user)
 
 ### For FORK (Others' Repository)
 Minimal additions only:
@@ -135,15 +143,39 @@ Use `agent-md-template.md`, fill with detected metadata.
 **mod.config.json**:
 ```json
 {
+  "$version": "2.0.0",
   "mod_name": "{detected or asked}",
   "mod_json": "{ModID}.json",
-  "include_files": [auto-detect from existing files],
-  "exclude_from_release": ["References/", "scripts/", "docs/", ".git/", ".gitignore", "AGENT.md", "INIT.md"]
+  "paths": {
+    "mods_dir": "~/Library/Application Support/Balatro/Mods",
+    "logs_dir": "~/Library/Application Support/Balatro/Mods/lovely/log",
+    "release_dir": "release"
+  },
+  "include_files": [merged from existing + template defaults],
+  "sync": { "watch_enabled": true },
+  "release": { "formats": ["github", "thunderstore"] }
 }
 ```
 
-**scripts/** (always create if missing):
-- Copy from templates, make executable
+**Merging include_files from existing scripts:**
+If existing scripts have `BASE_FILES` array:
+1. Extract files from `BASE_FILES=( ... )` in old scripts
+2. Merge with template defaults (no duplicates)
+3. Add to `include_files` in new mod.config.json
+
+Example old script pattern to extract:
+```bash
+BASE_FILES=(
+    "main.lua"
+    "*.lua"
+    "localization/***"
+)
+```
+
+**scripts/** (always create/update if outdated):
+- Copy from skill templates
+- Make executable
+- Old scripts with hardcoded BASE_FILES → new scripts read from mod.config.json
 
 **.gitignore** additions:
 ```
@@ -165,6 +197,9 @@ Created:
 
 Modified:
 - [file list]
+
+Migrated from old scripts:
+- [list any BASE_FILES merged into mod.config.json]
 
 Next steps:
 - Run `./scripts/sync_to_mods.sh` to sync to game

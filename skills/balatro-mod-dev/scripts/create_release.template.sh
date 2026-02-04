@@ -1,6 +1,8 @@
 #!/bin/bash
 # Creates release packages for GitHub and Thunderstore.
-# Reads configuration from mod.config.json
+# Reads all configuration from mod.config.json (single source of truth)
+#
+# Config Version: 2.0.0
 #
 # Usage:
 #   ./scripts/create_release.sh              # Use version from manifest
@@ -12,7 +14,6 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEV_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_FILE="$DEV_DIR/mod.config.json"
-RELEASE_DIR="$DEV_DIR/release"
 
 # Check for config file
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -26,9 +27,17 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-# Read config
+# ============================================
+# Read all config from mod.config.json
+# ============================================
 MOD_NAME=$(jq -r '.mod_name' "$CONFIG_FILE")
 MOD_JSON=$(jq -r '.mod_json' "$CONFIG_FILE")
+RELEASE_DIR=$(jq -r '.paths.release_dir // "release"' "$CONFIG_FILE")
+
+# Expand relative paths
+if [[ "$RELEASE_DIR" != /* ]]; then
+    RELEASE_DIR="$DEV_DIR/$RELEASE_DIR"
+fi
 
 if [[ -z "$MOD_NAME" || "$MOD_NAME" == "null" ]]; then
     echo "Error: mod_name not found in mod.config.json"
@@ -57,10 +66,11 @@ fi
 echo "Creating release for $MOD_NAME v$VERSION"
 echo ""
 
-# Read file lists
+# Read include_files (for sync and GitHub release)
 readarray -t INCLUDE_LIST < <(jq -r '.include_files[]' "$CONFIG_FILE")
+
+# Read thunderstore_additions (additional files for Thunderstore only)
 readarray -t THUNDERSTORE_ADDITIONS < <(jq -r '.thunderstore_additions[]? // empty' "$CONFIG_FILE")
-readarray -t EXCLUDE_LIST < <(jq -r '.exclude_from_release[]? // empty' "$CONFIG_FILE")
 
 # Create temp directory
 TEMP_DIR=$(mktemp -d)
