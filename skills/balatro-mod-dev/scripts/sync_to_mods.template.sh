@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 # Syncs mod files to the game's Mods directory using rsync.
 # Reads all configuration from mod.config.json (single source of truth)
 #
-# Config Version: 2.0.0
+# Config Version: 2.0.1
+# Note: Uses zsh for macOS compatibility (bash 3.x lacks readarray)
 #
 # Usage:
 #   ./scripts/sync_to_mods.sh                    # One-time sync
@@ -44,8 +45,8 @@ if [[ -z "$MOD_NAME" || "$MOD_NAME" == "null" ]]; then
     exit 1
 fi
 
-# Read include_files as array
-readarray -t INCLUDE_LIST < <(jq -r '.include_files[]' "$CONFIG_FILE")
+# Read include_files as array (zsh syntax)
+INCLUDE_LIST=("${(@f)$(jq -r '.include_files[]' "$CONFIG_FILE")}")
 
 # Parse arguments (can override config)
 WATCH_MODE=false

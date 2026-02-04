@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 # Creates release packages for GitHub and Thunderstore.
 # Reads all configuration from mod.config.json (single source of truth)
 #
-# Config Version: 2.0.0
+# Config Version: 2.0.1
+# Note: Uses zsh for macOS compatibility (bash 3.x lacks readarray)
 #
 # Usage:
 #   ./scripts/create_release.sh              # Use version from manifest
@@ -66,11 +67,11 @@ fi
 echo "Creating release for $MOD_NAME v$VERSION"
 echo ""
 
-# Read include_files (for sync and GitHub release)
-readarray -t INCLUDE_LIST < <(jq -r '.include_files[]' "$CONFIG_FILE")
+# Read include_files (for sync and GitHub release) - zsh syntax
+INCLUDE_LIST=("${(@f)$(jq -r '.include_files[]' "$CONFIG_FILE")}")
 
-# Read thunderstore_additions (additional files for Thunderstore only)
-readarray -t THUNDERSTORE_ADDITIONS < <(jq -r '.thunderstore_additions[]? // empty' "$CONFIG_FILE")
+# Read thunderstore_additions (additional files for Thunderstore only) - zsh syntax
+THUNDERSTORE_ADDITIONS=("${(@f)$(jq -r '.thunderstore_additions[]? // empty' "$CONFIG_FILE")}")
 
 # Create temp directory
 TEMP_DIR=$(mktemp -d)

@@ -90,15 +90,16 @@ Evaluate and fix structure:
 - [ ] Check if INIT.md exists with correct rules
 - [ ] **Check Claude config** (see below)
 - [ ] Check if mod.config.json has `$version` field and uses v2.0.0 schema (with `paths` object)
-- [ ] Check if scripts use Config Version 2.0.0 (read from mod.config.json `paths` and `sync`/`release` settings)
+- [ ] Check if scripts use Config Version 2.0.1 (zsh for macOS compat, reads from mod.config.json)
 - [ ] Check if scripts/ folder exists and is executable
 - [ ] Check if .gitignore includes agent folders
 - [ ] List any structural issues to fix
 
 **Script Version Check:**
-Look for `# Config Version: 2.0.0` in scripts. If missing or older:
+Look for `# Config Version: 2.0.1` in scripts. If missing or older:
 - Offer to update scripts to latest version from skill templates
 - Keep any custom modifications (ask user)
+- Note: Scripts now use `#!/bin/zsh` for macOS compatibility
 
 ### For FORK (Others' Repository)
 Minimal additions only:
