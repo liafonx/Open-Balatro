@@ -6,18 +6,40 @@ This repository contains the `balatro-mod-dev` skill for AI-assisted Balatro mod
 
 ```
 Open-Balatro/
-├── balatro-mod-skill/          # The main skill
-│   ├── SKILL.md                # Skill entry point
-│   ├── agents/openai.yaml      # Codex UI metadata
-│   ├── patterns/               # Lovely, SMODS, mobile, UI guides
-│   ├── references/             # Game file map, globals
-│   ├── scripts/                # sync_to_mods, create_release templates
-│   └── templates/              # Project setup templates
-│       ├── agents/             # Sub-agent templates
-│       ├── docs/               # User doc templates
-│       └── claude-config/      # Hooks, commands
+├── skills/
+│   └── balatro-mod-dev/        # The main skill
+│       ├── SKILL.md            # Skill entry point
+│       ├── agents/openai.yaml  # Codex UI metadata
+│       ├── patterns/           # Lovely, SMODS, mobile, UI guides
+│       ├── references/         # Game file map, globals
+│       ├── scripts/            # sync_to_mods, create_release templates
+│       └── templates/          # Project setup templates
+│           ├── agents/         # Sub-agent templates
+│           ├── docs/           # User doc templates
+│           └── claude-config/  # Hooks, commands
 ├── .claude/skills/             # Other Claude skills
 └── .codex/skills/              # Other Codex skills
+```
+
+## Installation
+
+### Using skill-installer (Codex)
+```
+$skill-installer install https://github.com/anthropics/Open-Balatro/tree/main/skills/balatro-mod-dev
+```
+
+### Using npx skills CLI
+```bash
+npx skills add https://github.com/anthropics/Open-Balatro --skill balatro-mod-dev
+```
+
+### Manual
+```bash
+# Claude Code
+cp -r skills/balatro-mod-dev ~/.claude/skills/
+
+# Codex
+cp -r skills/balatro-mod-dev ~/.codex/skills/
 ```
 
 ## Key Design Decisions
