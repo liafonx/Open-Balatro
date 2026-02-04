@@ -73,8 +73,8 @@ Create full skeleton:
 - [ ] .gitignore
 - [ ] scripts/sync_to_mods.sh
 - [ ] scripts/create_release.sh
-- [ ] .claude/hooks/hooks.json (optional)
 - [ ] localization/en-us.lua
+- [ ] **Claude config** (see below)
 
 ### For OWN Existing Repository
 Evaluate and fix structure:
@@ -88,6 +88,7 @@ Evaluate and fix structure:
 - [ ] Check if manifest follows SMODS conventions
 - [ ] Check if AGENT.md exists and is complete
 - [ ] Check if INIT.md exists with correct rules
+- [ ] **Check Claude config** (see below)
 - [ ] Check if mod.config.json has `$version` field and uses v2.0.0 schema (with `paths` object)
 - [ ] Check if scripts use Config Version 2.0.0 (read from mod.config.json `paths` and `sync`/`release` settings)
 - [ ] Check if scripts/ folder exists and is executable
@@ -108,6 +109,42 @@ Minimal additions only:
 - [ ] .gitignore additions (append agent folders if missing)
 - Do NOT modify: manifest, main code structure
 
+### Claude Agent Config (if running under Claude)
+
+When init is called from Claude agent, set up Claude-specific config:
+
+**Required files:**
+```
+.claude/
+├── commands/           # Slash commands
+│   ├── sync-mod.md
+│   ├── bump-version.md
+│   ├── release.md
+│   ├── refactor.md
+│   ├── debug.md
+│   ├── draft-pr.md
+│   ├── update-docs.md
+│   └── update-skill.md
+├── hooks/
+│   └── hooks.json      # SessionStart, PreToolUse, PostToolUse
+└── agents/             # Sub-agents for research
+    ├── game-source-researcher.md
+    ├── smods-api-researcher.md
+    ├── mod-pattern-researcher.md
+    └── lovely-patch-researcher.md
+```
+
+**Copy from skill templates:**
+- Commands: `templates/claude-config/commands/*` → `.claude/commands/`
+- Hooks: `templates/claude-config/hooks.json` → `.claude/hooks/hooks.json`
+- Agents: `templates/agents/*` → `.claude/agents/`
+
+**For existing repos, verify:**
+- [ ] `.claude/commands/` exists with all commands
+- [ ] `.claude/hooks/hooks.json` exists and has correct events
+- [ ] `.claude/agents/` exists with research agents
+- [ ] Commands are up-to-date (compare with skill templates)
+
 ## Step 3: Confirm with User
 
 Present the plan:
@@ -122,6 +159,9 @@ Actions to perform:
 1. [action 1]
 2. [action 2]
 ...
+
+Claude config:
+- [New setup / Update needed / Already configured]
 
 Proceed? (y/n)
 ```
@@ -226,9 +266,32 @@ BASE_FILES=(
 .claude/
 .codex/
 .cursor/
+INIT.md
+mod.config.json
+docs/knowledge-base.md
 ```
 
-## Step 5: Summary
+## Step 5: Verify/Update AGENT.md
+
+**Purpose of AGENT.md:** Enable seamless handover between agents. Another agent should be able to:
+- Understand mod structure, functions, and dependencies quickly
+- Know current development status and pending tasks
+- Continue work without losing context
+
+**After init, if AGENT.md exists, verify it contains:**
+- [ ] Accurate mod metadata (name, id, version, prefix)
+- [ ] Current file structure (list actual files, not template placeholders)
+- [ ] Key functions and their purposes
+- [ ] Dependencies (SMODS version, other mods)
+- [ ] Current development status (stable, in-progress features, known issues)
+- [ ] Any pending tasks or TODOs
+
+**If AGENT.md is outdated or incomplete:**
+1. Read current codebase to understand actual structure
+2. Update AGENT.md to reflect reality
+3. Add "Last updated: {date}" at the bottom
+
+## Step 6: Summary
 
 Report what was created/modified:
 ```
@@ -240,10 +303,9 @@ Created:
 Modified:
 - [file list]
 
-Migrated from old scripts:
-- [list any BASE_FILES merged into mod.config.json]
+AGENT.md status:
+- [Created new / Updated existing / Already up-to-date]
 
 Next steps:
 - Run `./scripts/sync_to_mods.sh` to sync to game
-- Review AGENT.md and update with mod-specific details
 ```

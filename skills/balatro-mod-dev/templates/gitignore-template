@@ -29,6 +29,13 @@ logs/
 *.code-workspace
 
 # ========================================
+# AI Agent Files (local only)
+# ========================================
+INIT.md
+mod.config.json
+docs/knowledge-base.md
+
+# ========================================
 # Test Files
 # ========================================
 jkrs/

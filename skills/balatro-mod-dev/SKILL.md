@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.0.4
+version: 1.0.5
 ---
 
 # Balatro Mod Development
@@ -23,11 +23,14 @@ See `templates/project-rules-template.md` for detailed rules per type.
 
 Both Claude and Codex use the same file structure:
 
-| File | Purpose |
-|------|---------|
-| `INIT.md` | Project instructions, rules, constraints for AI agents |
-| `AGENT.md` | Repository structure, functionality, mod-specific details |
-| `mod.config.json` | File lists for sync/release scripts |
+| File | Purpose | Git |
+|------|---------|-----|
+| `INIT.md` | Project rules, constraints for AI agents | ignored |
+| `AGENT.md` | Mod structure, functions, dependencies, dev status (for handover) | tracked |
+| `mod.config.json` | File lists for sync/release scripts | ignored |
+| `docs/knowledge-base.md` | Issues & lessons learned | ignored |
+
+**AGENT.md Purpose:** Enable seamless handover between agents. Another agent should quickly understand mod structure, functions, dependencies, and current development status without losing context.
 
 ## File Placement Rules
 
