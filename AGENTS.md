@@ -25,12 +25,12 @@ Open-Balatro/
 
 ### Using skill-installer (Codex)
 ```
-$skill-installer install https://github.com/anthropics/Open-Balatro/tree/main/skills/balatro-mod-dev
+$skill-installer install https://github.com/liafonx/Open-Balatro/tree/main/skills/balatro-mod-dev
 ```
 
 ### Using npx skills CLI
 ```bash
-npx skills add https://github.com/anthropics/Open-Balatro --skill balatro-mod-dev
+npx skills add https://github.com/liafonx/Open-Balatro --skill balatro-mod-dev
 ```
 
 ### Manual
