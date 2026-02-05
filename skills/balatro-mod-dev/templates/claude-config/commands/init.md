@@ -18,25 +18,33 @@ When creating `.md` or `.txt` files, only these belong in root:
 
 **ALL other `.md`/`.txt` files MUST go in `docs/`** (e.g., `docs/DESIGN.md`, `docs/knowledge-base.md`)
 
-## Step 1: Auto-Detect Repository Type
+## Step 1: Detect Repository State
 
-Check these indicators to determine repo type:
-
-### Check 1: Git Remote Origin
+### Check 1: Is this an empty (brand new) repo?
 ```bash
-git remote get-url origin 2>/dev/null
+# Count files (excluding .git)
+find . -type f ! -path './.git/*' | wc -l
 ```
-- If contains `liafonx/` → **own repo** (user's mod)
-- If contains other username → **fork** (contributing to others)
-- If no remote → **new repo**
+- If 0 files (or only README/LICENSE) → **new repo** (proceed to Step 2 with full skeleton)
+- If has files → **existing repo** (proceed to ask user)
 
-### Check 2: Existing Files
-Scan for:
-- `*.json` files with `"id"`, `"prefix"`, `"dependencies"` fields → SMODS manifest
-- `main.lua`, `*.lua` files → mod code
-- `AGENT.md`, `INIT.md`, `mod.config.json` → already initialized
-- `lovely.toml` or `lovely/*.toml` → uses Lovely patches
-- `assets/1x/`, `assets/2x/` → texture pack
+### Check 2: For existing repos, ASK THE USER
+
+Do NOT auto-detect based on git remote. Ask the user directly:
+
+```
+This repository already has files. Please choose:
+
+1. **Fork/Contribute** - This is someone else's mod, I'm making changes to contribute back
+   → Minimal additions only, don't restructure
+
+2. **Own/Standardize** - This is my own mod, I want to standardize the structure
+   → Full structure evaluation and fixes
+
+Which option? (1 or 2)
+```
+
+Wait for user response before proceeding.
 
 ### Check 3: Determine Mod Type from Manifest
 If manifest exists, check dependencies:
@@ -44,7 +52,7 @@ If manifest exists, check dependencies:
 - Has `"provides"` field or many API functions → **framework**
 - Otherwise → **standard mod**
 
-### Auto-Detection Results
+### Detection Results
 
 Report findings:
 ```
