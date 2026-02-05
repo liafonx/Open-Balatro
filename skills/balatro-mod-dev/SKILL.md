@@ -1,23 +1,12 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.0.9
+version: 1.1.0
 ---
 
 # Balatro Mod Development
 
 Create and debug Balatro mods with Steamodded, Lovely, and SMODS.
-
-## Repo Type Awareness
-
-**First, determine repo type:**
-
-| Type | Description | Implications |
-|------|-------------|--------------|
-| `new` | My own mod from scratch | Full docs, Logger.lua, localization (en-us/zh-cn) |
-| `fork` | Contributing to others' mod | Minimal changes, temp logs only, follow existing patterns |
-
-See `templates/project-rules-template.md` for detailed rules per type.
 
 ## Quick Agent Selection
 
@@ -31,9 +20,19 @@ When researching, spawn the right agent:
 | Lovely patch syntax | `lovely-patch-researcher` | lovely files only |
 | Run temp script for data | `script-runner` | N/A (execution) |
 
-**Parallel vs Sequential:**
-- **Parallel:** When researching DIFFERENT sources (game + SMODS + mods) - spawn multiple agents at once
-- **Sequential:** When second query depends on first result
+**Parallel:** When researching DIFFERENT sources - spawn multiple agents at once
+**Sequential:** When second query depends on first result
+
+See `references/sub-agents.md` for boundaries, workflow patterns, and creating new agents.
+
+## Repo Type Awareness
+
+| Type | Description | Implications |
+|------|-------------|--------------|
+| `new` | My own mod from scratch | Full docs, Logger.lua, localization (en-us/zh-cn) |
+| `fork` | Contributing to others' mod | Minimal changes, temp logs only, follow existing patterns |
+
+See `templates/project-rules-template.md` for detailed rules per type.
 
 ## File Naming Convention (Claude & Codex)
 
@@ -240,229 +239,22 @@ When user says "update all user docs":
 
 ## Workflow: Draft PR Message (fork repos)
 
-When user says "draft a PR message":
-
-1. **Compare branches**: Show diff between current branch and upstream main
-2. **Summarize changes**: List what was added/changed/fixed
-3. **Draft message**: Casual, conversational tone - NOT formal bullet points
-
-### PR Message Style Guide:
-
-**DO:**
-- Write like you're explaining to a friend
-- Share reasoning and context ("I noticed...", "This matters because...")
-- Mention alternatives you considered
-- Acknowledge limitations ("if this feels overkill, I totally get it")
-- Offer to help with related issues
-- Use simple paragraphs, not heavy formatting
-
-**DON'T:**
-- Use formal PR templates
-- Heavy bullet point lists
-- Corporate language ("This PR implements...")
-- Overly brief descriptions
-
-### Example Structure:
-```
-{Brief title describing the change}
-
-{What you did - 1-2 sentences}
-
-{Why you did it / context - explain the problem}
-
-{Technical details if relevant - keep it readable}
-
-{Optional: alternatives considered, suggestions, or limitations}
-
-{Optional: offer to help with related issues}
-```
-
-### Example Tone:
-> "I just noticed that v1.9.3 added no-SMODS support, but my earlier fix relied on the SMODS API. I managed to make it work only with Lovely."
->
-> "The logic is actually pretty simple: draw background first, then jokers, then label on top. The code looks more involved than it is..."
->
-> "Anyway, if this feels overkill for this function, I totally get it, happy to just keep it in my fork."
+Use `/draft-pr` command. Style: 3-5 sentences, casual tone, what/why/done.
 
 ## Sub-Agents for Research
 
-**Philosophy:** Main agent handles code development. Sub-agents handle information gathering.
+Main agent handles code. Sub-agents handle information gathering.
 
-**Output Constraint (ALL research agents):** Keep report under 100 lines. Focus on:
-1. Direct answer to the question
-2. Key code locations (file:line)
-3. One code snippet (most relevant)
-
-### When to Use Sub-Agents
-
-| Situation | Use Sub-Agent |
-|-----------|---------------|
-| Finding game functions | `game-source-researcher` |
-| Understanding SMODS API | `smods-api-researcher` |
-| Finding mod patterns | `mod-pattern-researcher` |
-| Figuring out Lovely patches | `lovely-patch-researcher` |
+| Situation | Use |
+|-----------|-----|
+| Research (game, SMODS, mods, lovely) | Sub-agent |
 | Running temp scripts for data | `script-runner` |
-| Writing/editing code | **Main agent** (no sub-agent) |
-| User interaction needed | **Main agent** (sub-agents can't ask questions) |
+| Writing/editing code | **Main agent** |
+| User interaction needed | **Main agent** |
 
-### Available Sub-Agents
+See `references/sub-agents.md` for detailed boundaries, workflow patterns, and creating new agents.
 
-Templates in `templates/agents/`:
-
-| Agent | Purpose | Search Boundary |
-|-------|---------|-----------------|
-| `game-source-researcher` | Search Balatro source for functions, data | `Balatro_src/` only |
-| `smods-api-researcher` | Find SMODS API patterns, hooks | `smods/src/` only |
-| `mod-pattern-researcher` | Find how other mods implement features | `Mods/` folder only |
-| `lovely-patch-researcher` | Find Lovely patch syntax and examples | `smods/lovely/` only |
-| `script-runner` | Run temp scripts, return results | N/A (execution) |
-
-### Sub-Agent Boundaries (IMPORTANT)
-
-**Each research agent has a FIXED search boundary.** This prevents duplicate searches wasting tokens.
-
-| Agent | Searches IN | Does NOT search |
-|-------|-------------|-----------------|
-| `game-source-researcher` | `~/Development/GitWorkspace/Balatro_src/` | smods, Mods, lovely |
-| `smods-api-researcher` | `~/Development/GitWorkspace/smods/src/` | game source, Mods |
-| `mod-pattern-researcher` | `~/Library/Application Support/Balatro/Mods/` | game source, smods |
-| `lovely-patch-researcher` | `~/Development/GitWorkspace/smods/lovely/` | game source, Mods |
-
-**If a sub-agent needs to expand beyond its boundary:**
-1. Stop and report what was found
-2. Suggest which OTHER agent should search the expanded area
-3. Do NOT expand search without main agent approval
-
-### Script Runner Sub-Agent
-
-When main agent needs to run a temporary script to get data (not as the solution, just to extract/process info):
-
-**Use cases:**
-- Image processing with PIL
-- Data extraction from files
-- Quick calculations
-- Format conversions
-
-**Pattern:**
-```
-Main Agent: I need to extract image dimensions
-    ↓
-Script Runner Sub-Agent: Run `python3 -c "from PIL import Image; ..."`, return result
-    ↓
-Main Agent: Use result to continue with actual solution
-```
-
-**Do NOT use main agent to run temp scripts** - delegate to script-runner to keep focus on the actual problem.
-
-### Platform-Specific Setup
-
-| Platform | Agent Location | Invocation |
-|----------|----------------|------------|
-| Claude | `.claude/agents/` | Automatic via description, or explicit "Use the X agent" |
-| Codex | Use Task tool | `Task("Research game source for...", agent_prompt)` |
-
-**Claude:** Copy agent templates to `.claude/agents/` - they auto-trigger based on description.
-
-**Codex:** Use the Task tool with the agent's system prompt as context:
-```
-Task: Research how G.FUNCS.evaluate_poker_hand works
-Context: [paste from game-source-researcher.md]
-```
-
-### Workflow Pattern
-
-```
-Main Agent: Receive user request
-    ↓
-Sub-Agent: Research game source / SMODS API / mod patterns
-    ↓
-Main Agent: Review research, write code
-    ↓
-Script Runner: (if needed) Run temp script, return data
-    ↓
-Main Agent: Complete implementation, test, user feedback
-```
-
-### Creating Sub-Agents
-
-Agent template structure (works for both Claude and Codex):
-
-```markdown
----
-name: agent-name
-description: When to use this agent (triggers automatic selection)
-tools: Read, Grep, Glob, Bash
-model: sonnet
----
-
-<role>What this agent does</role>
-<workflow>Step-by-step process</workflow>
-<output_format>How to report findings</output_format>
-<constraints>What NOT to do</constraints>
-```
-
-**Key Rules:**
-- Sub-agents cannot interact with users (no AskUserQuestion)
-- Use `tools:` to restrict access (Read, Grep, Glob for research; no Write/Edit)
-- Sub-agents return a final report to main agent
-- Use XML tags for structure, not markdown headings
-
-## Skill Structure
-
-```
-balatro-mod-skill/
-├── SKILL.md                    # This file
-├── agents/openai.yaml          # Codex UI metadata
-├── patterns/                   # Detailed pattern guides
-│   ├── lovely-patches.md       # Lovely.toml syntax
-│   ├── smods-api.md            # SMODS patterns
-│   ├── mobile-compat.md        # Desktop vs mobile
-│   └── ui-system.md            # UIBox, CardArea
-├── references/                 # Game reference docs
-│   ├── game-files.md           # Game source map
-│   └── globals.md              # G.GAME, G.STATES
-├── scripts/                    # Script templates
-│   ├── sync_to_mods.template.sh
-│   ├── create_release.template.sh
-│   └── mod-scripts-guide.md
-└── templates/                  # Mod setup templates
-    ├── agents/                 # Sub-agent templates (shared)
-    │   ├── game-source-researcher.md
-    │   ├── smods-api-researcher.md
-    │   ├── mod-pattern-researcher.md
-    │   └── lovely-patch-researcher.md
-    ├── docs/                   # User doc templates
-    │   ├── description-template.md
-    │   ├── NEXUSMODS_DESCRIPTION-template.txt
-    │   └── knowledge-base-template.md
-    └── claude-config/          # Claude hooks/commands
-        ├── hooks.json          # SessionStart, PreToolUse, PostToolUse, Stop
-        ├── commands/           # Command templates
-        │   ├── sync-mod.md
-        │   ├── bump-version.md
-        │   ├── release.md
-        │   ├── refactor.md
-        │   ├── debug.md
-        │   ├── draft-pr.md
-        │   ├── update-docs.md
-        │   └── update-skill.md
-        └── init-balatro-mod.md # Init command
-```
-
-## Templates for Mod Repos
-
-When setting up a new mod repo, copy these templates:
-
-| Template | Destination | Purpose |
-|----------|-------------|---------|
-| `templates/claude-config/hooks.json` | `.claude/hooks/hooks.json` | Claude hooks |
-| `templates/claude-config/commands/*` | `.claude/commands/` | Claude commands |
-| `templates/agents/*` | `.claude/agents/` (Claude) | Research sub-agents |
-| `templates/agents/*` | Reference for Task tool (Codex) | Research prompts |
-| `templates/project-rules-template.md` | `INIT.md` | Project rules |
-| `templates/agent-md-template.md` | `AGENT.md` | Repo documentation |
-
-Commands available after setup:
+## Available Commands
 - `/init-balatro-mod` - Initialize new mod
 - `/sync-mod` - Start sync with watch mode (run once at start)
 - `/bump-version [patch|minor|major]` - Increment version, update changelogs
