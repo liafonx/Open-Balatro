@@ -69,90 +69,73 @@ Missing Dev Files: [list what needs to be created]
 
 ## Step 2: Generate Action Plan
 
-Based on repo type, create specific plan:
+Based on repo type, create specific plan.
 
-### For NEW Repository
-Create full skeleton:
+### For ALL Existing Repos (OWN or FORK)
+
+These steps apply to ANY non-empty repository:
+
+**Cleanup:**
+- [ ] Delete `References/` folder if exists (legacy symlink approach)
+- [ ] Move extra `.md` files to `docs/` - only keep in root:
+  - `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`
+  - `AGENT.md`, `INIT.md`, `LICENSE.md`
+  - Move ALL other `.md` files to `docs/`
+
+**Dev files (add if missing):**
+- [ ] AGENT.md
+- [ ] INIT.md
+- [ ] mod.config.json
+- [ ] scripts/sync_to_mods.sh
+- [ ] .gitignore with agent folders
+
+**Claude config (add if missing):**
+- [ ] `.claude/commands/*` from skill templates
+- [ ] `.claude/hooks/hooks.json`
+- [ ] `.claude/agents/*`
+
+---
+
+### Additional for NEW Repository
+
+Full skeleton - create everything:
 - [ ] {ModID}.json (manifest)
 - [ ] main.lua (entry point)
-- [ ] AGENT.md (mod documentation)
-- [ ] INIT.md (project rules)
-- [ ] mod.config.json (file lists)
-- [ ] .gitignore
-- [ ] scripts/sync_to_mods.sh
 - [ ] scripts/create_release.sh
 - [ ] localization/en-us.lua
-- [ ] **Claude config** (see below)
+- [ ] Utils/Logger.lua
 
-### For OWN Existing Repository
-Evaluate and fix structure:
-- [ ] Delete `References/` folder if exists (legacy symlink approach - no longer needed)
-- [ ] **Move extra docs to `docs/`** - only keep these `.md`/`.txt` in root:
-  - `README.md`, `README_zh.md`
-  - `CHANGELOG.md`, `CHANGELOG_zh.md`
-  - `AGENT.md`, `INIT.md`
-  - `LICENSE`, `LICENSE.md`
-  - Move ALL other `.md`/`.txt` files to `docs/`
-- [ ] Check if manifest follows SMODS conventions
-- [ ] Check if AGENT.md exists and is complete
-- [ ] Check if INIT.md exists with correct rules
-- [ ] **Check Claude config** (see below)
-- [ ] Check if mod.config.json has `$version` field and uses v2.0.0 schema (with `paths` object)
-- [ ] Check if scripts use Config Version 2.0.1 (zsh for macOS compat, reads from mod.config.json)
-- [ ] Check if scripts/ folder exists and is executable
-- [ ] Check if .gitignore includes agent folders
-- [ ] List any structural issues to fix
+### Additional for OWN Repository
+
+Full evaluation - check and fix:
+- [ ] Verify manifest follows SMODS conventions
+- [ ] Check mod.config.json uses v2.0.0 schema (with `paths` object)
+- [ ] Check scripts use Config Version 2.0.1 (zsh, reads from mod.config.json)
+- [ ] scripts/create_release.sh exists
+- [ ] List structural issues to fix
 
 **Script Version Check:**
-Look for `# Config Version: 2.0.1` in scripts. If missing or older:
-- Offer to update scripts to latest version from skill templates
-- Keep any custom modifications (ask user)
-- Note: Scripts now use `#!/bin/zsh` for macOS compatibility
+Look for `# Config Version: 2.0.1` in scripts. If missing or older, offer to update.
 
-### For FORK (Others' Repository)
-Minimal additions only:
-- [ ] AGENT.md (if missing - lightweight version documenting current structure)
-- [ ] INIT.md (lightweight, fork-mode rules)
-- [ ] mod.config.json (for local sync only)
-- [ ] scripts/sync_to_mods.sh (local development)
-- [ ] .gitignore additions (append agent folders if missing)
-- Do NOT modify: manifest, main code structure
+### Additional for FORK Repository
 
-### Claude Agent Config (if running under Claude)
+Minimal changes - respect their structure:
+- [ ] AGENT.md should be lightweight (document existing structure, not prescribe)
+- [ ] INIT.md uses fork-mode rules
+- [ ] Do NOT add: create_release.sh, Logger.lua, localization/
+- [ ] Do NOT modify: manifest, main code structure
 
-When init is called from Claude agent, set up Claude-specific config:
+---
 
-**Required files:**
-```
-.claude/
-├── commands/           # Slash commands
-│   ├── sync-mod.md
-│   ├── bump-version.md
-│   ├── release.md
-│   ├── refactor.md
-│   ├── debug.md
-│   ├── draft-pr.md
-│   ├── update-docs.md
-│   └── update-skill.md
-├── hooks/
-│   └── hooks.json      # SessionStart, PreToolUse, PostToolUse
-└── agents/             # Sub-agents for research
-    ├── game-source-researcher.md
-    ├── smods-api-researcher.md
-    ├── mod-pattern-researcher.md
-    └── lovely-patch-researcher.md
-```
+### Claude Agent Config
 
-**Copy from skill templates:**
-- Commands: `templates/claude-config/commands/*` → `.claude/commands/`
-- Hooks: `templates/claude-config/hooks.json` → `.claude/hooks/hooks.json`
-- Agents: `templates/agents/*` → `.claude/agents/`
+Copy from skill templates to `.claude/`:
 
-**For existing repos, verify:**
-- [ ] `.claude/commands/` exists with all commands
-- [ ] `.claude/hooks/hooks.json` exists and has correct events
-- [ ] `.claude/agents/` exists with research agents
-- [ ] Commands are up-to-date (compare with skill templates)
+| Source | Destination |
+|--------|-------------|
+| `templates/claude-config/commands/*` | `.claude/commands/` |
+| `templates/claude-config/hooks.json` | `.claude/hooks/hooks.json` |
+| `templates/agents/*` | `.claude/agents/` |
 
 ## Step 3: Confirm with User
 

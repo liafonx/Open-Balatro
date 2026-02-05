@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.0.7
+version: 1.0.9
 ---
 
 # Balatro Mod Development
@@ -19,6 +19,22 @@ Create and debug Balatro mods with Steamodded, Lovely, and SMODS.
 
 See `templates/project-rules-template.md` for detailed rules per type.
 
+## Quick Agent Selection
+
+When researching, spawn the right agent:
+
+| Need to find... | Use agent | Search boundary |
+|-----------------|-----------|----------------|
+| Game function implementation | `game-source-researcher` | `Balatro_src/` only |
+| SMODS API usage/hooks | `smods-api-researcher` | `smods/` only |
+| How other mods do X | `mod-pattern-researcher` | `Mods/` folder only |
+| Lovely patch syntax | `lovely-patch-researcher` | lovely files only |
+| Run temp script for data | `script-runner` | N/A (execution) |
+
+**Parallel vs Sequential:**
+- **Parallel:** When researching DIFFERENT sources (game + SMODS + mods) - spawn multiple agents at once
+- **Sequential:** When second query depends on first result
+
 ## File Naming Convention (Claude & Codex)
 
 Both Claude and Codex use the same file structure:
@@ -34,13 +50,13 @@ Both Claude and Codex use the same file structure:
 
 ## File Placement Rules
 
-Only these `.md`/`.txt` files belong in root:
+Only these `.md` files belong in root:
 - `README.md`, `README_zh.md`
 - `CHANGELOG.md`, `CHANGELOG_zh.md`
 - `AGENT.md`, `INIT.md`
-- `LICENSE`, `LICENSE.md`
+- `LICENSE.md`
 
-**ALL other `.md`/`.txt` files MUST go in `docs/`**
+**ALL other `.md` files MUST go in `docs/`**
 
 ## External References (No Symlinks Needed)
 
@@ -188,24 +204,29 @@ pcall(print, "[Debug] checkpoint: " .. tostring(var))
 |--------|---------|
 | `scripts/sync_to_mods.template.sh` | Sync mod files to game's Mods folder |
 | `scripts/create_release.template.sh` | Create release packages |
+| `scripts/fix_transparent_pixels.py` | Fix grey borders on sprites |
 | `scripts/mod-scripts-guide.md` | Detailed script usage |
 
-## Workflow: New Mod
+## Workflow: Init Any Existing Repo
 
-1. Determine repo type (`new` or `fork`)
-2. Create repo, copy templates (INIT.md, AGENT.md, mod.config.json)
-3. For `new`: Set up Logger.lua, user docs, localization (en-us/zh-cn)
-4. Read `patterns/smods-api.md` for mod structure
-5. Search game source for relevant functions
-6. If mobile: read `patterns/mobile-compat.md`
-7. If patches: read `patterns/lovely-patches.md`
+For ALL non-empty repos (own or fork), ALWAYS do these first:
+
+1. **Delete `References/` folder** if exists (legacy symlink approach)
+2. **Move extra `.md` files to `docs/`** - only keep in root: README*.md, CHANGELOG*.md, AGENT.md, INIT.md, LICENSE.md
+3. **Add dev files** (if missing): AGENT.md, INIT.md, mod.config.json, scripts/sync_to_mods.sh
+4. **Add Claude config** (if missing): `.claude/commands/`, `.claude/hooks/`, `.claude/agents/`
+5. Update .gitignore with agent folders
+
+**Then for OWN repos:** Also check manifest, scripts version (2.0.1), add create_release.sh, Logger.lua
+
+**Then for FORK repos:** Keep AGENT.md lightweight, use fork-mode INIT.md, don't add release scripts
 
 ## Workflow: Debugging
 
 1. Check platform (desktop vs mobile)
 2. Search game source for function
 3. Check other mods for implementations
-4. Add logs (Logger.lua for new, temp for fork)
+4. Add logs (Logger.lua for own, temp for fork)
 5. Check Lovely logs
 6. **If fix fails 3+ times:** Document in `docs/knowledge-base.md`
 
@@ -267,6 +288,11 @@ When user says "draft a PR message":
 
 **Philosophy:** Main agent handles code development. Sub-agents handle information gathering.
 
+**Output Constraint (ALL research agents):** Keep report under 100 lines. Focus on:
+1. Direct answer to the question
+2. Key code locations (file:line)
+3. One code snippet (most relevant)
+
 ### When to Use Sub-Agents
 
 | Situation | Use Sub-Agent |
@@ -275,6 +301,7 @@ When user says "draft a PR message":
 | Understanding SMODS API | `smods-api-researcher` |
 | Finding mod patterns | `mod-pattern-researcher` |
 | Figuring out Lovely patches | `lovely-patch-researcher` |
+| Running temp scripts for data | `script-runner` |
 | Writing/editing code | **Main agent** (no sub-agent) |
 | User interaction needed | **Main agent** (sub-agents can't ask questions) |
 
@@ -282,12 +309,50 @@ When user says "draft a PR message":
 
 Templates in `templates/agents/`:
 
-| Agent | Purpose |
-|-------|---------|
-| `game-source-researcher` | Search Balatro source for functions, data, injection points |
-| `smods-api-researcher` | Find SMODS API patterns, hooks, configuration |
-| `mod-pattern-researcher` | Find how other mods implement features |
-| `lovely-patch-researcher` | Find Lovely patch syntax and examples |
+| Agent | Purpose | Search Boundary |
+|-------|---------|-----------------|
+| `game-source-researcher` | Search Balatro source for functions, data | `Balatro_src/` only |
+| `smods-api-researcher` | Find SMODS API patterns, hooks | `smods/src/` only |
+| `mod-pattern-researcher` | Find how other mods implement features | `Mods/` folder only |
+| `lovely-patch-researcher` | Find Lovely patch syntax and examples | `smods/lovely/` only |
+| `script-runner` | Run temp scripts, return results | N/A (execution) |
+
+### Sub-Agent Boundaries (IMPORTANT)
+
+**Each research agent has a FIXED search boundary.** This prevents duplicate searches wasting tokens.
+
+| Agent | Searches IN | Does NOT search |
+|-------|-------------|-----------------|
+| `game-source-researcher` | `~/Development/GitWorkspace/Balatro_src/` | smods, Mods, lovely |
+| `smods-api-researcher` | `~/Development/GitWorkspace/smods/src/` | game source, Mods |
+| `mod-pattern-researcher` | `~/Library/Application Support/Balatro/Mods/` | game source, smods |
+| `lovely-patch-researcher` | `~/Development/GitWorkspace/smods/lovely/` | game source, Mods |
+
+**If a sub-agent needs to expand beyond its boundary:**
+1. Stop and report what was found
+2. Suggest which OTHER agent should search the expanded area
+3. Do NOT expand search without main agent approval
+
+### Script Runner Sub-Agent
+
+When main agent needs to run a temporary script to get data (not as the solution, just to extract/process info):
+
+**Use cases:**
+- Image processing with PIL
+- Data extraction from files
+- Quick calculations
+- Format conversions
+
+**Pattern:**
+```
+Main Agent: I need to extract image dimensions
+    ↓
+Script Runner Sub-Agent: Run `python3 -c "from PIL import Image; ..."`, return result
+    ↓
+Main Agent: Use result to continue with actual solution
+```
+
+**Do NOT use main agent to run temp scripts** - delegate to script-runner to keep focus on the actual problem.
 
 ### Platform-Specific Setup
 
@@ -313,7 +378,7 @@ Sub-Agent: Research game source / SMODS API / mod patterns
     ↓
 Main Agent: Review research, write code
     ↓
-Sub-Agent: (if stuck) Research alternatives
+Script Runner: (if needed) Run temp script, return data
     ↓
 Main Agent: Complete implementation, test, user feedback
 ```
@@ -402,6 +467,7 @@ Commands available after setup:
 - `/sync-mod` - Start sync with watch mode (run once at start)
 - `/bump-version [patch|minor|major]` - Increment version, update changelogs
 - `/release` - Create release packages (auto-detects version from manifests)
+- `/fix-sprites <directory> [--preview]` - Fix grey borders on sprites
 - `/refactor [focus-area]` - Review code for redundancy, outdated fallbacks, modularization
 - `/debug` - Verify fix by checking Lovely logs (auto-detects mod key from repo)
 - `/draft-pr` - Draft PR message (for forks)
@@ -413,3 +479,4 @@ Sub-agents available after setup:
 - `smods-api-researcher` - Find SMODS API patterns and usage
 - `mod-pattern-researcher` - Find how other mods implement features
 - `lovely-patch-researcher` - Find Lovely patch syntax and examples
+- `script-runner` - Run temp scripts and return results

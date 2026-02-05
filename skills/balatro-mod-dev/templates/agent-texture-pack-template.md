@@ -155,11 +155,26 @@ end
 
 ### 7.2 Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Texture not appearing | Check key name matches vanilla exactly |
-| Wrong positioning | Use `original_sheet = true` or set `px`/`py` |
-| 2x blurry | Ensure 2x is exactly double 1x dimensions |
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Texture not appearing | Key name mismatch | Check key name matches vanilla exactly |
+| Wrong positioning | Missing sheet config | Use `original_sheet = true` or set `px`/`py` |
+| 2x blurry | Wrong dimensions | Ensure 2x is exactly double 1x dimensions |
+| Grey border on sprites | Transparent pixels using RGB(0,0,0) | Edge-bleed colors into transparent pixels |
+| Sprite not loading | Wrong atlas dimensions | Verify image is exactly (tiles × px) wide |
+| DeckSkin not appearing | pos_style mismatch | Use 'collab' for 3-column J/Q/K layouts |
+
+### 7.3 Grey Border Fix (Transparent Pixel Issue)
+
+When transparent pixels have RGB values of (0,0,0,0) instead of edge-bled colors, bilinear filtering causes grey borders.
+
+**Fix:** Use PIL to copy edge colors into transparent pixels:
+```python
+from PIL import Image
+img = Image.open("sprite.png").convert("RGBA")
+# Copy neighboring opaque pixel colors to transparent pixels
+# while keeping alpha=0
+```
 
 ---
 

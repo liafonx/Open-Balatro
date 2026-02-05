@@ -17,25 +17,28 @@ Draft a conversational pull request message for contributing to another mod.
 
 ## PR Message Style
 
+**Length:** 3-5 sentences max. One paragraph unless really needed.
+
 **DO:**
 - Write like explaining to a friend
-- Share reasoning: "I noticed...", "This matters because..."
-- Mention alternatives: "if this feels overkill, I totally get it"
-- Offer help: "happy to help with that too"
-- Keep it readable, light formatting
+- Get to the point: what, why, done
+- One sentence of context if needed
+- Keep it readable, minimal formatting
 
 **DON'T:**
 - Use formal PR templates
 - Heavy bullet point lists
 - Corporate language ("This PR implements...")
+- Over-explain technical details
+- Multiple paragraphs for simple fixes
 
-## Example Tone
+## Example: Too Long ❌
 
-> "I just noticed that v1.9.3 added no-SMODS support, but my earlier fix relied on the SMODS API. I managed to make it work only with Lovely."
->
-> "The logic is actually pretty simple... The code looks more involved than it is."
->
-> "Anyway, if this feels overkill, I totally get it, happy to just keep it in my fork."
+> "Hey! I noticed the face cards were showing a subtle grey blur/halo around the suit letters. After some digging, I found the culprit: transparent pixel RGB values. The sprites were using (0,0,0,0) for transparent areas, but vanilla uses (255,255,255,0). Even though these pixels are fully transparent, the game's shader can sample their RGB values during interpolation, causing a dark halo. The fix is pretty simple - I ran a script that converts each transparent pixel to use the color of its nearest opaque neighbor. All 16 sprite files were processed."
+
+## Example: Just Right ✓
+
+> "Fixed grey halo around suit letters on face cards. The transparent pixels had RGB(0,0,0) which bleeds through during filtering - changed them to edge-bled colors like vanilla does. All 16 sprites updated."
 
 ## Output
 
