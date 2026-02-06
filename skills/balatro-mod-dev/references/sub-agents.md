@@ -19,9 +19,9 @@ Invocation routed through `codeagent` via `run_subagent.sh` adapter (both Claude
 | Concern | Owned by | Config location |
 |---------|----------|----------------|
 | Task → backend hint | balatro-mod-dev | `mod.config.json > agent_backends` |
-| Backend API endpoint/key | codeagent | `~/.codeagent/config.yaml` |
+| Backend API endpoint/key + API/CLI mode | codeagent | `~/.codeagent/models.json > backends.* (base_url, api_key, use_api)` |
 | Model selection + params | codeagent | `~/.codeagent/models.json` |
-| Agent presets | codeagent | `~/.codeagent/config.yaml > presets` |
+| Agent presets | codeagent | `~/.codeagent/models.json > agents.*` |
 | Source paths (workdirs) | balatro-mod-dev | `mod.config.json > source_paths` |
 
 **This skill provides backend hints. Codeagent owns invocation policy and model resolution.**
@@ -88,7 +88,7 @@ Users on different machines or OS can set their own paths here.
 6. Expands `~` to `$HOME` (required — shell expansion doesn't occur in HEREDOC metadata)
 7. Routes through `~/.claude/skills/codeagent/scripts/route_subagent.sh`
 
-**Note:** These are backend *hints*. Codeagent may override based on its own config (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
+**Note:** These are backend *hints*. Codeagent may override based on `~/.codeagent/models.json` (agents/backends) with `~/.codeagent/config.yaml` as global fallback.
 
 ### Source Path → Agent Mapping
 

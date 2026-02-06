@@ -141,8 +141,8 @@ resolve_agent_config() {
 # Parallel mode: pass through directly to route script
 if [[ "${1:-}" == "--parallel" ]]; then
   shift
-  # Read stdin, expand ~ to $HOME in workdir lines
-  task_content=$(cat | sed "s|workdir: ~/|workdir: $HOME/|g")
+  # Read stdin, expand ~ to $HOME in workdir metadata lines
+  task_content=$(cat | sed -e "s|workdir: ~/|workdir: $HOME/|g" -e "s|working_dir: ~/|working_dir: $HOME/|g")
   echo "$task_content" | exec "$ROUTE_SCRIPT" -- --parallel "$@"
   exit $?
 fi
