@@ -1,8 +1,9 @@
 ---
 name: lovely-patch-researcher
 description: Researches Lovely patch patterns and injection techniques. Use when needing to find how to patch game functions, understand Lovely syntax, or find examples of specific patch types.
-tools: Read, Grep, Glob, Bash
-model: sonnet
+backend: claude
+workdir: ~/Development/GitWorkspace/smods/lovely
+source_path_key: lovely
 ---
 
 <role>

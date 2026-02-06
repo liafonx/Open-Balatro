@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Balatro Mod Development
@@ -243,16 +243,24 @@ Use `/draft-pr` command. Style: 3-5 sentences, casual tone, what/why/done.
 
 ## Sub-Agents for Research
 
-Main agent handles code. Sub-agents handle information gathering.
+Main agent handles code. Sub-agents handle information gathering via `scripts/run_subagent.sh` → codeagent routing.
 
-| Situation | Use |
-|-----------|-----|
-| Research (game, SMODS, mods, lovely) | Sub-agent |
-| Running temp scripts for data | `script-runner` |
-| Writing/editing code | **Main agent** |
-| User interaction needed | **Main agent** |
+| Situation | Use | Default Backend |
+|-----------|-----|---------|
+| Research (game, SMODS, mods, lovely) | Research agent | `claude` |
+| Running temp scripts for data | `script-runner` | `codex` |
+| Writing/editing code | **Main agent** | — |
+| User interaction needed | **Main agent** | — |
 
-See `references/sub-agents.md` for detailed boundaries, workflow patterns, and creating new agents.
+Backends and source paths are **configurable** in `mod.config.json`:
+- `agent_backends.research` / `agent_backends.execution` — category defaults
+- `agent_backends.overrides.{agent-name}` — per-agent override (string or `{backend, workdir}`)
+- `source_paths` — where game source, SMODS, mods are located on this machine
+
+These are backend **hints**. Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
+`run_subagent.sh` resolves config and routes through codeagent automatically — no direct `codeagent-wrapper` calls.
+
+See `references/sub-agents.md` for full config resolution, invocation patterns, and parallel examples.
 
 ## Available Commands
 - `/init-balatro-mod` - Initialize new mod

@@ -1,8 +1,9 @@
 ---
 name: smods-api-researcher
 description: Researches SMODS API patterns, hooks, and implementations. Use when needing to understand how to use SMODS features, find examples of SMODS usage in existing mods, or understand SMODS internals.
-tools: Read, Grep, Glob, Bash
-model: sonnet
+backend: claude
+workdir: ~/Development/GitWorkspace/smods/src
+source_path_key: steamodded
 ---
 
 <role>

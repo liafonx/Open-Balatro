@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
-  "$version": "2.0.0",
+  "$version": "2.1.0",
   
   "mod_name": "{{MOD_NAME}}",
   "mod_json": "{{MOD_NAME}}.json",
@@ -39,5 +39,19 @@
     "formats": ["github", "thunderstore"]
   },
   
-  "test_saves": null
+  "test_saves": null,
+
+  "agent_backends": {
+    "research": "claude",
+    "execution": "codex",
+    "overrides": {}
+  },
+
+  "source_paths": {
+    "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",
+    "game_mobile": "~/Development/GitWorkspace/Balatro_src/ios_plus",
+    "steamodded": "~/Development/GitWorkspace/smods/src",
+    "lovely": "~/Development/GitWorkspace/smods/lovely",
+    "mods": "~/Library/Application Support/Balatro/Mods"
+  }
 }
