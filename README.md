@@ -1,6 +1,6 @@
 # Open-Balatro
 
-AI skill for Balatro mod development with Claude and Codex. Version 1.2.0.
+AI skill for Balatro mod development with Claude and Codex.
 
 ## What is This?
 
@@ -73,7 +73,7 @@ These are hints — [codeagent](https://github.com/liafonx/myclaude) owns final 
 ```
 Open-Balatro/
 ├── skills/
-│   └── balatro-mod-dev/        # The skill (v1.2.0)
+│   └── balatro-mod-dev/        # The skill
 │       ├── SKILL.md            # Main entry point
 │       ├── agents/openai.yaml  # Codex UI metadata
 │       ├── patterns/           # Pattern guides

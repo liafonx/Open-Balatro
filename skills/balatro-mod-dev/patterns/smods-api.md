@@ -277,3 +277,73 @@ local shader = love.graphics.newShader(MY_MOD.mod.path .. "assets/shaders/effect
     colour = G.C.WHITE
 }}
 ```
+
+## Lua Gotchas
+
+### Local Function Scoping (nil call crash)
+
+**Symptom:** `attempt to call global 'X' (a nil value)`
+
+In Lua, `local function` is only visible AFTER its definition. Calling it from code above produces nil.
+
+```lua
+-- WRONG: caller before callee
+local function caller()
+    callee()  -- nil! callee not defined yet
+end
+
+local function callee()
+    print("hi")
+end
+
+-- FIX: Forward declare
+local callee  -- Forward declaration
+
+local function caller()
+    callee()  -- Works now
+end
+
+callee = function()  -- Assignment, not 'local function'
+    print("hi")
+end
+```
+
+**Lesson:** When refactoring function order, add forward declarations for cross-references.
+
+### Meta-File Boolean Normalization
+
+**Problem:** `.meta` fields are strings; Lua treats `"0"` and `0` as truthy.
+
+```lua
+-- WRONG: string "0" is truthy
+if meta.is_enabled then  -- Always true if field exists
+```
+
+**Fix:** Normalize once at read boundary:
+
+```lua
+-- In meta file reader
+meta.is_enabled = (tonumber(meta.is_enabled) == 1)
+
+-- All downstream: plain boolean check
+if meta.is_enabled then
+```
+
+### Cache Nil-Safety
+
+**Problem:** Lazy/evictable cache fields may be `nil` (not yet loaded), not `false`.
+
+```lua
+-- WRONG: nil treated as false skips hydration
+if entry.is_key then  -- Misses entries where is_key is nil
+
+-- FIX: Hydrate before evaluating
+local function get_entry_with_meta(entry)
+    if entry.is_key == nil then
+        hydrate_meta(entry)  -- Load from disk
+    end
+    return entry
+end
+```
+
+**Lesson:** For cache-backed optional fields, `nil` means "not loaded yet" and requires hydration.

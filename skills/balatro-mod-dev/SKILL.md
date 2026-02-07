@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.2.1
+version: 1.2.2
 ---
 
 # Balatro Mod Development
@@ -12,16 +12,33 @@ Create and debug Balatro mods with Steamodded, Lovely, and SMODS.
 
 When researching, spawn the right agent:
 
-| Need to find... | Use agent | Search boundary |
-|-----------------|-----------|----------------|
-| Game function implementation | `game-source-researcher` | `Balatro_src/` only |
-| SMODS API usage/hooks | `smods-api-researcher` | `smods/` only |
-| How other mods do X | `mod-pattern-researcher` | `Mods/` folder only |
-| Lovely patch syntax | `lovely-patch-researcher` | lovely files only |
-| Run temp script for data | `script-runner` | N/A (execution) |
+| Need to find... | Use agent | Search boundary | Default Backend |
+|-----------------|-----------|----------------|----------------|
+| Game function implementation | `game-source-researcher` | `Balatro_src/` only | claude |
+| SMODS API usage/hooks | `smods-api-researcher` | `smods/` only | claude |
+| How other mods do X | `mod-pattern-researcher` | `Mods/` folder only | claude |
+| Lovely patch syntax | `lovely-patch-researcher` | lovely files only | claude |
+| **Project architecture/exploration** | `project-explorer` | **Current project only** | **codex** |
+| Run temp script for data | `script-runner` | N/A (execution) | codex |
 
 **Parallel:** When researching DIFFERENT sources - spawn multiple agents at once
 **Sequential:** When second query depends on first result
+
+> **⚠️ MANDATORY: Sub-Agent Invocation**
+>
+> **ALWAYS use `scripts/run_subagent.sh`** to spawn sub-agents. This adapter resolves backend config from `mod.config.json` and routes through codeagent.
+>
+> **DO NOT** use built-in agent spawning, direct shell commands, or any other method.
+>
+> ```bash
+> # CORRECT - always use this
+> ./scripts/run_subagent.sh game-source-researcher <<'EOF'
+> [task content]
+> EOF
+>
+> # WRONG - never do this
+> # spawn_agent(...), create_subagent(...), direct codeagent calls, etc.
+> ```
 
 See `references/sub-agents.md` for boundaries, workflow patterns, and creating new agents.
 
@@ -279,4 +296,5 @@ Sub-agents available after setup:
 - `smods-api-researcher` - Find SMODS API patterns and usage
 - `mod-pattern-researcher` - Find how other mods implement features
 - `lovely-patch-researcher` - Find Lovely patch syntax and examples
+- `project-explorer` - Extensive codebase exploration (uses codex for token efficiency)
 - `script-runner` - Run temp scripts and return results

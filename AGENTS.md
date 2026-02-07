@@ -1,6 +1,6 @@
 # Open-Balatro - Agent Guide
 
-This repository contains the `balatro-mod-dev` skill (v1.2.0) for AI-assisted Balatro mod development.
+This repository contains the `balatro-mod-dev` skill for AI-assisted Balatro mod development.
 
 ## Repository Structure
 
@@ -8,7 +8,7 @@ This repository contains the `balatro-mod-dev` skill (v1.2.0) for AI-assisted Ba
 Open-Balatro/
 ├── skills/
 │   └── balatro-mod-dev/        # The main skill
-│       ├── SKILL.md            # Skill entry point (v1.2.0)
+│       ├── SKILL.md            # Skill entry point
 │       ├── agents/openai.yaml  # Codex UI metadata
 │       ├── patterns/           # Lovely, SMODS, mobile, UI guides
 │       ├── references/         # Game file map, globals, sub-agent system
@@ -66,7 +66,7 @@ Both Claude and Codex use the same file structure in mod repos:
 | `AGENT.md` | Mod-specific structure, functionality |
 | `mod.config.json` | File lists, backend config, source paths for sync/release/agents |
 
-### Configurable Backends (v1.2.0)
+### Configurable Backends
 
 Sub-agent backends are configurable per-mod via `mod.config.json`:
 
@@ -86,6 +86,12 @@ Sub-agent backends are configurable per-mod via `mod.config.json`:
 Resolution order: per-agent override → category default → agent template fallback.
 These are backend **hints** — codeagent owns final invocation policy.
 
+Codeagent runtime ownership:
+- `~/.codeagent/models.json`:
+  - `agents.*` for agent presets
+  - `backends.*` for backend runtime defaults and API settings (`model`, `reasoning`, `skip_permissions`, `base_url`, `api_key`, `use_api`)
+- `~/.codeagent/config.yaml`: global fallback defaults.
+
 ### Codeagent Integration
 
 Sub-agents route through the `codeagent` skill (never direct `codeagent-wrapper` calls):
@@ -94,10 +100,13 @@ Sub-agents route through the `codeagent` skill (never direct `codeagent-wrapper`
 run_subagent.sh → reads mod.config.json → route_subagent.sh → codeagent-wrapper
 ```
 
+Parallel metadata normalization:
+- `run_subagent.sh` normalizes both `workdir: ~/...` and `working_dir: ~/...` to `$HOME/...` before routing.
+
 | Concern | Owned by |
 |---------|----------|
 | Task decomposition, backend hints, source paths | balatro-mod-dev (`mod.config.json`) |
-| Backend routing, model selection, API config | codeagent (`~/.codeagent/config.yaml`, `models.json`) |
+| Backend routing + model/API behavior | codeagent (`~/.codeagent/models.json` primary, `~/.codeagent/config.yaml` fallback) |
 
 ### Five-Layer Architecture
 
@@ -126,7 +135,7 @@ Layer 3: Per-Mod Config
 Layer 4: Codeagent Routing
 ├── run_subagent.sh: Adapter (resolves config → routes)
 ├── route_subagent.sh: Codeagent entrypoint
-└── ~/.codeagent/: Model config, API keys, presets
+└── ~/.codeagent/: models.json (agents/backends, use_api), config.yaml (global fallback)
 
 Layer 5: External References (read-only)
 ├── Game source

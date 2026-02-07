@@ -98,6 +98,7 @@ Users on different machines or OS can set their own paths here.
 | `smods-api-researcher` | `steamodded` | `~/Development/GitWorkspace/smods/src` |
 | `mod-pattern-researcher` | `mods` | `~/Library/Application Support/Balatro/Mods` |
 | `lovely-patch-researcher` | `lovely` | `~/Development/GitWorkspace/smods/lovely` |
+| `project-explorer` | — | project root (current mod) |
 | `script-runner` | — | project root |
 
 ## Agent Selection
@@ -108,6 +109,7 @@ Users on different machines or OS can set their own paths here.
 | SMODS API usage/hooks | `smods-api-researcher` | `claude` | `source_paths.steamodded` |
 | How other mods do X | `mod-pattern-researcher` | `claude` | `source_paths.mods` |
 | Lovely patch syntax | `lovely-patch-researcher` | `claude` | `source_paths.lovely` |
+| **Project architecture/exploration** | `project-explorer` | **`codex`** | **project root** |
 | Run temp script for data | `script-runner` | `codex` | project root |
 
 ## Invocation

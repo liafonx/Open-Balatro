@@ -89,11 +89,12 @@ RSYNC_ARGS+=("--exclude=*")
 echo "Copying mod files..."
 rsync -av "${RSYNC_ARGS[@]}" "$DEV_DIR/" "$TEMP_MOD_DIR/"
 
-# Create release directory
-mkdir -p "$RELEASE_DIR"
+# Create version-specific release directory (e.g., release/1.4.8/)
+VERSION_RELEASE_DIR="$RELEASE_DIR/$VERSION"
+mkdir -p "$VERSION_RELEASE_DIR"
 
 # Create GitHub release zip
-GITHUB_ZIP="$RELEASE_DIR/$MOD_NAME-$VERSION.zip"
+GITHUB_ZIP="$VERSION_RELEASE_DIR/$MOD_NAME-$VERSION.zip"
 echo "Creating GitHub release: $GITHUB_ZIP"
 (cd "$TEMP_DIR" && zip -r "$GITHUB_ZIP" "$MOD_NAME")
 
@@ -108,7 +109,7 @@ if [[ ${#THUNDERSTORE_ADDITIONS[@]} -gt 0 ]]; then
         fi
     done
     
-    THUNDERSTORE_ZIP="$RELEASE_DIR/$MOD_NAME-$VERSION-thunderstore.zip"
+    THUNDERSTORE_ZIP="$VERSION_RELEASE_DIR/$MOD_NAME-$VERSION-thunderstore.zip"
     echo "Creating Thunderstore release: $THUNDERSTORE_ZIP"
     (cd "$TEMP_DIR" && zip -r "$THUNDERSTORE_ZIP" "$MOD_NAME")
 fi
@@ -117,7 +118,7 @@ fi
 rm -rf "$TEMP_DIR"
 
 echo ""
-echo "Release packages created in $RELEASE_DIR:"
-ls -la "$RELEASE_DIR"/*.zip 2>/dev/null | grep "$VERSION" || true
+echo "Release packages created in $VERSION_RELEASE_DIR:"
+ls -la "$VERSION_RELEASE_DIR"/*.zip 2>/dev/null || true
 echo ""
 echo "Done!"
