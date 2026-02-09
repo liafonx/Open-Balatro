@@ -126,6 +126,20 @@ When user says "draft a PR message":
 >
 > "Anyway, if this feels overkill, I totally get it, happy to just keep it in my fork."
 
+### Rule 9: Sub-Agent Invocation
+
+**NEVER use the Task tool or built-in agent spawning to create sub-agents.**
+
+All sub-agent research MUST go through:
+```bash
+./scripts/run_subagent.sh <agent-name> <<'EOF'
+[task content]
+EOF
+```
+
+This adapter resolves backend config from mod.config.json and routes through codeagent.
+Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner.
+
 ---
 
 ## User Documentation (new repos only)

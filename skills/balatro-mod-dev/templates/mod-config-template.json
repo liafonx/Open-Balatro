@@ -26,6 +26,7 @@
   ],
   
   "thunderstore_additions": [
+    "manifest.json",
     "CHANGELOG.md",
     "icon.png"
   ],

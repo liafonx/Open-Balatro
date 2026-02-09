@@ -23,6 +23,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "BLOCK: Do not use the Task tool to spawn sub-agents. All sub-agent research MUST go through ./scripts/run_subagent.sh via the Bash tool. Example: ./scripts/run_subagent.sh game-source-researcher <<'EOF'\n[task]\nEOF\nSee the balatro-mod-dev skill's references/sub-agents.md for invocation patterns.",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

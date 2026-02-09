@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.2.2
+version: 1.2.4
 ---
 
 # Balatro Mod Development
@@ -44,12 +44,27 @@ See `references/sub-agents.md` for boundaries, workflow patterns, and creating n
 
 ## Repo Type Awareness
 
-| Type | Description | Implications |
-|------|-------------|--------------|
-| `new` | My own mod from scratch | Full docs, Logger.lua, localization (en-us/zh-cn) |
-| `fork` | Contributing to others' mod | Minimal changes, temp logs only, follow existing patterns |
+**Auto-detection:** Compare mod manifest `author` with git remote username.
+
+```bash
+# Get git remote username
+git_user=$(git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+)/[^/]+\.git$|\1|' | tr '[:upper:]' '[:lower:]')
+
+# Get mod author from manifest (first author, lowercase)
+mod_author=$(jq -r '.author[0] // .author // ""' *.json 2>/dev/null | head -1 | tr '[:upper:]' '[:lower:]')
+
+# Compare: match = own, no match = fork
+[[ "$git_user" == "$mod_author" ]] && echo "own" || echo "fork"
+```
+
+| Type | Detection | Implications |
+|------|-----------|--------------|
+| `new` | Empty repo (no files) | Full docs, Logger.lua, localization |
+| `own` | Author matches git user | Full docs, standardize structure |
+| `fork` | Author differs from git user | Minimal changes, temp logs only |
 
 See `templates/project-rules-template.md` for detailed rules per type.
+
 
 ## File Naming Convention (Claude & Codex)
 
@@ -288,6 +303,7 @@ See `references/sub-agents.md` for full config resolution, invocation patterns, 
 - `/refactor [focus-area]` - Review code for redundancy, outdated fallbacks, modularization
 - `/debug` - Verify fix by checking Lovely logs (auto-detects mod key from repo)
 - `/draft-pr` - Draft PR message (for forks)
+- `/update` - Audit project for outdated scripts, hooks, commands, and config
 - `/update-docs` - Review all user docs
 - `/update-skill [file|instruction]` - Update skill based on new knowledge
 

@@ -32,10 +32,10 @@ Scripts read configuration from `mod.config.json` at the mod root:
     "assets/***"
   ],
   "thunderstore_additions": [
+    "manifest.json",
     "README.md",
     "CHANGELOG.md",
-    "icon.png",
-    "manifest.json"
+    "icon.png"
   ],
   "exclude_from_release": [
     "References/",

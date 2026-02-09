@@ -28,23 +28,28 @@ find . -type f ! -path './.git/*' | wc -l
 - If 0 files (or only README/LICENSE) → **new repo** (proceed to Step 2 with full skeleton)
 - If has files → **existing repo** (proceed to ask user)
 
-### Check 2: For existing repos, ASK THE USER
+### Check 2: For existing repos, auto-detect own vs fork
 
-Do NOT auto-detect based on git remote. Ask the user directly:
+Compare mod manifest author with git remote username:
 
+```bash
+# Get git remote username (lowercase)
+git_user=$(git remote get-url origin 2>/dev/null | sed -E 's|.*[:/]([^/]+)/[^/]+\.git$|\1|' | tr '[:upper:]' '[:lower:]')
+
+# Get mod author from manifest (first author if array, lowercase)
+mod_author=$(jq -r '.author[0] // .author // ""' *.json 2>/dev/null | head -1 | tr '[:upper:]' '[:lower:]')
+
+# Report
+echo "Git user: $git_user"
+echo "Mod author: $mod_author"
 ```
-This repository already has files. Please choose:
 
-1. **Fork/Contribute** - This is someone else's mod, I'm making changes to contribute back
-   → Minimal additions only, don't restructure
+**Detection logic:**
+- If `git_user == mod_author` → **own** (your mod, full standardization)
+- If `git_user != mod_author` → **fork** (contributing, minimal changes)
+- If git remote unavailable → ask user
 
-2. **Own/Standardize** - This is my own mod, I want to standardize the structure
-   → Full structure evaluation and fixes
-
-Which option? (1 or 2)
-```
-
-Wait for user response before proceeding.
+**Note:** Detection is case-insensitive. Falls back to asking user if detection fails.
 
 ### Check 3: Determine Mod Type from Manifest
 If manifest exists, check dependencies:
@@ -210,6 +215,7 @@ Use `agent-md-template.md`, fill with detected metadata.
     "Utils/***"
   ],
   "thunderstore_additions": [
+    "manifest.json",
     "CHANGELOG.md",
     "icon.png"
   ],

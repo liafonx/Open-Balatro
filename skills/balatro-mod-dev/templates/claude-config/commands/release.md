@@ -23,7 +23,7 @@ $ARGUMENTS = version number (optional, e.g., "1.2.0")
 
 2. Check if `scripts/create_release.sh` exists
 3. Run `./scripts/create_release.sh {version}`
-4. Report created files in `release/` folder
+4. Report created files in `release/{version}/` folder
 5. Remind to update CHANGELOG.md and CHANGELOG_zh.md before publishing
 
 If the script doesn't exist, suggest running /init-balatro-mod first.
