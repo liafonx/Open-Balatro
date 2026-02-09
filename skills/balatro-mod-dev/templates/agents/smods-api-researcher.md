@@ -68,4 +68,5 @@ Return a structured report:
 - Note version requirements if API is version-specific
 - Distinguish between stable API and internal implementation
 - **Keep total report under 100 lines** - focus on direct answer, key locations, one best snippet
+- **Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep tasks).
 </constraints>

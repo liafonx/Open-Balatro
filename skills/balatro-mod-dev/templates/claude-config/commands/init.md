@@ -117,10 +117,38 @@ Full evaluation - check and fix:
 - [ ] Check mod.config.json uses v2.0.0 schema (with `paths` object)
 - [ ] Check scripts use Config Version 2.0.1 (zsh, reads from mod.config.json)
 - [ ] scripts/create_release.sh exists
+- [ ] Utils/Logger.lua exists and matches template pattern
+- [ ] Scan for ad-hoc logging and flag for migration (see Logging Check below)
 - [ ] List structural issues to fix
 
 **Script Version Check:**
 Look for `# Config Version: 2.0.1` in scripts. If missing or older, offer to update.
+
+**Logging Check (new and own repos only):**
+
+1. Check if `Utils/Logger.lua` exists
+   - Missing → add to plan: install from `templates/logger-template.lua`
+   - Present → verify it has `M.create`, `M.log`, `should_log` functions
+
+2. Scan all `.lua` files (excluding `Utils/Logger.lua`) for ad-hoc logging:
+   - `print(` — bare print calls
+   - `pcall(print,` — protected print used as permanent logging
+   - Prefix patterns like `"[ModName]"` or `"[Debug]"` in print strings
+
+3. For each file with ad-hoc logging, flag for migration:
+   ```
+   Logging migration needed:
+   - main.lua: 2x print() → Logger.log()
+   - Core/SaveManager.lua: 3x pcall(print,...) → Logger.create("SaveManager")
+   ```
+
+4. Include in action plan. When user confirms, migrate:
+   - Add `local Logger = require("Utils.Logger")` at top of file
+   - Add `local log = Logger.create("ModuleName")` (derive module name from filename)
+   - Replace `print("[Prefix] msg")` → `log("info", "msg")`
+   - Replace `pcall(print, "[Debug] msg")` → `log("debug", "msg")`
+   - Replace error-context prints → `log("error", "msg")`
+   - Preserve semantic level: error prints → `"error"`, debug → `"debug"`, general → `"info"`
 
 ### Additional for FORK Repository
 

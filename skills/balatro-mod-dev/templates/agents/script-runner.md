@@ -35,4 +35,5 @@ If script fails: return the error message and suggest a fix if obvious. Do NOT r
 - Clean up any temp files you create
 - Use absolute paths for all file references
 - Prefer one-liners and heredocs over creating script files
+- **Model restriction:** Never use Opus for sub-agents. Use Haiku (command execution) or Sonnet (if script requires reasoning).
 </constraints>

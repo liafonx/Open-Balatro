@@ -74,4 +74,5 @@ payload = '''
 - Note if patch conflicts with other common mods
 - Prefer pattern patches over regex when possible (better compatibility)
 - **Keep total report under 100 lines** - focus on direct answer, key locations, one best snippet
+- **Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep tasks).
 </constraints>

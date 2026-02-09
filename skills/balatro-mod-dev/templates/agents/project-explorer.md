@@ -48,4 +48,5 @@ This agent is for understanding the mod's OWN codebase.
 - DO NOT modify any files - read-only exploration
 - DO NOT search outside project directory
 - Report what you found, not what you plan to do
+- **Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep tasks).
 </constraints>

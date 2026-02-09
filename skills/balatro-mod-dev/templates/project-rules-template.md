@@ -99,6 +99,7 @@ When modifying UI code (UIBox, draw functions, input handling):
 | SMODS patterns | `patterns/smods-api.md` |
 | Mobile differences | `patterns/mobile-compat.md` |
 | UI architecture | `patterns/ui-system.md` |
+| Lua/LuaJIT pitfalls, common bugs | `references/lua-gotchas.md` |
 
 ### Rule 8: PR Message Drafting (fork repos)
 
@@ -139,6 +140,36 @@ EOF
 
 This adapter resolves backend config from mod.config.json and routes through codeagent.
 Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner.
+
+### Rule 10: Plan Before Big Changes
+
+**For refactoring, structural changes, or feature implementation — NEVER proceed automatically.**
+
+1. Write a plan to `docs/PLAN.md` covering:
+   - What changes and why
+   - Files affected
+   - Migration steps (if breaking existing code)
+   - Risks or trade-offs
+2. Spawn a Codex review via `script-runner`:
+   ```bash
+   ./scripts/run_subagent.sh script-runner <<'EOF'
+   Review the plan in docs/PLAN.md. Check for:
+   - Missing edge cases or files that would break
+   - Simpler alternatives
+   - Whether the scope is too large (should be split)
+   Report: APPROVE / CONCERNS: [list]
+   EOF
+   ```
+3. Present the plan + review to the user
+4. **Only proceed after explicit user approval**
+
+**What counts as "big":**
+- Renaming or moving 3+ files
+- Changing module boundaries or require chains
+- Adding/removing a system (logging, config, UI framework)
+- Rewriting a core function's signature or behavior
+
+**Small changes** (typo fix, adding a field, single-file edits) do NOT need this — just do them.
 
 ---
 

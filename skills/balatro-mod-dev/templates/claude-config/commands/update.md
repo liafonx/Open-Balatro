@@ -45,8 +45,9 @@ Compare project config against skill templates:
 
 ## Step 4: Rules & Docs Check
 
-1. **INIT.md:** Verify exists and contains all critical rules (Rules 1-9)
+1. **INIT.md:** Verify exists and contains all critical rules (Rules 1-10)
    - Specifically check for Rule 9 (Sub-Agent Invocation)
+   - Specifically check for Rule 10 (Plan Before Big Changes)
 2. **AGENT.md:** Verify exists and contains:
    - Mod metadata (name, id, version, prefix)
    - File structure section
@@ -55,7 +56,42 @@ Compare project config against skill templates:
    - `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`
    - `AGENT.md`, `INIT.md`, `LICENSE.md`
 
-## Step 5: Generate Report
+## Step 5: Logging Check (own repos only)
+
+Skip this step for fork repos (where temp `pcall(print, ...)` is expected).
+
+1. **Logger.lua exists?** Check for `Utils/Logger.lua`
+   - If missing: flag as "Logger utility not installed"
+   - If present: read it and check it matches the template pattern (has `M.create`, `M.log`, `should_log`)
+
+2. **Scan for ad-hoc logging** in all `.lua` files:
+   - `print(` — bare print calls (not inside Logger.lua itself)
+   - `pcall(print,` — protected print calls used as permanent logging (not temp debug)
+   - Direct string concatenation with prefix patterns like `"[ModName]"` or `"[Debug]"`
+   - Custom debug functions that duplicate Logger behavior
+
+3. **Check Logger adoption** — for each `.lua` file (excluding Logger.lua):
+   - Does it `require("Utils.Logger")` or use a `Logger.create()` call?
+   - If it has logging calls but doesn't use Logger → flag for migration
+
+4. **Report per-file:**
+   ```
+   Logging audit:
+   - Utils/Logger.lua: [installed / missing / outdated]
+   - main.lua: Uses Logger ✅
+   - Core/SaveManager.lua: 3x bare print(), no Logger require → migrate
+   - UI/Menu.lua: 2x pcall(print, "[Debug]...") → migrate to Logger.create("Menu")
+   ```
+
+5. **Migration guidance** (when user opts to fix):
+   - Add `local Logger = require("Utils.Logger")` at top
+   - Add `local log = Logger.create("ModuleName")` after require
+   - Replace `print("[Prefix] msg")` → `log("info", "msg")`
+   - Replace `pcall(print, "[Debug] msg")` → `log("debug", "msg")`
+   - Replace error-level prints → `log("error", "msg")`
+   - Preserve the semantic level: error prints → `"error"`, debug prints → `"debug"`, general → `"info"`
+
+## Step 6: Generate Report
 
 Present findings grouped by status:
 

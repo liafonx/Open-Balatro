@@ -285,3 +285,4 @@ workdir: /default/search/path
 - Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`)
 - All boundaries MUST be inline (not referenced from external files)
 - Use `$HOME` (not `~`) in parallel task workdir/search_boundary values
+- **Model restriction:** Never use Opus for sub-agents. Only Sonnet (research requiring reasoning) or Haiku (pure search, grep, command execution). Opus is reserved for the main agent only.

@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.2.4
+version: 1.2.5
 ---
 
 # Balatro Mod Development
@@ -145,6 +145,7 @@ Read these files for specific topics:
 | UIBox, CardArea, draw order | `patterns/ui-system.md` |
 | Game source file map + search tips | `references/game-files.md` |
 | G.GAME, G.STATES, G.P_* globals | `references/globals.md` |
+| Lua/LuaJIT pitfalls, common mod bugs | `references/lua-gotchas.md` |
 
 ## New Mod Setup (type: new)
 
@@ -254,12 +255,13 @@ For ALL non-empty repos (own or fork), ALWAYS do these first:
 
 ## Workflow: Debugging
 
-1. Check platform (desktop vs mobile)
-2. Search game source for function
-3. Check other mods for implementations
-4. Add logs (Logger.lua for own, temp for fork)
-5. Check Lovely logs
-6. **If fix fails 3+ times:** Document in `docs/knowledge-base.md`
+1. Check `references/lua-gotchas.md` for known pitfalls (FFI cdata, nil scoping, boolean normalization)
+2. Check platform (desktop vs mobile)
+3. Search game source for function
+4. Check other mods for implementations
+5. Add logs (Logger.lua for own, temp for fork)
+6. Check Lovely logs
+7. **If fix fails 3+ times:** Document in `docs/knowledge-base.md`
 
 ## Workflow: Update User Docs
 
@@ -289,12 +291,15 @@ Backends and source paths are **configurable** in `mod.config.json`:
 - `agent_backends.overrides.{agent-name}` — per-agent override (string or `{backend, workdir}`)
 - `source_paths` — where game source, SMODS, mods are located on this machine
 
+**Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep/execution). Opus is reserved for the main agent only.
+
 These are backend **hints**. Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
 `run_subagent.sh` resolves config and routes through codeagent automatically — no direct `codeagent-wrapper` calls.
 
 See `references/sub-agents.md` for full config resolution, invocation patterns, and parallel examples.
 
 ## Available Commands
+- `/familiar` - Get familiar with this mod (reads AGENT.md, INIT.md, maps architecture)
 - `/init-balatro-mod` - Initialize new mod
 - `/sync-mod` - Start sync with watch mode (run once at start)
 - `/bump-version [patch|minor|major]` - Increment version, update changelogs
