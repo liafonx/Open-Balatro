@@ -32,8 +32,9 @@ logs/
 # AI Agent Files (local only)
 # ========================================
 INIT.md
+AGENT.md
 mod.config.json
-docs/knowledge-base.md
+docs/
 
 # ========================================
 # Test Files
@@ -60,6 +61,7 @@ test_saves/
 # ========================================
 # Temporary Files
 # ========================================
+.tmp/
 temp/
 tmp/
 *.tmp

@@ -29,11 +29,13 @@ Allowed paths:
 </search_boundary>
 
 <workflow>
-1. Understand what feature or pattern is needed
-2. Search installed mods for similar implementations
-3. Analyze different approaches used by various mods
-4. Identify best practices and common patterns
-5. Report: examples, patterns, and recommendations
+1. If a `.tmp/[taskname]/task.md` path is provided, read it for shared context
+2. Understand what feature or pattern is needed
+3. Search installed mods for similar implementations
+4. Analyze different approaches used by various mods
+5. Identify best practices and common patterns
+6. Report: examples, patterns, and recommendations
+7. If a `.tmp/[taskname]/` output path is specified, write findings to the designated file (e.g., `research.md` or `research-mods.md`)
 </workflow>
 
 <output_format>

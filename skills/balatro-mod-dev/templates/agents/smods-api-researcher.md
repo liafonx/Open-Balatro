@@ -30,11 +30,13 @@ Allowed paths:
 </search_boundary>
 
 <workflow>
-1. Understand what SMODS feature or pattern is needed
-2. Search SMODS source for the API definition
-3. Find usage examples in other mods
-4. Note required fields, optional fields, and callbacks
-5. Report: API signature, examples, and best practices
+1. If a `.tmp/[taskname]/task.md` path is provided, read it for shared context
+2. Understand what SMODS feature or pattern is needed
+3. Search SMODS source for the API definition
+4. Find usage examples in other mods
+5. Note required fields, optional fields, and callbacks
+6. Report: API signature, examples, and best practices
+7. If a `.tmp/[taskname]/` output path is specified, write findings to the designated file (e.g., `research.md` or `research-smods.md`)
 </workflow>
 
 <output_format>

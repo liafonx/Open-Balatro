@@ -42,12 +42,14 @@ Backends are **configurable per-mod** via `mod.config.json`. Resolution order:
 "agent_backends": {
   "research": "claude",
   "execution": "codex",
+  "reasoning": "opus",
   "overrides": {}
 }
 ```
 
 - `research` — default backend for all research agents (game-source, smods-api, mod-pattern, lovely-patch)
 - `execution` — default backend for execution agents (script-runner)
+- `reasoning` — default backend for reasoning agents (strategic-planner, code-reviewer, research-analyst)
 - `overrides` — per-agent override, string or object:
 
 ```json
@@ -100,6 +102,9 @@ Users on different machines or OS can set their own paths here.
 | `lovely-patch-researcher` | `lovely` | `~/Development/GitWorkspace/smods/lovely` |
 | `project-explorer` | — | project root (current mod) |
 | `script-runner` | — | project root |
+| `strategic-planner` | — | project root |
+| `code-reviewer` | — | project root |
+| `research-analyst` | — | project root |
 
 ## Agent Selection
 
@@ -111,6 +116,9 @@ Users on different machines or OS can set their own paths here.
 | Lovely patch syntax | `lovely-patch-researcher` | `claude` | `source_paths.lovely` |
 | **Project architecture/exploration** | `project-explorer` | **`codex`** | **project root** |
 | Run temp script for data | `script-runner` | `codex` | project root |
+| **Plan implementation strategy** | `strategic-planner` | **`opus`** | **project root** |
+| **Review code for correctness** | `code-reviewer` | **`opus`** | **project root** |
+| **Synthesize research findings** | `research-analyst` | **`opus`** | **project root** |
 
 ## Invocation
 
@@ -236,6 +244,126 @@ ALL research agents must keep report under 100 lines. Focus on:
 2. Key code locations (file:line)
 3. One code snippet (most relevant)
 
+## Shared Task Context
+
+When the main agent invokes multiple sub-agents for a task, it **must** first create a shared task brief as the single source of truth. All task artifacts live under `.tmp/[taskname]/`.
+
+### Task Brief (main agent only)
+
+**Create:** `.tmp/[taskname]/task.md` before spawning any sub-agents.
+
+Contents (concise + accurate):
+- **User requirements** — must-haves
+- **Goal + success criteria** — what "done" looks like
+- **Scope / boundaries** — do / don't
+- **Constraints + assumptions** — known limits
+- **Key context** — definitions, focus areas, references
+
+Only the main agent may edit `task.md`. Sub-agents read it for context.
+
+### Phase Handoff Notes (sub-agents)
+
+Each sub-agent writes a Markdown artifact in `.tmp/[taskname]/`, concise and actionable:
+
+| Agent role | Artifact file | Contents |
+|------------|---------------|----------|
+| Researcher / Explorer | `research.md` / `exploration.md` | Key findings + evidence/refs, unknowns, follow-ups. Keep short; avoid speculation. |
+| Analyst | `analysis.md` | Synthesized conclusions + rationale. Decisions, tradeoffs, risks, key numbers. Comprehensive but not verbose; review-ready. |
+| Planner | `plan.md` | Executable + justified plan (see structure below). |
+| Reviewer | `review.md` | Review verdict, issues found, recommendations. |
+
+### Plan Artifact Structure (`plan.md`)
+
+The planner's artifact must include:
+
+1. **Problem statement** — what is needed / broken
+2. **Root cause / constraints** — why it happens or what drives the need
+3. **Solution approach** — how the plan addresses the root cause (cause → fix mapping)
+4. **Execution steps** — concrete step-by-step actions the executor can follow
+5. **Verification** — how to validate success (tests/checks/acceptance criteria)
+6. **Traceability** — reference earlier `.md` files when helpful
+
+**If the task is a new feature**, also include an **Approach justification**:
+- Why this is the best approach vs alternatives
+- Minimal code changes / minimal surface area
+- No redundant logic; maximize reuse of existing code/components
+- No conflict with existing architecture or conventions
+- No performance bottlenecks (call out hotspots and how you avoid them)
+
+### Invocation with Shared Context
+
+```bash
+# Step 0: Main agent creates the task brief
+mkdir -p .tmp/add-hand-scoring
+cat > .tmp/add-hand-scoring/task.md <<'BRIEF'
+## Goal
+Add custom hand scoring for Flush Five.
+## Requirements
+- Hook into evaluate_poker_hand
+- Support mobile + desktop
+## Scope
+- DO: Add scoring logic, localization
+- DON'T: Change UI layout
+## Context
+- See SMODS.Hand for API
+BRIEF
+
+# Step 1: Research (agents read task.md, write research.md)
+./scripts/run_subagent.sh game-source-researcher <<'EOF'
+Read `.tmp/add-hand-scoring/task.md` for context.
+Find evaluate_poker_hand implementation and scoring hooks.
+Write findings to `.tmp/add-hand-scoring/research.md`.
+EOF
+
+# Step 2: Analyze (reads task.md + research.md, writes analysis.md)
+./scripts/run_subagent.sh research-analyst <<'EOF'
+Read `.tmp/add-hand-scoring/task.md` and `.tmp/add-hand-scoring/research.md`.
+Synthesize findings and recommend the best approach.
+Write analysis to `.tmp/add-hand-scoring/analysis.md`.
+EOF
+
+# Step 3: Plan (reads all prior artifacts, writes plan.md)
+./scripts/run_subagent.sh strategic-planner <<'EOF'
+Read all files in `.tmp/add-hand-scoring/`.
+Create an implementation plan.
+Write plan to `.tmp/add-hand-scoring/plan.md`.
+EOF
+```
+
+**For parallel research**, each researcher writes its own section. The analyst then reads all of them:
+
+```bash
+# Parallel research (each writes to .tmp/[taskname]/)
+./scripts/run_subagent.sh --parallel --full-output <<'EOF'
+---TASK---
+id: game_source
+backend: claude
+workdir: $HOME/Development/GitWorkspace/Balatro_src/desktop
+---CONTENT---
+Read `.tmp/add-hand-scoring/task.md` for context.
+[specific question]
+Write findings to `.tmp/add-hand-scoring/research-game.md`.
+
+---TASK---
+id: smods_api
+backend: claude
+workdir: $HOME/Development/GitWorkspace/smods/src
+---CONTENT---
+Read `.tmp/add-hand-scoring/task.md` for context.
+[specific question]
+Write findings to `.tmp/add-hand-scoring/research-smods.md`.
+EOF
+```
+
+### Cleanup
+
+The main agent should clean up `.tmp/[taskname]/` after the task is complete:
+```bash
+rm -rf .tmp/[taskname]
+```
+
+`.tmp/` is git-ignored by default (see gitignore template).
+
 ## Workflow Pattern
 
 ```
@@ -243,12 +371,23 @@ Main Agent: Receive user request
     ↓
 run_subagent.sh --parallel: Research game source + SMODS + mods
     ↓
-Main Agent: Review research, write code
+run_subagent.sh research-analyst: (if multi-source) Synthesize findings
+    ↓
+run_subagent.sh strategic-planner: (if complex) Plan implementation
+    ↓
+Main Agent: Implement code based on plan
+    ↓
+run_subagent.sh code-reviewer: (if significant) Review changes
     ↓
 run_subagent.sh script-runner: (if needed) Run temp script, return data
     ↓
-Main Agent: Complete implementation, test, user feedback
+Main Agent: Address review feedback, test, user feedback
 ```
+
+**When to use reasoning agents:**
+- `strategic-planner` — before implementing new features, refactoring, or structural changes
+- `code-reviewer` — after writing code or before merging significant changes
+- `research-analyst` — when research spans 2+ sources and needs synthesis
 
 ## Agent Templates
 
@@ -285,5 +424,5 @@ workdir: /default/search/path
 - Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`)
 - All boundaries MUST be inline (not referenced from external files)
 - Use `$HOME` (not `~`) in parallel task workdir/search_boundary values
-- **Model restriction:** Never use Opus for sub-agents. Only Sonnet (research requiring reasoning) or Haiku (pure search, grep, command execution). Opus is reserved for the main agent only.
-- **Hookify enforcement:** Model and routing rules enforced by `hookify.no-opus-subagents.local.md` and `hookify.subagent-routing.local.md` (requires hookify plugin on-site)
+- **Model restriction:** Opus is allowed **only** for reasoning sub-agents (strategic-planner, code-reviewer, research-analyst). Research agents use Sonnet; execution agents use Haiku.
+- **Hookify enforcement:** Model and routing rules enforced by `hookify.no-opus-subagents.local.md` (blocks Opus for non-reasoning agents) and `hookify.subagent-routing.local.md` (requires run_subagent.sh). Requires hookify plugin on-site.

@@ -60,11 +60,13 @@ The skill uses **absolute paths** to reference external resources. No setup need
 
 Both Claude and Codex use the same file structure in mod repos:
 
-| File | Purpose |
-|------|---------|
-| `INIT.md` | Project rules, constraints for AI agents |
-| `AGENT.md` | Mod-specific structure, functionality |
-| `mod.config.json` | File lists, backend config, source paths for sync/release/agents |
+| File | Purpose | Git |
+|------|---------|-----|
+| `INIT.md` | Project rules, constraints for AI agents | ignored |
+| `AGENT.md` | Mod-specific structure, functionality | ignored |
+| `mod.config.json` | File lists, backend config, source paths for sync/release/agents | ignored |
+
+Both `INIT.md` and `AGENT.md` live at the **project root** and are git-ignored (dev-only, not shipped).
 
 ### Configurable Backends
 
@@ -74,6 +76,7 @@ Sub-agent backends are configurable per-mod via `mod.config.json`:
 "agent_backends": {
   "research": "claude",
   "execution": "codex",
+  "reasoning": "opus",
   "overrides": {}
 },
 "source_paths": {

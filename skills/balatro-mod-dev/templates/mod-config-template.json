@@ -45,6 +45,7 @@
   "agent_backends": {
     "research": "claude",
     "execution": "codex",
+    "reasoning": "opus",
     "overrides": {}
   },
 

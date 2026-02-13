@@ -139,35 +139,40 @@ EOF
 ```
 
 This adapter resolves backend config from mod.config.json and routes through codeagent.
-Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner.
+Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, strategic-planner, code-reviewer, research-analyst.
+
+**Shared context:** When invoking multiple sub-agents for a task, **first** create `.tmp/[taskname]/task.md` with the task brief (requirements, goals, scope, constraints, key context). Sub-agents read this for shared context and write their artifacts to the same directory. See `references/sub-agents.md` → "Shared Task Context" for the full protocol.
 
 **Hookify enforcement** (requires hookify plugin installed):
-- `hookify.no-opus-subagents.local.md` — Blocks Opus model in sub-agent invocations
+- `hookify.no-opus-subagents.local.md` — Blocks Opus for non-reasoning agents (allows strategic-planner, code-reviewer, research-analyst)
 - `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls (must use run_subagent.sh)
 
-**Model restriction:** Never use Opus for sub-agents. Sonnet for research, Haiku for execution.
+**Model restriction:** Opus is allowed **only** for reasoning sub-agents (strategic-planner, code-reviewer, research-analyst). Research agents use Sonnet; execution agents use Haiku.
 
 ### Rule 10: Plan Before Big Changes
 
 **For refactoring, structural changes, or feature implementation — NEVER proceed automatically.**
 
-1. Write a plan to `docs/PLAN.md` covering:
-   - What changes and why
-   - Files affected
-   - Migration steps (if breaking existing code)
-   - Risks or trade-offs
-2. Spawn a Codex review via `script-runner`:
+1. Create `.tmp/[taskname]/task.md` with the task brief (requirements, goals, scope)
+2. Spawn `strategic-planner` to produce the plan:
    ```bash
-   ./scripts/run_subagent.sh script-runner <<'EOF'
-   Review the plan in docs/PLAN.md. Check for:
-   - Missing edge cases or files that would break
-   - Simpler alternatives
-   - Whether the scope is too large (should be split)
-   Report: APPROVE / CONCERNS: [list]
+   ./scripts/run_subagent.sh strategic-planner <<'EOF'
+   Read `.tmp/[taskname]/task.md`.
+   Create an implementation plan covering: problem statement, root cause,
+   solution approach, execution steps, verification, and risks.
+   Write to `.tmp/[taskname]/plan.md`.
    EOF
    ```
-3. Present the plan + review to the user
-4. **Only proceed after explicit user approval**
+3. Spawn `code-reviewer` to review the plan:
+   ```bash
+   ./scripts/run_subagent.sh code-reviewer <<'EOF'
+   Read `.tmp/[taskname]/task.md` and `.tmp/[taskname]/plan.md`.
+   Check for: missing edge cases, simpler alternatives, scope creep.
+   Write to `.tmp/[taskname]/review.md`.
+   EOF
+   ```
+4. Present the plan + review to the user
+5. **Only proceed after explicit user approval**
 
 **What counts as "big":**
 - Renaming or moving 3+ files
@@ -195,7 +200,7 @@ Available agents: game-source-researcher, smods-api-researcher, mod-pattern-rese
 | `docs/description.md` | Concise version of README for quick reference |
 | `docs/NEXUSMODS_DESCRIPTION.txt` | BBCode format for NexusMods |
 | `docs/knowledge-base.md` | Known issues and lessons learned |
-| `docs/AGENT.md` | Detailed repo structure (for AI agents) |
+| `AGENT.md` (root) | Detailed repo structure (for AI agents) — git-ignored |
 
 ### Meta Files at Root
 | File | Purpose | Template |

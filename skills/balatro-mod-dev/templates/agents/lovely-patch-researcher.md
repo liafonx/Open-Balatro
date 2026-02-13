@@ -31,11 +31,13 @@ Allowed paths:
 </search_boundary>
 
 <workflow>
-1. Understand what patch type or injection is needed
-2. Search Lovely docs for syntax and capabilities
-3. Find examples in SMODS and other mods
-4. Identify the target file and position
-5. Report: patch syntax, examples, and target locations
+1. If a `.tmp/[taskname]/task.md` path is provided, read it for shared context
+2. Understand what patch type or injection is needed
+3. Search Lovely docs for syntax and capabilities
+4. Find examples in SMODS and other mods
+5. Identify the target file and position
+6. Report: patch syntax, examples, and target locations
+7. If a `.tmp/[taskname]/` output path is specified, write findings to the designated file (e.g., `research.md` or `research-lovely.md`)
 </workflow>
 
 <output_format>

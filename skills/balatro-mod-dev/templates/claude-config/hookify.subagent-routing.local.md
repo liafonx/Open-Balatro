@@ -20,6 +20,6 @@ All sub-agent research MUST go through `./scripts/run_subagent.sh`, which resolv
 EOF
 ```
 
-**Available agents:** game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner
+**Available agents:** game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, strategic-planner, code-reviewer, research-analyst
 
 See the balatro-mod-dev skill's `references/sub-agents.md` for invocation patterns.

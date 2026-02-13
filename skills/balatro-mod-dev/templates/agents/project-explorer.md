@@ -15,12 +15,14 @@ This agent is for understanding the mod's OWN codebase.
 </search_boundary>
 
 <workflow>
-1. Start with directory structure exploration
-2. Identify main entry points (main.lua, lovely.toml)
-3. Map module dependencies and require chains
-4. Document key functions and their relationships
-5. Identify patterns, utilities, and shared code
-6. Note any potential issues or improvement areas
+1. If a `.tmp/[taskname]/task.md` path is provided, read it for shared context
+2. Start with directory structure exploration
+3. Identify main entry points (main.lua, lovely.toml)
+4. Map module dependencies and require chains
+5. Document key functions and their relationships
+6. Identify patterns, utilities, and shared code
+7. Note any potential issues or improvement areas
+8. If a `.tmp/[taskname]/` output path is specified, write findings to the designated file (e.g., `exploration.md`)
 </workflow>
 
 <output_format>

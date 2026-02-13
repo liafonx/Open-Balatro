@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.2.6
+version: 1.3.0
 ---
 
 # Balatro Mod Development
@@ -20,6 +20,9 @@ When researching, spawn the right agent:
 | Lovely patch syntax | `lovely-patch-researcher` | lovely files only | claude |
 | **Project architecture/exploration** | `project-explorer` | **Current project only** | **codex** |
 | Run temp script for data | `script-runner` | N/A (execution) | codex |
+| **Plan implementation strategy** | `strategic-planner` | Current project only | **opus** |
+| **Review code for correctness** | `code-reviewer` | Current project only | **opus** |
+| **Synthesize research findings** | `research-analyst` | Current project only | **opus** |
 
 **Parallel:** When researching DIFFERENT sources - spawn multiple agents at once
 **Sequential:** When second query depends on first result
@@ -73,7 +76,7 @@ Both Claude and Codex use the same file structure:
 | File | Purpose | Git |
 |------|---------|-----|
 | `INIT.md` | Project rules, constraints for AI agents | ignored |
-| `AGENT.md` | Mod structure, functions, dependencies, dev status (for handover) | tracked |
+| `AGENT.md` | Mod structure, functions, dependencies, dev status (for handover) | ignored |
 | `mod.config.json` | File lists for sync/release scripts | ignored |
 | `docs/knowledge-base.md` | Issues & lessons learned | ignored |
 
@@ -183,8 +186,7 @@ Root:
 docs/:
 ├── description.md               # Concise README
 ├── NEXUSMODS_DESCRIPTION.txt    # BBCode format
-├── knowledge-base.md            # Issues & lessons
-└── AGENT.md                     # Repo structure (AI)
+└── knowledge-base.md            # Issues & lessons
 ```
 
 ### Basic Mod Structure (new repos):
@@ -247,7 +249,7 @@ For ALL non-empty repos (own or fork), ALWAYS do these first:
 2. **Move extra `.md` files to `docs/`** - only keep in root: README*.md, CHANGELOG*.md, AGENT.md, INIT.md, LICENSE.md
 3. **Add dev files** (if missing): AGENT.md, INIT.md, mod.config.json, scripts/sync_to_mods.sh
 4. **Add Claude config** (if missing): `.claude/commands/`, `.claude/hooks/`, `.claude/agents/`
-5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md`, `.claude/hookify.subagent-routing.local.md`
+5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md` (Opus only for reasoning agents), `.claude/hookify.subagent-routing.local.md`
 6. Update .gitignore with agent folders
 
 **Then for OWN repos:** Also check manifest, scripts version (2.0.1), add create_release.sh, Logger.lua
@@ -280,22 +282,25 @@ Use `/draft-pr` command. Style: 3-5 sentences, casual tone, what/why/done.
 
 Main agent handles code. Sub-agents handle information gathering via `scripts/run_subagent.sh` → codeagent routing.
 
+**Shared context:** When invoking multiple sub-agents for a task, the main agent **must** first create `.tmp/[taskname]/task.md` as a shared brief. Sub-agents read it for context and write their artifacts (research.md, analysis.md, plan.md, review.md) to the same directory. See `references/sub-agents.md` → "Shared Task Context" for the full protocol.
+
 | Situation | Use | Default Backend |
 |-----------|-----|---------|
 | Research (game, SMODS, mods, lovely) | Research agent | `claude` |
 | Running temp scripts for data | `script-runner` | `codex` |
+| Planning, reviewing, synthesizing | Reasoning agent | `opus` |
 | Writing/editing code | **Main agent** | — |
 | User interaction needed | **Main agent** | — |
 
 Backends and source paths are **configurable** in `mod.config.json`:
-- `agent_backends.research` / `agent_backends.execution` — category defaults
+- `agent_backends.research` / `agent_backends.execution` / `agent_backends.reasoning` — category defaults
 - `agent_backends.overrides.{agent-name}` — per-agent override (string or `{backend, workdir}`)
 - `source_paths` — where game source, SMODS, mods are located on this machine
 
-**Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep/execution). Opus is reserved for the main agent only.
+**Model restriction:** Opus is allowed **only** for reasoning sub-agents (strategic-planner, code-reviewer, research-analyst). Research agents use Sonnet; execution agents use Haiku.
 
 **Hookify enforcement** (requires hookify plugin on-site):
-- `hookify.no-opus-subagents.local.md` — Blocks Opus model in sub-agent invocations
+- `hookify.no-opus-subagents.local.md` — Blocks Opus for non-reasoning agents (allows strategic-planner, code-reviewer, research-analyst)
 - `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls
 
 These are backend **hints**. Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
@@ -314,8 +319,9 @@ See `references/sub-agents.md` for full config resolution, invocation patterns, 
 - `/debug` - Verify fix by checking Lovely logs (auto-detects mod key from repo)
 - `/draft-pr` - Draft PR message (for forks)
 - `/update` - Audit project for outdated scripts, hooks, commands, and config
-- `/update-docs` - Review all user docs
+- `/update-docs` - Review all docs (user docs + AGENT.md + INIT.md) for accuracy, staleness, duplication, verbosity
 - `/update-skill [file|instruction]` - Update skill based on new knowledge
+- `/knowledge` - Review session work, capture discoveries (project-scope → AGENT.md, general → skill)
 
 Sub-agents available after setup:
 - `game-source-researcher` - Find game functions and injection points
@@ -324,3 +330,6 @@ Sub-agents available after setup:
 - `lovely-patch-researcher` - Find Lovely patch syntax and examples
 - `project-explorer` - Extensive codebase exploration (uses codex for token efficiency)
 - `script-runner` - Run temp scripts and return results
+- `strategic-planner` - Plan implementation strategy (uses opus for deep reasoning)
+- `code-reviewer` - Review code for correctness and edge cases (uses opus)
+- `research-analyst` - Synthesize multi-source research findings (uses opus)
