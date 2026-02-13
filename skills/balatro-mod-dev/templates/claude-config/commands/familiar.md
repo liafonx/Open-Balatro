@@ -6,8 +6,8 @@ allowed-tools: Read, Glob, Grep
 # Get Familiar With This Mod
 
 **Mandatory first reads — do these before anything else:**
-1. Read `AGENT.md` (or `docs/AGENT.md`) — mod metadata, file structure, dependencies, dev status
-2. Read `INIT.md` — project rules, constraints, repo type
+1. Read `AGENT.md` (root only — if found in `docs/`, flag as misplaced) — mod metadata, file structure, dependencies, dev status
+2. Read `INIT.md` (root only) — project rules, constraints, repo type
 3. Read `mod.config.json` — file lists, paths, backend config
 
 ## Step 0: Git Worktree Detection

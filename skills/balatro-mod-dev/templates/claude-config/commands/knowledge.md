@@ -7,6 +7,14 @@ allowed-tools: Read, Grep, Glob, Bash, Edit
 
 Review what was done this session, surface discoveries about Steamodded/game source, and evaluate where each finding belongs.
 
+## Step 0: Git Worktree Detection
+
+```bash
+git worktree list 2>/dev/null
+```
+
+Exclude worktree directories from all file scans below.
+
 ## Step 1: Gather Session Context
 
 **Review recent work:**
@@ -19,7 +27,7 @@ git log --oneline -10
 ```
 
 **Read project state:**
-- Read `AGENT.md` for current documented state
+- Read `AGENT.md` (root only — if found in `docs/`, flag as misplaced) for current documented state
 - Read `docs/knowledge-base.md` if it exists
 - Read `INIT.md` for repo type and constraints
 - Scan any `.tmp/*/` artifacts from sub-agent work this session

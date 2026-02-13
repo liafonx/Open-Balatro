@@ -27,6 +27,14 @@ Review and update **all** documentation: user-facing docs, AI agent docs (AGENT.
 - `{ModName}.json` — Check version number
 - `manifest.json` — Check version number matches
 
+## Phase 0: Git Worktree Detection
+
+```bash
+git worktree list 2>/dev/null
+```
+
+Exclude worktree directories from all file scans below.
+
 ## Phase 1: Audit Current State
 
 ```bash
@@ -54,8 +62,8 @@ Compare AGENT.md against the actual codebase:
 
 ### Structure Check
 ```bash
-# Compare documented structure vs actual files
-find . -name "*.lua" -o -name "*.toml" -o -name "*.json" | grep -v node_modules | grep -v .git | sort
+# Compare documented structure vs actual files (exclude worktree paths)
+find . -name "*.lua" -o -name "*.toml" -o -name "*.json" | grep -v node_modules | grep -v .git | grep -v .tmp | sort
 ```
 
 - [ ] **§2 Repository Structure** — Does the file tree match reality? Any new/removed files?

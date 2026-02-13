@@ -14,12 +14,12 @@ $ARGUMENTS = path to knowledge file (.md) OR direct instruction text
 
 ## Skill Location
 
-The skill to update: `~/Development/GitWorkspace/Open-Balatro/balatro-mod-skill/`
+The skill to update: `~/Development/GitWorkspace/Open-Balatro/skills/balatro-mod-dev/`
 
 ## Skill Structure
 
 ```
-balatro-mod-skill/
+skills/balatro-mod-dev/
 ├── SKILL.md                    # Main entry (keep under 500 lines!)
 ├── agents/openai.yaml          # Codex UI metadata
 ├── patterns/
@@ -29,12 +29,14 @@ balatro-mod-skill/
 │   └── ui-system.md            # UIBox, CardArea
 ├── references/
 │   ├── game-files.md           # Game source map
-│   └── globals.md              # G.GAME, G.STATES
+│   ├── globals.md              # G.GAME, G.STATES
+│   ├── sub-agents.md           # Sub-agent system docs
+│   └── lua-gotchas.md          # Lua/LuaJIT pitfalls
 ├── scripts/                    # Script templates
 └── templates/                  # Mod setup templates
-    ├── agents/                 # Sub-agent templates
+    ├── agents/                 # Sub-agent templates (9 agents)
     ├── docs/                   # User doc templates
-    └── claude-config/          # Hooks, commands
+    └── claude-config/          # Hooks, commands (13 commands)
 ```
 
 ## Decision Process
@@ -61,7 +63,8 @@ If $ARGUMENTS is instruction text, use it directly.
 | Globals | `references/globals.md` | New G.* variables |
 | Workflow | `SKILL.md` | New workflows, commands |
 | Commands | `templates/claude-config/commands/` | New or updated commands |
-| Sub-agents | `templates/agents/` | New research agents |
+| Sub-agents | `templates/agents/`, `references/sub-agents.md` | New agents, workflow changes |
+| Lua pitfalls | `references/lua-gotchas.md` | New Lua/LuaJIT gotchas |
 | Project setup | `templates/` | New templates |
 
 ### 3. Evaluate Update
@@ -100,10 +103,16 @@ After updating:
 
 ```bash
 # Check SKILL.md line count
-wc -l ~/Development/GitWorkspace/Open-Balatro/balatro-mod-skill/SKILL.md
+wc -l ~/Development/GitWorkspace/Open-Balatro/skills/balatro-mod-dev/SKILL.md
 
 # Verify YAML frontmatter is intact
-head -10 ~/Development/GitWorkspace/Open-Balatro/balatro-mod-skill/SKILL.md
+head -10 ~/Development/GitWorkspace/Open-Balatro/skills/balatro-mod-dev/SKILL.md
+
+# Verify command count (should be 13)
+ls ~/Development/GitWorkspace/Open-Balatro/skills/balatro-mod-dev/templates/claude-config/commands/*.md | wc -l
+
+# Verify agent count (should be 9)
+ls ~/Development/GitWorkspace/Open-Balatro/skills/balatro-mod-dev/templates/agents/*.md | wc -l
 ```
 
 ## Report Format
@@ -127,6 +136,8 @@ head -10 ~/Development/GitWorkspace/Open-Balatro/balatro-mod-skill/SKILL.md
 ### Validation
 - SKILL.md line count: {N}/500
 - YAML frontmatter: {OK | BROKEN}
+- Commands: {N}/13
+- Agents: {N}/9
 
 ### Notes
 {Any follow-up needed}

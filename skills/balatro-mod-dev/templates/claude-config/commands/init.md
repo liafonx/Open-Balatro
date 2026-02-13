@@ -18,6 +18,14 @@ When creating `.md` or `.txt` files, only these belong in root:
 
 **ALL other `.md`/`.txt` files MUST go in `docs/`** (e.g., `docs/DESIGN.md`, `docs/knowledge-base.md`)
 
+## Step 0: Git Worktree Detection
+
+```bash
+git worktree list 2>/dev/null
+```
+
+Record worktree paths. **Exclude them from ALL file detection below.**
+
 ## Step 1: Detect Repository State
 
 ### Check 1: Is this an empty (brand new) repo?
@@ -248,7 +256,20 @@ Use `agent-md-template.md`, fill with detected metadata.
     "icon.png"
   ],
   "sync": { "watch_enabled": true },
-  "release": { "formats": ["github", "thunderstore"] }
+  "release": { "formats": ["github", "thunderstore"] },
+  "agent_backends": {
+    "research": "claude",
+    "execution": "codex",
+    "reasoning": "opus",
+    "overrides": {}
+  },
+  "source_paths": {
+    "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",
+    "game_mobile": "~/Development/GitWorkspace/Balatro_src/ios_plus",
+    "steamodded": "~/Development/GitWorkspace/smods/src",
+    "lovely": "~/Development/GitWorkspace/smods/lovely",
+    "mods": "~/Library/Application Support/Balatro/Mods"
+  }
 }
 ```
 
@@ -285,7 +306,7 @@ BASE_FILES=(
 - Make executable
 - Old scripts with hardcoded BASE_FILES → new scripts read from mod.config.json
 
-**.gitignore** additions:
+**.gitignore** additions (verify ALL of these are present):
 ```
 .agent/
 .agents/
@@ -293,8 +314,11 @@ BASE_FILES=(
 .codex/
 .cursor/
 INIT.md
+AGENT.md
 mod.config.json
-docs/knowledge-base.md
+docs/
+.tmp/
+release/
 ```
 
 ## Step 5: Verify/Update AGENT.md
