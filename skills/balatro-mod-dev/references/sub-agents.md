@@ -225,6 +225,21 @@ EOF
 
 **Each research agent has a FIXED search boundary.** This prevents duplicate searches wasting tokens.
 
+### Git Worktree Awareness
+
+When browsing or searching a codebase, **always skip git worktree directories**. Worktrees are separate checkouts of other branches — searching into them gives duplicate or wrong-branch results.
+
+```bash
+# Detect worktrees in project root
+git worktree list 2>/dev/null
+```
+
+**Rules for all agents:**
+- Skip any directory that is a git worktree (contains a `.git` file pointing elsewhere)
+- When listing files or exploring structure, exclude worktree paths
+- If unsure whether a directory is a worktree, check: `[ -f <dir>/.git ] && echo "worktree"`
+- The main project is the worktree you're currently in — only search within it
+
 | Agent | Searches IN | Does NOT search |
 |-------|-------------|-----------------|
 | `game-source-researcher` | `~/Development/GitWorkspace/Balatro_src/` | smods, Mods, lovely |

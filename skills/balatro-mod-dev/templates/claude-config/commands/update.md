@@ -28,24 +28,105 @@ Read `mod.config.json` and check:
 4. **Thunderstore manifest:** Verify `manifest.json` is in `thunderstore_additions`
 5. **No duplicates:** Check no files appear in both `include_files` and `thunderstore_additions`
 
-## Step 3: Hooks & Commands Check
+## Step 3: Commands, Hooks & Agents Check
 
-Compare project config against skill templates:
+### 3a. Commands
 
-1. **Commands:** List files in `.claude/commands/` and compare against skill `templates/claude-config/commands/`
-   - Flag missing commands
-   - Note any extra project-specific commands (these are fine)
-2. **Hooks:** Read `.claude/hooks/hooks.json` and verify these hooks exist:
-   - `SessionStart` (matcher: `*`)
-   - `PreToolUse` (matcher: `Write|Edit|Replace`) — protected file check
-   - `PreToolUse` (matcher: `Task`) — sub-agent bypass prevention
-   - `PostToolUse` (matcher: `Write`) — new file suggestion
-   - `Stop` (matcher: `*`) — completion check
-   - Flag any missing hooks
+List files in `.claude/commands/` and verify **every** skill command is installed:
+
+```bash
+ls .claude/commands/ 2>/dev/null
+```
+
+**Required commands** (from skill `templates/claude-config/commands/`):
+
+| Command file | Installed? |
+|-------------|------------|
+| `familiar.md` | ☐ |
+| `init.md` | ☐ |
+| `sync-mod.md` | ☐ |
+| `bump-version.md` | ☐ |
+| `release.md` | ☐ |
+| `fix-sprites.md` | ☐ |
+| `refactor.md` | ☐ |
+| `debug.md` | ☐ |
+| `draft-pr.md` | ☐ |
+| `update.md` | ☐ |
+| `update-docs.md` | ☐ |
+| `update-skill.md` | ☐ |
+| `knowledge.md` | ☐ |
+
+Flag any missing. Extra project-specific commands are fine — just note them.
+
+**If commands are missing**, offer to copy from skill templates:
+```bash
+# Example: copy missing command
+cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/knowledge.md .claude/commands/
+```
+
+### 3b. Hooks
+
+Read `.claude/hooks/hooks.json` and verify these hooks exist:
+- `SessionStart` (matcher: `*`)
+- `PreToolUse` (matcher: `Write|Edit|Replace`) — protected file check
+- `PreToolUse` (matcher: `Task`) — sub-agent bypass prevention
+- `PostToolUse` (matcher: `Write`) — new file suggestion
+- `Stop` (matcher: `*`) — completion check
+
+Flag any missing hooks.
+
+### 3c. Hookify Rules
+
+Check hookify rules are installed:
+
+```bash
+ls .claude/hookify.*.local.md 2>/dev/null
+```
+
+| Rule file | Installed? |
+|-----------|------------|
+| `hookify.no-opus-subagents.local.md` | ☐ |
+| `hookify.subagent-routing.local.md` | ☐ |
+
+### 3d. Agent Templates
+
+Check agent templates are installed:
+
+```bash
+ls .claude/agents/ 2>/dev/null
+```
+
+**Required agents** (from skill `templates/agents/`):
+
+| Agent template | Installed? |
+|---------------|------------|
+| `game-source-researcher.md` | ☐ |
+| `smods-api-researcher.md` | ☐ |
+| `mod-pattern-researcher.md` | ☐ |
+| `lovely-patch-researcher.md` | ☐ |
+| `project-explorer.md` | ☐ |
+| `script-runner.md` | ☐ |
+| `strategic-planner.md` | ☐ |
+| `code-reviewer.md` | ☐ |
+| `research-analyst.md` | ☐ |
+
+Flag any missing. If agents are missing, offer to copy from skill templates.
 
 ## Step 4: File & Directory Structure Check
 
-### 4a. INIT.md and AGENT.md Placement
+### 4a. Git Worktree Detection
+
+Check for git worktrees first — they must be excluded from all file/directory checks below.
+
+```bash
+git worktree list 2>/dev/null
+```
+
+- Note any worktree directories so they are **skipped** in subsequent checks
+- Worktrees are separate branch checkouts — not part of the current project state
+- If file searches below return results from a worktree path, ignore them
+
+### 4b. INIT.md and AGENT.md Placement
 
 Both must be at the **project root** and **git-ignored**:
 
@@ -60,7 +141,7 @@ ls -la docs/INIT.md docs/AGENT.md 2>/dev/null
 - [ ] `AGENT.md` exists at root (not in `docs/`)
 - [ ] If `docs/AGENT.md` or `docs/INIT.md` exists → flag as misplaced, offer to move to root
 
-### 4b. Root .md File Placement
+### 4c. Root .md File Placement
 
 Only these `.md` files belong in root:
 - `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`
@@ -73,7 +154,7 @@ ls *.md 2>/dev/null
 
 Flag any other `.md` files in root → should be in `docs/`.
 
-### 4c. .gitignore Validation
+### 4d. .gitignore Validation
 
 Read `.gitignore` and verify these entries exist:
 
@@ -91,7 +172,7 @@ Read `.gitignore` and verify these entries exist:
 
 Flag any missing entries.
 
-### 4d. Directory Structure
+### 4e. Directory Structure
 
 Verify expected directories exist (for own/new repos):
 
@@ -101,7 +182,7 @@ Verify expected directories exist (for own/new repos):
 - [ ] `.claude/commands/` — Claude commands
 - [ ] `.claude/hooks/` — Claude hooks
 
-### 4e. Rules & Docs Content
+### 4f. Rules & Docs Content
 
 1. **INIT.md:** Verify contains all critical rules (Rules 1-10)
    - Specifically check for Rule 9 (Sub-Agent Invocation) — includes shared context protocol

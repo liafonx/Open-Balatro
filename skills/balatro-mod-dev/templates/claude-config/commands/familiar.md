@@ -10,6 +10,14 @@ allowed-tools: Read, Glob, Grep
 2. Read `INIT.md` — project rules, constraints, repo type
 3. Read `mod.config.json` — file lists, paths, backend config
 
+## Step 0: Git Worktree Detection
+
+```bash
+git worktree list 2>/dev/null
+```
+
+Note any worktree directories and **exclude them** from all file exploration below. Worktrees are separate branch checkouts — not part of the current project state.
+
 ## Step 1: Mod Identity
 
 From AGENT.md and manifests, report:

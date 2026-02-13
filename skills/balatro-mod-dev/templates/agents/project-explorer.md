@@ -12,6 +12,8 @@ workdir: .
 Search ONLY within the current project working directory.
 DO NOT search external game source, SMODS, or installed mods.
 This agent is for understanding the mod's OWN codebase.
+
+**Skip git worktree directories.** They are separate branch checkouts — not part of the current project state. Check: `[ -f <dir>/.git ] && echo "worktree"` to detect them.
 </search_boundary>
 
 <workflow>
