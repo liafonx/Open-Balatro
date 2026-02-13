@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.3.0
+version: 1.3.1
 ---
 
 # Balatro Mod Development
@@ -318,7 +318,7 @@ See `references/sub-agents.md` for full config resolution, invocation patterns, 
 - `/refactor [focus-area]` - Review code for redundancy, outdated fallbacks, modularization
 - `/debug` - Verify fix by checking Lovely logs (auto-detects mod key from repo)
 - `/draft-pr` - Draft PR message (for forks)
-- `/update` - Audit project for outdated scripts, hooks, commands, and config
+- `/update` - Audit project health: scripts, hooks, commands, config, file placement, gitignore
 - `/update-docs` - Review all docs (user docs + AGENT.md + INIT.md) for accuracy, staleness, duplication, verbosity
 - `/update-skill [file|instruction]` - Update skill based on new knowledge
 - `/knowledge` - Review session work, capture discoveries (project-scope → AGENT.md, general → skill)

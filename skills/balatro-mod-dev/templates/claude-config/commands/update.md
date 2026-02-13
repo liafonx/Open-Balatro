@@ -1,11 +1,11 @@
 ---
-description: Check if project config, scripts, hooks, commands, and docs are up-to-date
-allowed-tools: Read, Bash, Glob, Grep
+description: Check if project config, scripts, hooks, commands, file placement, gitignore, and docs are up-to-date
+allowed-tools: Read, Bash, Glob, Grep, Edit
 ---
 
 # Update Check (Health Audit)
 
-Audit this mod repo for outdated scripts, hooks, commands, rules, and incomplete mod.config.json.
+Audit this mod repo for outdated scripts, hooks, commands, rules, file/dir structure, gitignore, and incomplete mod.config.json.
 **Report findings first, then ask user which items to fix.**
 
 ## Step 1: Script Version Check
@@ -43,18 +43,73 @@ Compare project config against skill templates:
    - `Stop` (matcher: `*`) — completion check
    - Flag any missing hooks
 
-## Step 4: Rules & Docs Check
+## Step 4: File & Directory Structure Check
 
-1. **INIT.md:** Verify exists and contains all critical rules (Rules 1-10)
-   - Specifically check for Rule 9 (Sub-Agent Invocation)
-   - Specifically check for Rule 10 (Plan Before Big Changes)
-2. **AGENT.md:** Verify exists and contains:
+### 4a. INIT.md and AGENT.md Placement
+
+Both must be at the **project root** and **git-ignored**:
+
+```bash
+# Verify placement
+ls -la INIT.md AGENT.md 2>/dev/null
+# Verify NOT in docs/
+ls -la docs/INIT.md docs/AGENT.md 2>/dev/null
+```
+
+- [ ] `INIT.md` exists at root (not in `docs/`)
+- [ ] `AGENT.md` exists at root (not in `docs/`)
+- [ ] If `docs/AGENT.md` or `docs/INIT.md` exists → flag as misplaced, offer to move to root
+
+### 4b. Root .md File Placement
+
+Only these `.md` files belong in root:
+- `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`
+- `AGENT.md`, `INIT.md`, `LICENSE.md`
+
+```bash
+# Find stray .md files in root
+ls *.md 2>/dev/null
+```
+
+Flag any other `.md` files in root → should be in `docs/`.
+
+### 4c. .gitignore Validation
+
+Read `.gitignore` and verify these entries exist:
+
+| Entry | Section | Purpose |
+|-------|---------|---------|
+| `INIT.md` | AI Agent Files | Dev-only, not shipped |
+| `AGENT.md` | AI Agent Files | Dev-only, not shipped |
+| `mod.config.json` | AI Agent Files | Dev-only config |
+| `docs/` | AI Agent Files | Dev-only docs (knowledge-base, etc.) |
+| `.tmp/` | Temporary Files | Sub-agent task artifacts |
+| `.claude/` | Development Tools | Claude config |
+| `.codex/` | Development Tools | Codex config |
+| `.agents/` | Development Tools | Agent config |
+| `release/` | Build/Release | Build output |
+
+Flag any missing entries.
+
+### 4d. Directory Structure
+
+Verify expected directories exist (for own/new repos):
+
+- [ ] `scripts/` — utility scripts (sync, release, run_subagent)
+- [ ] `localization/` — if mod has user-facing strings
+- [ ] `docs/` — if mod has knowledge-base or dev docs
+- [ ] `.claude/commands/` — Claude commands
+- [ ] `.claude/hooks/` — Claude hooks
+
+### 4e. Rules & Docs Content
+
+1. **INIT.md:** Verify contains all critical rules (Rules 1-10)
+   - Specifically check for Rule 9 (Sub-Agent Invocation) — includes shared context protocol
+   - Specifically check for Rule 10 (Plan Before Big Changes) — uses `.tmp/[taskname]/`
+2. **AGENT.md:** Verify contains:
    - Mod metadata (name, id, version, prefix)
-   - File structure section
+   - File structure section (matches actual repo)
    - Development status section
-3. **File placement:** Check no stray `.md` files in root besides:
-   - `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`
-   - `AGENT.md`, `INIT.md`, `LICENSE.md`
 
 ## Step 5: Logging Check (own repos only)
 
