@@ -1,6 +1,6 @@
 ---
 description: Review codebase for refactoring opportunities
-allowed-tools: Read, Grep, Glob, Bash, Task
+allowed-tools: Read, Grep, Glob, Bash
 argument-hint: [focus-area]
 ---
 

@@ -141,6 +141,12 @@ EOF
 This adapter resolves backend config from mod.config.json and routes through codeagent.
 Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner.
 
+**Hookify enforcement** (requires hookify plugin installed):
+- `hookify.no-opus-subagents.local.md` — Blocks Opus model in sub-agent invocations
+- `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls (must use run_subagent.sh)
+
+**Model restriction:** Never use Opus for sub-agents. Sonnet for research, Haiku for execution.
+
 ### Rule 10: Plan Before Big Changes
 
 **For refactoring, structural changes, or feature implementation — NEVER proceed automatically.**

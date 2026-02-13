@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "BLOCK: Do not use the Task tool to spawn sub-agents. All sub-agent research MUST go through ./scripts/run_subagent.sh via the Bash tool. Example: ./scripts/run_subagent.sh game-source-researcher <<'EOF'\n[task]\nEOF\nSee the balatro-mod-dev skill's references/sub-agents.md for invocation patterns.",
+            "prompt": "BLOCK: Do not use the Task tool to spawn sub-agents. All sub-agent research MUST go through ./scripts/run_subagent.sh via the Bash tool. See references/sub-agents.md for invocation patterns. Model and routing enforcement is handled by hookify rules (hookify.no-opus-subagents.local.md, hookify.subagent-routing.local.md).",
             "timeout": 10
           }
         ]

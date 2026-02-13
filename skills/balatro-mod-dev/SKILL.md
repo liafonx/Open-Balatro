@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.2.5
+version: 1.2.6
 ---
 
 # Balatro Mod Development
@@ -247,7 +247,8 @@ For ALL non-empty repos (own or fork), ALWAYS do these first:
 2. **Move extra `.md` files to `docs/`** - only keep in root: README*.md, CHANGELOG*.md, AGENT.md, INIT.md, LICENSE.md
 3. **Add dev files** (if missing): AGENT.md, INIT.md, mod.config.json, scripts/sync_to_mods.sh
 4. **Add Claude config** (if missing): `.claude/commands/`, `.claude/hooks/`, `.claude/agents/`
-5. Update .gitignore with agent folders
+5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md`, `.claude/hookify.subagent-routing.local.md`
+6. Update .gitignore with agent folders
 
 **Then for OWN repos:** Also check manifest, scripts version (2.0.1), add create_release.sh, Logger.lua
 
@@ -292,6 +293,10 @@ Backends and source paths are **configurable** in `mod.config.json`:
 - `source_paths` — where game source, SMODS, mods are located on this machine
 
 **Model restriction:** Never use Opus for sub-agents. Use Sonnet (research requiring reasoning) or Haiku (pure search/grep/execution). Opus is reserved for the main agent only.
+
+**Hookify enforcement** (requires hookify plugin on-site):
+- `hookify.no-opus-subagents.local.md` — Blocks Opus model in sub-agent invocations
+- `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls
 
 These are backend **hints**. Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
 `run_subagent.sh` resolves config and routes through codeagent automatically — no direct `codeagent-wrapper` calls.

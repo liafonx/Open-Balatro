@@ -286,3 +286,4 @@ workdir: /default/search/path
 - All boundaries MUST be inline (not referenced from external files)
 - Use `$HOME` (not `~`) in parallel task workdir/search_boundary values
 - **Model restriction:** Never use Opus for sub-agents. Only Sonnet (research requiring reasoning) or Haiku (pure search, grep, command execution). Opus is reserved for the main agent only.
+- **Hookify enforcement:** Model and routing rules enforced by `hookify.no-opus-subagents.local.md` and `hookify.subagent-routing.local.md` (requires hookify plugin on-site)
