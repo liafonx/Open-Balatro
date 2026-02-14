@@ -102,10 +102,11 @@ These steps apply to ANY non-empty repository:
 - [ ] scripts/sync_to_mods.sh
 - [ ] .gitignore with agent folders
 
-**Claude config (add if missing):**
-- [ ] `.claude/commands/*` from skill templates
-- [ ] `.claude/hooks/hooks.json`
-- [ ] `.claude/agents/*`
+**Claude config (add if missing) — 13 commands, 5 hooks, 2 hookify rules, 9 agents:**
+- [ ] `.claude/commands/` — **ALL 13 required** (see Claude Agent Config section below)
+- [ ] `.claude/hooks/hooks.json` — **5 hooks required**
+- [ ] `.claude/hookify.*.local.md` — **2 rules required**
+- [ ] `.claude/agents/` — **ALL 9 required** (see Claude Agent Config section below)
 
 ---
 
@@ -170,13 +171,65 @@ Minimal changes - respect their structure:
 
 ### Claude Agent Config
 
-Copy from skill templates to `.claude/`:
+Copy from skill templates to `.claude/`. **You MUST install ALL items below. Verify counts after copying.**
 
-| Source | Destination |
-|--------|-------------|
-| `templates/claude-config/commands/*` | `.claude/commands/` |
-| `templates/claude-config/hooks.json` | `.claude/hooks/hooks.json` |
-| `templates/agents/*` | `.claude/agents/` |
+#### Commands — 13 required in `.claude/commands/`
+
+| # | File | Source |
+|---|------|--------|
+| 1 | `familiar.md` | `templates/claude-config/commands/` |
+| 2 | `init.md` | `templates/claude-config/commands/` |
+| 3 | `sync-mod.md` | `templates/claude-config/commands/` |
+| 4 | `bump-version.md` | `templates/claude-config/commands/` |
+| 5 | `release.md` | `templates/claude-config/commands/` |
+| 6 | `fix-sprites.md` | `templates/claude-config/commands/` |
+| 7 | `refactor.md` | `templates/claude-config/commands/` |
+| 8 | `debug.md` | `templates/claude-config/commands/` |
+| 9 | `draft-pr.md` | `templates/claude-config/commands/` |
+| 10 | `update.md` | `templates/claude-config/commands/` |
+| 11 | `update-docs.md` | `templates/claude-config/commands/` |
+| 12 | `update-skill.md` | `templates/claude-config/commands/` |
+| 13 | `knowledge.md` | `templates/claude-config/commands/` |
+
+#### Hooks — copy `hooks.json` to `.claude/hooks/hooks.json`
+
+Must contain 5 hooks: SessionStart, PreToolUse (Write|Edit|Replace), PreToolUse (Task), PostToolUse (Write), Stop.
+
+#### Hookify Rules — 2 required in `.claude/`
+
+| # | File |
+|---|------|
+| 1 | `hookify.no-opus-subagents.local.md` |
+| 2 | `hookify.subagent-routing.local.md` |
+
+#### Agents — 9 required in `.claude/agents/`
+
+| # | File | Source |
+|---|------|--------|
+| 1 | `game-source-researcher.md` | `templates/agents/` |
+| 2 | `smods-api-researcher.md` | `templates/agents/` |
+| 3 | `mod-pattern-researcher.md` | `templates/agents/` |
+| 4 | `lovely-patch-researcher.md` | `templates/agents/` |
+| 5 | `project-explorer.md` | `templates/agents/` |
+| 6 | `script-runner.md` | `templates/agents/` |
+| 7 | `strategic-planner.md` | `templates/agents/` |
+| 8 | `code-reviewer.md` | `templates/agents/` |
+| 9 | `research-analyst.md` | `templates/agents/` |
+
+#### Verification after copying
+
+```bash
+# Must be exactly 13 (extra project-specific commands are OK)
+ls .claude/commands/*.md | wc -l
+
+# Must be exactly 9
+ls .claude/agents/*.md | wc -l
+
+# Must be exactly 2
+ls .claude/hookify.*.local.md | wc -l
+```
+
+**If any count is wrong, compare against the tables above and identify what's missing.**
 
 ## Step 3: Confirm with User
 

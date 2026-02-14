@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.3.5
+version: 1.3.6
 ---
 
 # Balatro Mod Development
@@ -248,9 +248,12 @@ For ALL non-empty repos (own or fork), ALWAYS do these first:
 1. **Delete `References/` folder** if exists (legacy symlink approach)
 2. **Move extra `.md` files to `docs/`** - only keep in root: README*.md, CHANGELOG*.md, AGENT.md, INIT.md, LICENSE.md
 3. **Add dev files** (if missing): AGENT.md, INIT.md, mod.config.json, scripts/sync_to_mods.sh
-4. **Add Claude config** (if missing): `.claude/commands/`, `.claude/hooks/`, `.claude/agents/`
+4. **Add Claude config** — verify ALL are installed:
+   - `.claude/commands/` — **13 commands required** (familiar, init, sync-mod, bump-version, release, fix-sprites, refactor, debug, draft-pr, update, update-docs, update-skill, knowledge)
+   - `.claude/hooks/` or `.claude/hooks.json` — 5 hooks
+   - `.claude/agents/` — **9 agents required** (game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, strategic-planner, code-reviewer, research-analyst)
 5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md` (Opus only for reasoning agents), `.claude/hookify.subagent-routing.local.md`
-6. Update .gitignore with agent folders
+6. Update .gitignore — must include: `INIT.md`, `AGENT.md`, `mod.config.json`, `docs/`, `.tmp/`, `.claude/`, `.codex/`, `.agents/`, `release/`
 
 **Then for OWN repos:** Also check manifest, scripts version (2.0.1), add create_release.sh, Logger.lua
 
@@ -308,7 +311,7 @@ These are backend **hints**. Codeagent owns final invocation policy (`~/.codeage
 
 See `references/sub-agents.md` for full config resolution, invocation patterns, and parallel examples.
 
-## Available Commands
+## Available Commands (13 total — all must be installed in `.claude/commands/`)
 - `/familiar` - Get familiar with this mod (reads AGENT.md, INIT.md, maps architecture)
 - `/init-balatro-mod` - Initialize new mod
 - `/sync-mod` - Start sync with watch mode (run once at start)
@@ -318,12 +321,12 @@ See `references/sub-agents.md` for full config resolution, invocation patterns, 
 - `/refactor [focus-area]` - Review code for redundancy, outdated fallbacks, modularization
 - `/debug` - Verify fix by checking Lovely logs (auto-detects mod key from repo)
 - `/draft-pr` - Draft PR message (for forks)
-- `/update` - Audit project health: scripts, hooks, commands, config, file placement, gitignore
+- `/update` - Self-updates commands/agents from skill templates first, then audits project health
 - `/update-docs` - Review all docs (user docs + AGENT.md + INIT.md) for accuracy, staleness, duplication, verbosity
 - `/update-skill [file|instruction]` - Update skill based on new knowledge
 - `/knowledge` - Review session work, capture discoveries (project-scope → AGENT.md, general → skill)
 
-Sub-agents available after setup:
+Sub-agents available after setup (9 total — all must be in `.claude/agents/`):
 - `game-source-researcher` - Find game functions and injection points
 - `smods-api-researcher` - Find SMODS API patterns and usage
 - `mod-pattern-researcher` - Find how other mods implement features

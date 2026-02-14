@@ -13,6 +13,69 @@ Audit this mod repo for outdated scripts, hooks, commands, rules, file/dir struc
 
 ---
 
+## Pre-flight: Self-Update Commands & Agents
+
+**Before auditing anything else, ensure THIS command and all other skill files are current.**
+
+The skill templates live at: `~/.claude/skills/balatro-mod-dev/`
+
+### 1. Check if commands are current
+
+```bash
+# Compare each project command against skill template
+for cmd in familiar init sync-mod bump-version release fix-sprites refactor debug draft-pr update update-docs update-skill knowledge; do
+  if [ ! -f ".claude/commands/${cmd}.md" ]; then
+    echo "MISSING: ${cmd}.md"
+  elif ! diff -q ".claude/commands/${cmd}.md" ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/${cmd}.md >/dev/null 2>&1; then
+    echo "OUTDATED: ${cmd}.md"
+  fi
+done
+```
+
+### 2. Check if agents are current
+
+```bash
+for agent in game-source-researcher smods-api-researcher mod-pattern-researcher lovely-patch-researcher project-explorer script-runner strategic-planner code-reviewer research-analyst; do
+  if [ ! -f ".claude/agents/${agent}.md" ]; then
+    echo "MISSING: ${agent}.md"
+  elif ! diff -q ".claude/agents/${agent}.md" ~/.claude/skills/balatro-mod-dev/templates/agents/${agent}.md >/dev/null 2>&1; then
+    echo "OUTDATED: ${agent}.md"
+  fi
+done
+```
+
+### 3. Check hookify rules
+
+```bash
+for rule in hookify.no-opus-subagents.local.md hookify.subagent-routing.local.md; do
+  if [ ! -f ".claude/${rule}" ]; then
+    echo "MISSING: ${rule}"
+  elif ! diff -q ".claude/${rule}" ~/.claude/skills/balatro-mod-dev/templates/claude-config/${rule} >/dev/null 2>&1; then
+    echo "OUTDATED: ${rule}"
+  fi
+done
+```
+
+### 4. Apply updates
+
+**If ANY files are missing or outdated:**
+1. Copy ALL missing/outdated files from skill templates to project
+2. Report what was updated
+
+```bash
+# Example: copy all commands
+mkdir -p .claude/commands .claude/agents
+cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/*.md .claude/commands/
+cp ~/.claude/skills/balatro-mod-dev/templates/agents/*.md .claude/agents/
+cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/hookify.*.local.md .claude/
+```
+
+**If update.md itself was outdated:** Inform the user: "The /update command was outdated and has been refreshed. This run continues with the previous version's instructions — re-run `/update` for the most accurate audit."
+
+**If everything is current:** Proceed to Step 0.
+
+---
+
 ## Step 0: Git Worktree Detection
 
 ```bash
@@ -278,6 +341,12 @@ Ad-hoc logging: [N files with bare print/pcall — list them]
 
 ```
 === Mod Health Check ===
+
+Pre-flight: Self-Update
+- Commands: [all current ✅ / updated N ⚠️ / copied N new]
+- Agents: [all current ✅ / updated N ⚠️ / copied N new]
+- Hookify rules: [all current ✅ / updated N ⚠️ / copied N new]
+- update.md itself: [current ✅ / was outdated ⚠️ — re-run recommended]
 
 Step 0: Worktrees
 - [N worktrees found / none] — excluded from checks: [paths]
