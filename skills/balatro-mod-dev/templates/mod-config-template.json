@@ -42,13 +42,6 @@
   
   "test_saves": null,
 
-  "agent_backends": {
-    "research": "claude",
-    "execution": "codex",
-    "reasoning": "opus",
-    "overrides": {}
-  },
-
   "source_paths": {
     "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",
     "game_mobile": "~/Development/GitWorkspace/Balatro_src/ios_plus",

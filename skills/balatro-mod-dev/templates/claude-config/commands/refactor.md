@@ -51,7 +51,7 @@ Exclude worktree directories from all scans below.
 - Unnecessary global lookups (localize frequently used globals)
 
 ### 6. Check Balatro-Specific Patterns
-- Use sub-agent `smods-api-researcher` to verify API usage is current
+- Spawn `smods-api-researcher` via Task tool (model: sonnet) to verify API usage is current
 - Check if newer SMODS features could simplify code
 - Verify Lovely patches are still needed vs SMODS hooks
 

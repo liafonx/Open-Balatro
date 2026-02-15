@@ -12,9 +12,9 @@ Open-Balatro/
 │       ├── agents/openai.yaml  # Codex UI metadata
 │       ├── patterns/           # Lovely, SMODS, mobile, UI guides
 │       ├── references/         # Game file map, globals, sub-agent system
-│       ├── scripts/            # sync_to_mods, create_release, run_subagent, fix_sprites
+│       ├── scripts/            # sync_to_mods, create_release, fix_sprites
 │       └── templates/          # Project setup templates
-│           ├── agents/         # Sub-agent templates (codeagent-compatible)
+│           ├── agents/         # Sub-agent templates (Task tool compatible)
 │           ├── docs/           # User doc templates
 │           └── claude-config/  # Hooks, commands
 ├── .agents/skills/             # Shared agent skills
@@ -64,54 +64,29 @@ Both Claude and Codex use the same file structure in mod repos:
 |------|---------|-----|
 | `INIT.md` | Project rules, constraints for AI agents | ignored |
 | `AGENT.md` | Mod-specific structure, functionality | ignored |
-| `mod.config.json` | File lists, backend config, source paths for sync/release/agents | ignored |
+| `mod.config.json` | File lists, source paths for sync/release/agents | ignored |
 
 Both `INIT.md` and `AGENT.md` live at the **project root** and are git-ignored (dev-only, not shipped).
 
-### Configurable Backends
+### Opus Orchestrator Architecture
 
-Sub-agent backends are configurable per-mod via `mod.config.json`:
-
-```json
-"agent_backends": {
-  "research": "claude",
-  "execution": "codex",
-  "reasoning": "opus",
-  "overrides": {}
-},
-"source_paths": {
-  "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",
-  "steamodded": "~/Development/GitWorkspace/smods/src",
-  "mods": "~/Library/Application Support/Balatro/Mods"
-}
-```
-
-Resolution order: per-agent override → category default → agent template fallback.
-These are backend **hints** — codeagent owns final invocation policy.
-
-Codeagent runtime ownership:
-- `~/.codeagent/models.json`:
-  - `agents.*` for agent presets
-  - `backends.*` for backend runtime defaults and API settings (`model`, `reasoning`, `skip_permissions`, `base_url`, `api_key`, `use_api`)
-- `~/.codeagent/config.yaml`: global fallback defaults.
-
-### Codeagent Integration
-
-Sub-agents route through the `codeagent` skill (never direct `codeagent-wrapper` calls):
+The main agent (Opus) orchestrates all work. Sub-agents (Sonnet/Haiku) execute research, code writing, and script running via the built-in Task tool.
 
 ```
-run_subagent.sh → reads mod.config.json → route_subagent.sh → codeagent-wrapper
+Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
+     ↑                                                    │
+     └──────────────── recap ─────────────────────────────┘
 ```
 
-Parallel metadata normalization:
-- `run_subagent.sh` normalizes both `workdir: ~/...` and `working_dir: ~/...` to `$HOME/...` before routing.
+| Role | Model | Examples |
+|------|-------|---------|
+| Orchestration, planning, review, synthesis | Opus (main) | Strategy, code review, decisions |
+| Research, code writing, exploration | Sonnet (sub-agent) | game-source-researcher, code-writer |
+| Script execution | Haiku (sub-agent) | script-runner |
 
-| Concern | Owned by |
-|---------|----------|
-| Task decomposition, backend hints, source paths | balatro-mod-dev (`mod.config.json`) |
-| Backend routing + model/API behavior | codeagent (`~/.codeagent/models.json` primary, `~/.codeagent/config.yaml` fallback) |
+Source paths are configured in `mod.config.json > source_paths` — the main agent reads these and includes them in Task prompts.
 
-### Five-Layer Architecture
+### Four-Layer Architecture
 
 ```
 Layer 0: Workspace Setup
@@ -126,21 +101,16 @@ Layer 1: Skill (balatro-mod-dev)
 
 Layer 2: Hooks & Commands (per-mod)
 ├── SessionStart: Load mod context
-├── PreToolUse: Protect AGENT.md
+├── PreToolUse: Protect AGENT.md, enforce delegation, block Opus sub-agents
 ├── PostToolUse: Suggest config updates
 └── Commands: /sync-mod, /release, /debug, /refactor, /fix-sprites
 
 Layer 3: Per-Mod Config
 ├── AGENT.md: Mod-specific behavior
-├── mod.config.json: File lists + agent backend config + source paths
+├── mod.config.json: File lists + source paths
 └── scripts/*.sh: Utility scripts
 
-Layer 4: Codeagent Routing
-├── run_subagent.sh: Adapter (resolves config → routes)
-├── route_subagent.sh: Codeagent entrypoint
-└── ~/.codeagent/: models.json (agents/backends, use_api), config.yaml (global fallback)
-
-Layer 5: External References (read-only)
+Layer 4: External References (read-only, accessed via sub-agents)
 ├── Game source
 ├── Installed mods
 └── Lovely logs
@@ -151,11 +121,10 @@ Layer 5: External References (read-only)
 | Component | Purpose |
 |-----------|---------|
 | **Skill** | Static knowledge (patterns, references, paths) |
-| **Hooks** | Automated triggers (protect files, suggest updates) |
+| **Hooks** | Automated triggers (protect files, enforce delegation, suggest updates) |
 | **Commands** | User-initiated actions (/sync-mod, /release, /debug, /fix-sprites) |
-| **Sub-agents** | Research tasks via codeagent routing |
-| **run_subagent.sh** | Adapter: resolves mod config → routes through codeagent |
-| **mod.config.json** | Per-mod file lists, backend hints, source paths |
+| **Sub-agents** | Research and code tasks via Task tool (model: sonnet/haiku) |
+| **mod.config.json** | Per-mod file lists, source paths |
 | **AGENT.md** | Per-mod specific behavior |
 
 ### Repo Type Awareness
@@ -176,5 +145,5 @@ Layer 5: External References (read-only)
 
 - **Progressive Disclosure**: Metadata → SKILL.md → reference files
 - **Concise is Key**: Only add what AI doesn't already know
-- **Main agent for code, sub-agents for research**
+- **Opus orchestrates, Sonnet/Haiku execute**
 - **No extraneous files** in skill folders

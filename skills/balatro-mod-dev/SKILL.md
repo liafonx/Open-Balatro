@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.3.6
+version: 1.4.0
 ---
 
 # Balatro Mod Development
@@ -10,40 +10,41 @@ Create and debug Balatro mods with Steamodded, Lovely, and SMODS.
 
 ## Quick Agent Selection
 
-When researching, spawn the right agent:
+When researching or writing code, spawn the right sub-agent via the **Task tool**:
 
-| Need to find... | Use agent | Search boundary | Default Backend |
-|-----------------|-----------|----------------|----------------|
-| Game function implementation | `game-source-researcher` | `Balatro_src/` only | claude |
-| SMODS API usage/hooks | `smods-api-researcher` | `smods/` only | claude |
-| How other mods do X | `mod-pattern-researcher` | `Mods/` folder only | claude |
-| Lovely patch syntax | `lovely-patch-researcher` | lovely files only | claude |
-| **Project architecture/exploration** | `project-explorer` | **Current project only** | **codex** |
-| Run temp script for data | `script-runner` | N/A (execution) | codex |
-| **Plan implementation strategy** | `strategic-planner` | Current project only | **opus** |
-| **Review code for correctness** | `code-reviewer` | Current project only | **opus** |
-| **Synthesize research findings** | `research-analyst` | Current project only | **opus** |
+| Need to find... | Use agent | Model | Search boundary |
+|-----------------|-----------|-------|----------------|
+| Game function implementation | `game-source-researcher` | sonnet | `Balatro_src/` only |
+| SMODS API usage/hooks | `smods-api-researcher` | sonnet | `smods/` only |
+| How other mods do X | `mod-pattern-researcher` | sonnet | `Mods/` folder only |
+| Lovely patch syntax | `lovely-patch-researcher` | sonnet | lovely files only |
+| Project architecture/exploration | `project-explorer` | sonnet | Current project only |
+| Write code per plan | `code-writer` | sonnet | Current project only |
+| Run temp script for data | `script-runner` | haiku | N/A (execution) |
 
-**Parallel:** When researching DIFFERENT sources - spawn multiple agents at once
+**The main agent (Opus) handles directly:** Planning strategy, reviewing code, synthesizing research, making decisions, presenting to user.
+
+**Parallel:** When researching DIFFERENT sources — spawn multiple Task calls in one message
 **Sequential:** When second query depends on first result
 
-> **⚠️ MANDATORY: Sub-Agent Invocation**
+> **Sub-Agent Invocation**
 >
-> **ALWAYS use `scripts/run_subagent.sh`** to spawn sub-agents. This adapter resolves backend config from `mod.config.json` and routes through codeagent.
+> Use the **Task tool** with model selection to spawn sub-agents:
 >
-> **DO NOT** use built-in agent spawning, direct shell commands, or any other method.
->
-> ```bash
-> # CORRECT - always use this
-> ./scripts/run_subagent.sh game-source-researcher <<'EOF'
-> [task content]
-> EOF
->
-> # WRONG - never do this
-> # spawn_agent(...), create_subagent(...), direct codeagent calls, etc.
 > ```
+> # Research agent
+> Task(subagent_type="Explore", model="sonnet", prompt="[agent template + task]")
+>
+> # Code writer
+> Task(subagent_type="general-purpose", model="sonnet", prompt="[code-writer template + plan]")
+>
+> # Script runner
+> Task(subagent_type="Bash", model="haiku", prompt="[script to run]")
+> ```
+>
+> **Never use `model: opus`** — the main agent IS Opus. Sub-agents return structured recaps.
 
-See `references/sub-agents.md` for boundaries, workflow patterns, and creating new agents.
+See `references/sub-agents.md` for boundaries, workflow patterns, recap protocol, and creating new agents.
 
 ## Repo Type Awareness
 
@@ -239,7 +240,6 @@ pcall(print, "[Debug] checkpoint: " .. tostring(var))
 | `scripts/sync_to_mods.template.sh` | Sync mod files to game's Mods folder |
 | `scripts/create_release.template.sh` | Create release packages |
 | `scripts/fix_transparent_pixels.py` | Fix grey borders on sprites |
-| `scripts/mod-scripts-guide.md` | Detailed script usage |
 
 ## Workflow: Init Any Existing Repo
 
@@ -250,9 +250,9 @@ For ALL non-empty repos (own or fork), ALWAYS do these first:
 3. **Add dev files** (if missing): AGENT.md, INIT.md, mod.config.json, scripts/sync_to_mods.sh
 4. **Add Claude config** — verify ALL are installed:
    - `.claude/commands/` — **13 commands required** (familiar, init, sync-mod, bump-version, release, fix-sprites, refactor, debug, draft-pr, update, update-docs, update-skill, knowledge)
-   - `.claude/hooks/` or `.claude/hooks.json` — 5 hooks
-   - `.claude/agents/` — **9 agents required** (game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, strategic-planner, code-reviewer, research-analyst)
-5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md` (Opus only for reasoning agents), `.claude/hookify.subagent-routing.local.md`
+   - `.claude/hooks/` or `.claude/hooks.json` — 6 hooks
+   - `.claude/agents/` — **7 agents required** (game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, code-writer)
+5. **Add hookify rules** (if missing): `.claude/hookify.no-opus-subagents.local.md` (blocks Opus sub-agents), `.claude/hookify.no-codeagent.local.md` (blocks legacy routing)
 6. Update .gitignore — must include: `INIT.md`, `AGENT.md`, `mod.config.json`, `docs/`, `.tmp/`, `.claude/`, `.codex/`, `.agents/`, `release/`
 
 **Then for OWN repos:** Also check manifest, scripts version (2.0.1), add create_release.sh, Logger.lua
@@ -281,35 +281,40 @@ When user says "update all user docs":
 
 Use `/draft-pr` command. Style: 3-5 sentences, casual tone, what/why/done.
 
-## Sub-Agents for Research
+## Sub-Agent Delegation
 
-Main agent handles code. Sub-agents handle information gathering via `scripts/run_subagent.sh` → codeagent routing.
+The main agent (Opus) orchestrates. Sub-agents (Sonnet/Haiku) execute research, code writing, and script running via the Task tool.
 
-**Shared context:** When invoking multiple sub-agents for a task, the main agent **must** first create `.tmp/[taskname]/task.md` as a shared brief. Sub-agents read it for context and write their artifacts (research.md, analysis.md, plan.md, review.md) to the same directory. See `references/sub-agents.md` → "Shared Task Context" for the full protocol.
+| Situation | Action | Model |
+|-----------|--------|-------|
+| Research (game, SMODS, mods, lovely) | Spawn research agent | sonnet |
+| Writing code (>20 lines or multi-file) | Spawn `code-writer` | sonnet |
+| Exploring project architecture | Spawn `project-explorer` | sonnet |
+| Running temp scripts for data | Spawn `script-runner` | haiku |
+| Planning, reviewing, synthesizing | **Main agent does directly** | — |
+| User interaction needed | **Main agent does directly** | — |
 
-| Situation | Use | Default Backend |
-|-----------|-----|---------|
-| Research (game, SMODS, mods, lovely) | Research agent | `claude` |
-| Running temp scripts for data | `script-runner` | `codex` |
-| Planning, reviewing, synthesizing | Reasoning agent | `opus` |
-| Writing/editing code | **Main agent** | — |
-| User interaction needed | **Main agent** | — |
+### Plan Mode → Code-Writer Handoff
 
-Backends and source paths are **configurable** in `mod.config.json`:
-- `agent_backends.research` / `agent_backends.execution` / `agent_backends.reasoning` — category defaults
-- `agent_backends.overrides.{agent-name}` — per-agent override (string or `{backend, workdir}`)
-- `source_paths` — where game source, SMODS, mods are located on this machine
+**After exiting plan mode and receiving user approval, immediately delegate to Sonnet code-writer.** Do NOT implement the plan yourself.
 
-**Model restriction:** Opus is allowed **only** for reasoning sub-agents (strategic-planner, code-reviewer, research-analyst). Research agents use Sonnet; execution agents use Haiku.
+```
+EnterPlanMode → write plan → ExitPlanMode → user approves
+    → Task(model="sonnet", prompt="[code-writer template + approved plan]")
+    → receive recap → review changes
+```
+
+Opus's value is in planning and review. Sonnet executes mechanically from the plan. For large plans, split into multiple sequential code-writer calls.
+
+Source paths are configured in `mod.config.json > source_paths` — the main agent reads these and includes them in Task prompts when spawning researchers.
+
+**Recap protocol:** All sub-agents end output with a structured recap (Task/Result/Files/Issues/Needs Review). The main agent reads the recap, not raw tool output.
 
 **Hookify enforcement** (requires hookify plugin on-site):
-- `hookify.no-opus-subagents.local.md` — Blocks Opus for non-reasoning agents (allows strategic-planner, code-reviewer, research-analyst)
-- `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls
+- `hookify.no-opus-subagents.local.md` — Blocks Opus model in Task tool calls
+- `hookify.no-codeagent.local.md` — Blocks legacy codeagent/run_subagent commands
 
-These are backend **hints**. Codeagent owns final invocation policy (`~/.codeagent/config.yaml`, `~/.codeagent/models.json`).
-`run_subagent.sh` resolves config and routes through codeagent automatically — no direct `codeagent-wrapper` calls.
-
-See `references/sub-agents.md` for full config resolution, invocation patterns, and parallel examples.
+See `references/sub-agents.md` for invocation patterns, recap protocol, and delegation rules.
 
 ## Available Commands (13 total — all must be installed in `.claude/commands/`)
 - `/familiar` - Get familiar with this mod (reads AGENT.md, INIT.md, maps architecture)
@@ -326,13 +331,11 @@ See `references/sub-agents.md` for full config resolution, invocation patterns, 
 - `/update-skill [file|instruction]` - Update skill based on new knowledge
 - `/knowledge` - Review session work, capture discoveries (project-scope → AGENT.md, general → skill)
 
-Sub-agents available after setup (9 total — all must be in `.claude/agents/`):
-- `game-source-researcher` - Find game functions and injection points
-- `smods-api-researcher` - Find SMODS API patterns and usage
-- `mod-pattern-researcher` - Find how other mods implement features
-- `lovely-patch-researcher` - Find Lovely patch syntax and examples
-- `project-explorer` - Extensive codebase exploration (uses codex for token efficiency)
-- `script-runner` - Run temp scripts and return results
-- `strategic-planner` - Plan implementation strategy (uses opus for deep reasoning)
-- `code-reviewer` - Review code for correctness and edge cases (uses opus)
-- `research-analyst` - Synthesize multi-source research findings (uses opus)
+Sub-agents available after setup (7 total — all must be in `.claude/agents/`):
+- `game-source-researcher` - Find game functions and injection points (sonnet)
+- `smods-api-researcher` - Find SMODS API patterns and usage (sonnet)
+- `mod-pattern-researcher` - Find how other mods implement features (sonnet)
+- `lovely-patch-researcher` - Find Lovely patch syntax and examples (sonnet)
+- `project-explorer` - Extensive codebase exploration (sonnet)
+- `code-writer` - Execute implementation plans, write code (sonnet)
+- `script-runner` - Run temp scripts and return results (haiku)

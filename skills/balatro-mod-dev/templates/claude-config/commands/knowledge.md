@@ -30,7 +30,7 @@ git log --oneline -10
 - Read `AGENT.md` (root only — if found in `docs/`, flag as misplaced) for current documented state
 - Read `docs/knowledge-base.md` if it exists
 - Read `INIT.md` for repo type and constraints
-- Scan any `.tmp/*/` artifacts from sub-agent work this session
+- Check for any `.tmp/*/` artifacts from multi-agent work this session (optional, not standard)
 
 **Identify what was worked on:**
 - What features were added or modified?

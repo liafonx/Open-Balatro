@@ -102,11 +102,11 @@ These steps apply to ANY non-empty repository:
 - [ ] scripts/sync_to_mods.sh
 - [ ] .gitignore with agent folders
 
-**Claude config (add if missing) — 13 commands, 5 hooks, 2 hookify rules, 9 agents:**
+**Claude config (add if missing) — 13 commands, 6 hooks, 2 hookify rules, 7 agents:**
 - [ ] `.claude/commands/` — **ALL 13 required** (see Claude Agent Config section below)
-- [ ] `.claude/hooks/hooks.json` — **5 hooks required**
+- [ ] `.claude/hooks/hooks.json` — **6 hooks required**
 - [ ] `.claude/hookify.*.local.md` — **2 rules required**
-- [ ] `.claude/agents/` — **ALL 9 required** (see Claude Agent Config section below)
+- [ ] `.claude/agents/` — **ALL 7 required** (see Claude Agent Config section below)
 
 ---
 
@@ -193,16 +193,16 @@ Copy from skill templates to `.claude/`. **You MUST install ALL items below. Ver
 
 #### Hooks — copy `hooks.json` to `.claude/hooks/hooks.json`
 
-Must contain 5 hooks: SessionStart, PreToolUse (Write|Edit|Replace), PreToolUse (Task), PostToolUse (Write), Stop.
+Must contain 6 hooks: SessionStart, PreToolUse (Write|Edit|Replace), PreToolUse (Task — blocks Opus), PreToolUse (Read|Grep|Glob — blocks external sources), PostToolUse (Write), Stop.
 
 #### Hookify Rules — 2 required in `.claude/`
 
 | # | File |
 |---|------|
 | 1 | `hookify.no-opus-subagents.local.md` |
-| 2 | `hookify.subagent-routing.local.md` |
+| 2 | `hookify.no-codeagent.local.md` |
 
-#### Agents — 9 required in `.claude/agents/`
+#### Agents — 7 required in `.claude/agents/`
 
 | # | File | Source |
 |---|------|--------|
@@ -212,9 +212,7 @@ Must contain 5 hooks: SessionStart, PreToolUse (Write|Edit|Replace), PreToolUse 
 | 4 | `lovely-patch-researcher.md` | `templates/agents/` |
 | 5 | `project-explorer.md` | `templates/agents/` |
 | 6 | `script-runner.md` | `templates/agents/` |
-| 7 | `strategic-planner.md` | `templates/agents/` |
-| 8 | `code-reviewer.md` | `templates/agents/` |
-| 9 | `research-analyst.md` | `templates/agents/` |
+| 7 | `code-writer.md` | `templates/agents/` |
 
 #### Verification after copying
 
@@ -222,7 +220,7 @@ Must contain 5 hooks: SessionStart, PreToolUse (Write|Edit|Replace), PreToolUse 
 # Must be exactly 13 (extra project-specific commands are OK)
 ls .claude/commands/*.md | wc -l
 
-# Must be exactly 9
+# Must be exactly 7
 ls .claude/agents/*.md | wc -l
 
 # Must be exactly 2
@@ -310,12 +308,6 @@ Use `agent-md-template.md`, fill with detected metadata.
   ],
   "sync": { "watch_enabled": true },
   "release": { "formats": ["github", "thunderstore"] },
-  "agent_backends": {
-    "research": "claude",
-    "execution": "codex",
-    "reasoning": "opus",
-    "overrides": {}
-  },
   "source_paths": {
     "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",
     "game_mobile": "~/Development/GitWorkspace/Balatro_src/ios_plus",

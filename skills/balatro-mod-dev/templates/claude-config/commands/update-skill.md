@@ -34,7 +34,7 @@ skills/balatro-mod-dev/
 │   └── lua-gotchas.md          # Lua/LuaJIT pitfalls
 ├── scripts/                    # Script templates
 └── templates/                  # Mod setup templates
-    ├── agents/                 # Sub-agent templates (9 agents)
+    ├── agents/                 # Sub-agent templates (7 agents)
     ├── docs/                   # User doc templates
     └── claude-config/          # Hooks, commands (13 commands)
 ```

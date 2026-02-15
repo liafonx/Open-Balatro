@@ -185,3 +185,24 @@ local item = full_list[filtered_index]  -- wrong item!
 local full_index = filtered_to_full[filtered_index]
 local item = full_list[full_index]
 ```
+
+### 11. `delete_run()` required between `start_run()` and `main_menu()`
+
+`start_run()` creates CardArea objects and HUD elements that hold references to SMODS state (e.g. `current_scoring_calculation`). Calling `main_menu()` without cleanup leaves these UI elements orphaned — they crash on nil references during the render loop.
+
+```lua
+-- WRONG - orphaned UI elements crash on SMODS nil refs
+start_run(args)
+save_run()
+main_menu(args)  -- CRASH: attempt to index 'current_scoring_calculation' (nil)
+
+-- CORRECT - delete_run() tears down all run state
+start_run(args)
+save_run()
+G:delete_run()   -- removes CardAreas, HUD, events, controller state
+main_menu(args)  -- clean rebuild
+```
+
+**What `delete_run()` cleans up:** All CardArea objects (jokers, deck, hand, play), HUD/HUD_blind/HUD_tags, SPLASH elements, event queue, controller state. Sets `G.STATE = -1`.
+
+**When it matters:** Any mod that programmatically starts/ends runs (save generators, test harnesses, run replay).

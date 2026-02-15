@@ -8,7 +8,6 @@ A skill that teaches AI agents how to develop Balatro mods using:
 - **Steamodded (SMODS)** - Mod loader and API
 - **Lovely** - Lua injection framework
 - **Malverk** - Texture pack API
-- **Codeagent** - Routed sub-agent execution (configurable backends)
 
 ## Installation
 
@@ -45,28 +44,27 @@ cp -r skills/balatro-mod-dev ~/.codex/skills/
 | Script templates | Sync to mods, create release, fix sprites |
 | Project templates | INIT.md, AGENT.md, mod.config.json |
 | Commands | `/sync-mod`, `/release`, `/debug`, `/refactor`, `/fix-sprites`, etc. |
-| Sub-agents | Research game source, SMODS API, mod patterns (via codeagent routing) |
-| run_subagent.sh | Adapter that resolves per-mod backend config and routes through codeagent |
+| Sub-agents | Research game source, SMODS API, mod patterns, write code (via Task tool) |
 
-## Configurable Backends
+## Architecture
 
-Sub-agent backends are configurable per-mod in `mod.config.json`:
+The main agent (Opus) orchestrates all work. Sub-agents (Sonnet/Haiku) handle research, code writing, and script execution via the built-in Task tool with model selection.
+
+```
+Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
+     ↑                                                    │
+     └──────────────── recap ─────────────────────────────┘
+```
+
+Source paths are configured per-mod in `mod.config.json`:
 
 ```json
-"agent_backends": {
-  "research": "claude",
-  "execution": "codex",
-  "overrides": {}
-},
 "source_paths": {
   "game_desktop": "~/path/to/Balatro_src/desktop",
   "steamodded": "~/path/to/smods/src",
   "mods": "~/path/to/Balatro/Mods"
 }
 ```
-
-Resolution: per-agent override → category default → template fallback.
-These are hints — [codeagent](https://github.com/liafonx/myclaude) owns final invocation policy.
 
 ## Repository Structure
 
@@ -78,9 +76,9 @@ Open-Balatro/
 │       ├── agents/openai.yaml  # Codex UI metadata
 │       ├── patterns/           # Pattern guides
 │       ├── references/         # Game reference docs, sub-agent system
-│       ├── scripts/            # Script templates + run_subagent.sh adapter
+│       ├── scripts/            # Script templates
 │       └── templates/          # Mod setup templates
-│           └── agents/         # Sub-agent templates (codeagent-compatible)
+│           └── agents/         # Sub-agent templates (7 agents)
 ├── .agents/skills/             # Shared agent skills
 └── .codex/skills/              # Codex skills
 ```

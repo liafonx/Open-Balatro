@@ -10,7 +10,7 @@ Each Balatro mod should have these scripts in its `scripts/` folder:
 |--------|---------|-------|
 | `sync_to_mods.sh` | Sync mod files to game's Mods folder | `./scripts/sync_to_mods.sh [--watch]` |
 | `create_release.sh` | Create release packages for distribution | `./scripts/create_release.sh [version]` |
-| `filter_logs.sh` | Filter Lovely logs for debugging | `./scripts/filter_logs.sh [pattern]` |
+| `filter_logs.sh` | Filter Lovely logs for debugging (optional) | `./scripts/filter_logs.sh [pattern]` |
 
 ## Configuration: mod.config.json
 

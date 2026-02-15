@@ -127,60 +127,74 @@ When user says "draft a PR message":
 >
 > "Anyway, if this feels overkill, I totally get it, happy to just keep it in my fork."
 
-### Rule 9: Sub-Agent Invocation
+### Rule 9: Sub-Agent Delegation
 
-**NEVER use the Task tool or built-in agent spawning to create sub-agents.**
+**Use the Task tool** to spawn sub-agents for research and code writing. The main agent (Opus) orchestrates; Sonnet/Haiku sub-agents execute.
 
-All sub-agent research MUST go through:
-```bash
-./scripts/run_subagent.sh <agent-name> <<'EOF'
-[task content]
-EOF
+**Available agents (7 total):**
+- Research: `game-source-researcher`, `smods-api-researcher`, `mod-pattern-researcher`, `lovely-patch-researcher`
+- Exploration: `project-explorer`
+- Code: `code-writer`
+- Execution: `script-runner`
+
+**Invocation pattern:**
+```
+Task(subagent_type="Explore", model="sonnet", prompt="[agent template content]\n\n<task>\n[question]\n</task>")
+Task(subagent_type="general-purpose", model="sonnet", prompt="[code-writer template]\n\n<plan>\n[plan]\n</plan>")
+Task(subagent_type="Bash", model="haiku", prompt="Run this script: [script]")
 ```
 
-This adapter resolves backend config from mod.config.json and routes through codeagent.
-Available agents: game-source-researcher, smods-api-researcher, mod-pattern-researcher, lovely-patch-researcher, project-explorer, script-runner, strategic-planner, code-reviewer, research-analyst.
+**Delegation rules:**
+- **Delegate to Sonnet** when: researching external sources, writing code >20 lines, exploring project architecture
+- **Do directly (Opus)** when: planning strategy, reviewing code/results, synthesizing research, making decisions, presenting to user
+- **Parallel:** Spawn multiple Task calls in one message when researching DIFFERENT sources
+- **Never spawn Opus sub-agents** — the main agent IS Opus
 
-**Shared context:** When invoking multiple sub-agents for a task, **first** create `.tmp/[taskname]/task.md` with the task brief (requirements, goals, scope, constraints, key context). Sub-agents read this for shared context and write their artifacts to the same directory. See `references/sub-agents.md` → "Shared Task Context" for the full protocol.
+**Recap protocol:** All sub-agents end output with a structured recap (Task/Result/Files/Issues/Needs Review). Read the recap, not raw tool output.
 
 **Hookify enforcement** (requires hookify plugin installed):
-- `hookify.no-opus-subagents.local.md` — Blocks Opus for non-reasoning agents (allows strategic-planner, code-reviewer, research-analyst)
-- `hookify.subagent-routing.local.md` — Blocks direct codeagent/route_subagent calls (must use run_subagent.sh)
+- `hookify.no-opus-subagents.local.md` — Blocks Opus model in Task tool calls
+- `hookify.no-codeagent.local.md` — Blocks legacy codeagent/run_subagent commands
 
-**Model restriction:** Opus is allowed **only** for reasoning sub-agents (strategic-planner, code-reviewer, research-analyst). Research agents use Sonnet; execution agents use Haiku.
+### Rule 10: Plan Mode → Code-Writer Handoff
 
-### Rule 10: Plan Before Big Changes
+**For refactoring, structural changes, or feature implementation — use plan mode, then hand off to Sonnet.**
 
-**For refactoring, structural changes, or feature implementation — NEVER proceed automatically.**
-
-1. Create `.tmp/[taskname]/task.md` with the task brief (requirements, goals, scope)
-2. Spawn `strategic-planner` to produce the plan:
-   ```bash
-   ./scripts/run_subagent.sh strategic-planner <<'EOF'
-   Read `.tmp/[taskname]/task.md`.
-   Create an implementation plan covering: problem statement, root cause,
-   solution approach, execution steps, verification, and risks.
-   Write to `.tmp/[taskname]/plan.md`.
-   EOF
+#### Phase 1: Research (before plan mode)
+1. For complex tasks, spawn Sonnet researchers to gather context:
    ```
-3. Spawn `code-reviewer` to review the plan:
-   ```bash
-   ./scripts/run_subagent.sh code-reviewer <<'EOF'
-   Read `.tmp/[taskname]/task.md` and `.tmp/[taskname]/plan.md`.
-   Check for: missing edge cases, simpler alternatives, scope creep.
-   Write to `.tmp/[taskname]/review.md`.
-   EOF
+   Task(subagent_type="Explore", model="sonnet", prompt="[research question]")
    ```
-4. Present the plan + review to the user
-5. **Only proceed after explicit user approval**
+2. Synthesize research recaps into key findings
 
-**What counts as "big":**
+#### Phase 2: Plan mode
+3. Enter plan mode (`EnterPlanMode`)
+4. Explore codebase as needed, design the implementation approach
+5. Write the plan to the plan file
+6. Exit plan mode (`ExitPlanMode`) — user reviews and approves
+
+#### Phase 3: Execution (after user approves plan)
+7. **Immediately delegate to Sonnet `code-writer`** — do NOT implement the plan yourself:
+   ```
+   Task(
+     subagent_type="general-purpose",
+     model="sonnet",
+     prompt="[code-writer template]\n\n<plan>\n[the approved plan]\n</plan>"
+   )
+   ```
+   For large plans, split into multiple sequential code-writer calls (one per logical chunk).
+8. Review the code-writer's recap — verify changes are correct
+9. If issues found, either fix small problems directly or spawn another code-writer call
+
+**Why Opus must not implement after plan mode:** Opus tokens are expensive. The plan already captures all decisions — Sonnet can execute it mechanically. Opus's value is in the planning and review, not the typing.
+
+**What counts as "big" (requires plan mode):**
 - Renaming or moving 3+ files
 - Changing module boundaries or require chains
 - Adding/removing a system (logging, config, UI framework)
 - Rewriting a core function's signature or behavior
 
-**Small changes** (typo fix, adding a field, single-file edits) do NOT need this — just do them.
+**Small changes** (typo fix, adding a field, single-file edits) do NOT need plan mode — just do them directly or delegate to code-writer.
 
 ---
 

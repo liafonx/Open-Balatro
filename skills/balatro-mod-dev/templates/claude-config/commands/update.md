@@ -35,11 +35,17 @@ done
 ### 2. Check if agents are current
 
 ```bash
-for agent in game-source-researcher smods-api-researcher mod-pattern-researcher lovely-patch-researcher project-explorer script-runner strategic-planner code-reviewer research-analyst; do
+for agent in game-source-researcher smods-api-researcher mod-pattern-researcher lovely-patch-researcher project-explorer script-runner code-writer; do
   if [ ! -f ".claude/agents/${agent}.md" ]; then
     echo "MISSING: ${agent}.md"
   elif ! diff -q ".claude/agents/${agent}.md" ~/.claude/skills/balatro-mod-dev/templates/agents/${agent}.md >/dev/null 2>&1; then
     echo "OUTDATED: ${agent}.md"
+  fi
+done
+# Check for obsolete agents that should be removed
+for obsolete in strategic-planner code-reviewer research-analyst; do
+  if [ -f ".claude/agents/${obsolete}.md" ]; then
+    echo "OBSOLETE: ${obsolete}.md (should be removed — main agent handles this directly)"
   fi
 done
 ```
@@ -47,13 +53,17 @@ done
 ### 3. Check hookify rules
 
 ```bash
-for rule in hookify.no-opus-subagents.local.md hookify.subagent-routing.local.md; do
+for rule in hookify.no-opus-subagents.local.md hookify.no-codeagent.local.md; do
   if [ ! -f ".claude/${rule}" ]; then
     echo "MISSING: ${rule}"
   elif ! diff -q ".claude/${rule}" ~/.claude/skills/balatro-mod-dev/templates/claude-config/${rule} >/dev/null 2>&1; then
     echo "OUTDATED: ${rule}"
   fi
 done
+# Check for obsolete hookify rule
+if [ -f ".claude/hookify.subagent-routing.local.md" ]; then
+  echo "OBSOLETE: hookify.subagent-routing.local.md (replaced by hookify.no-codeagent.local.md)"
+fi
 ```
 
 ### 4. Apply updates
@@ -104,7 +114,7 @@ Read `mod.config.json` and check:
 
 1. **Schema version:** `$version` should be `"2.0.0"` or `"2.1.0"`
 2. **Paths object:** Verify `paths` object exists with `mods_dir`, `logs_dir`, `release_dir`
-3. **Agent backends:** Verify `agent_backends` has `research`, `execution`, `reasoning` keys
+3. **Source paths:** Verify `source_paths` object exists (used by main agent to construct Task prompts for researchers)
 4. **File coverage:** Scan actual mod files and compare against `include_files`:
    - Look for `*.lua`, `*.toml`, `*.json` (mod manifests), `localization/`, `assets/`, `Utils/`, `lovely/`
    - Flag files/folders that exist but aren't in `include_files`
@@ -115,7 +125,7 @@ Read `mod.config.json` and check:
 ```
 mod.config.json schema: [version] — ✅ / ⚠️
 mod.config.json paths: ✅ / ❌ missing [key]
-mod.config.json backends: ✅ / ⚠️ missing reasoning
+mod.config.json source_paths: ✅ / ⚠️ missing
 mod.config.json file coverage: ✅ / ⚠️ [N] files not in include_files
 ```
 
@@ -164,11 +174,12 @@ Read `.claude/hooks.json` (or `.claude/hooks/hooks.json`) and verify:
 |---|------|---------|------------|
 | 1 | `SessionStart` | `*` | ☐ |
 | 2 | `PreToolUse` | `Write\|Edit\|Replace` | ☐ |
-| 3 | `PreToolUse` | `Task` | ☐ |
-| 4 | `PostToolUse` | `Write` | ☐ |
-| 5 | `Stop` | `*` | ☐ |
+| 3 | `PreToolUse` | `Task` (blocks Opus sub-agents) | ☐ |
+| 4 | `PreToolUse` | `Read\|Grep\|Glob` (blocks external source reads) | ☐ |
+| 5 | `PostToolUse` | `Write` | ☐ |
+| 6 | `Stop` | `*` | ☐ |
 
-**Report line:** `Hooks: [N]/5 configured — ✅ / ❌ missing: [list]`
+**Report line:** `Hooks: [N]/6 configured — ✅ / ❌ missing: [list]`
 
 ### 3c. Hookify Rules
 
@@ -179,7 +190,10 @@ ls .claude/hookify.*.local.md 2>/dev/null
 | # | Rule file | Installed? |
 |---|-----------|------------|
 | 1 | `hookify.no-opus-subagents.local.md` | ☐ |
-| 2 | `hookify.subagent-routing.local.md` | ☐ |
+| 2 | `hookify.no-codeagent.local.md` | ☐ |
+
+Also check for obsolete rules to remove:
+- `hookify.subagent-routing.local.md` — should be removed (replaced by no-codeagent)
 
 **Report line:** `Hookify rules: [N]/2 — ✅ / ❌ missing: [list]`
 
@@ -197,11 +211,14 @@ ls .claude/agents/ 2>/dev/null
 | 4 | `lovely-patch-researcher.md` | yes | ☐ |
 | 5 | `project-explorer.md` | yes | ☐ |
 | 6 | `script-runner.md` | yes | ☐ |
-| 7 | `strategic-planner.md` | yes | ☐ |
-| 8 | `code-reviewer.md` | yes | ☐ |
-| 9 | `research-analyst.md` | yes | ☐ |
+| 7 | `code-writer.md` | yes | ☐ |
 
-**Report line:** `Agents: [N]/9 installed — ✅ / ❌ missing: [list]`
+Also check for obsolete agents to remove:
+- `strategic-planner.md` — main agent handles planning directly
+- `code-reviewer.md` — main agent handles review directly
+- `research-analyst.md` — main agent handles synthesis directly
+
+**Report line:** `Agents: [N]/7 installed — ✅ / ❌ missing: [list]`
 
 ---
 
@@ -292,8 +309,8 @@ Verify expected directories exist (for own/new repos):
    - Rule 6: Issue Documentation
    - Rule 7: Use Skill for Common Knowledge
    - Rule 8: PR Message Drafting
-   - Rule 9: Sub-Agent Invocation (must mention shared context + run_subagent.sh)
-   - Rule 10: Plan Before Big Changes (must mention `.tmp/[taskname]/`)
+   - Rule 9: Sub-Agent Delegation (must mention Task tool + model selection)
+   - Rule 10: Plan Before Big Changes (must mention code-writer)
 
 2. **AGENT.md content:** Read AGENT.md and verify it contains:
    - §1 Big Picture (mod description)
@@ -354,19 +371,19 @@ Step 0: Worktrees
 Step 1: Scripts
 - sync_to_mods.sh: v[X] — ✅ / ⚠️ / ❌
 - create_release.sh: v[X] — ✅ / ⚠️ / ❌
-- run_subagent.sh: ✅ / ❌
 
 Step 2: mod.config.json
 - Schema: v[X] — ✅ / ⚠️
 - Paths: ✅ / ❌
-- Backends (research/execution/reasoning): ✅ / ⚠️
+- Source paths: ✅ / ⚠️
 - File coverage: ✅ / ⚠️ [N] untracked files
 
 Step 3: Commands, Hooks & Agents
 - Commands: [N]/13 — ✅ / ❌ missing: [list each]
-- Hooks: [N]/5 — ✅ / ❌ missing: [list each]
+- Hooks: [N]/6 — ✅ / ❌ missing: [list each]
 - Hookify rules: [N]/2 — ✅ / ❌ missing: [list each]
-- Agents: [N]/9 — ✅ / ❌ missing: [list each]
+- Agents: [N]/7 — ✅ / ❌ missing: [list each]
+- Obsolete agents: [list any that should be removed]
 
 Step 4: File & Directory Structure
 - INIT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]

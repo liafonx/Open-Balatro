@@ -297,10 +297,71 @@ end
 
 ```lua
 -- Always check existence
-if self.children 
-   and self.children.area_uibox 
-   and self.children.area_uibox.UIRoot 
+if self.children
+   and self.children.area_uibox
+   and self.children.area_uibox.UIRoot
    and self.children.area_uibox.UIRoot.children then
     -- Safe to access children
 end
 ```
+
+## LÖVE2D Canvas Compositing
+
+### Alpha-First Pattern
+
+When compositing multiple layers onto a LÖVE2D canvas, set alpha in the first pass, then draw subsequent passes as RGB-only. Post-pass alpha replacement (`setColorMask(false,false,false,true)`) does not reliably write alpha on LÖVE2D canvases.
+
+```lua
+-- WRONG - post-pass alpha masking is unreliable on canvases
+love.graphics.setColorMask(false, false, false, true)
+love.graphics.setBlendMode("replace")
+love.graphics.draw(alpha_source)  -- does NOT reliably set alpha
+
+-- CORRECT - 3-pass compositing: alpha first, then RGB-only
+-- Pass 1: Stamp alpha from source onto result canvas
+love.graphics.setBlendMode("replace", "premultiplied")
+love.graphics.draw(source_canvas)
+
+-- Pass 2: Draw background (RGB only, alpha preserved from pass 1)
+love.graphics.setColorMask(true, true, true, false)
+love.graphics.setBlendMode("replace", "premultiplied")
+love.graphics.draw(background)
+
+-- Pass 3: Composite foreground (RGB only, blended over background)
+love.graphics.setBlendMode("alpha")
+love.graphics.draw(foreground)
+
+-- Restore
+love.graphics.setColorMask(true, true, true, true)
+```
+
+**When it matters:** Mods that composite tiled backgrounds, edge detection, or shader effects onto sprite atlases — especially when sprites have non-rectangular transparency (notched corners, irregular borders).
+
+## Node Insertion & Layout Flow
+
+### Don't Insert Siblings Into Row Flow
+
+Balatro's UI container layout recalculates widths/heights from child flow. Inserting extra nodes (markers, indicators, badges) as regular sibling children of a row changes the row's geometry and breaks alignment, pagination, and current-item highlighting.
+
+```lua
+-- WRONG - extra node changes row geometry
+local row = {n = G.UIT.R, config = {align = "cl"}, nodes = {
+    {n = G.UIT.T, config = {text = save_name, scale = 0.3}},
+    {n = G.UIT.T, config = {text = "[?]", scale = 0.25}},  -- breaks layout!
+}}
+
+-- CORRECT - attach as external badge via child UIBox
+local badge = UIBox{
+    definition = {n = G.UIT.ROOT, config = {align = "cm"}, nodes = {
+        {n = G.UIT.T, config = {text = "?", scale = 0.2, colour = G.C.WHITE}}
+    }},
+    config = {
+        align = "cr",           -- anchor to right edge
+        major = row_element,    -- position relative to row
+        parent = row_element    -- draw hierarchy
+    }
+}
+row_element.children.my_badge = badge  -- outside layout flow
+```
+
+**Key insight:** Child UIBoxes attached via `row.children.X = UIBox{...}` are positioned and drawn by their parent but do NOT participate in the parent's layout flow calculation. This is the correct pattern for indicators, badges, and markers that should appear near a row without affecting its dimensions.

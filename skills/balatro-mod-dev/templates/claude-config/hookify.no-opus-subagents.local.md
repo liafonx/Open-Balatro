@@ -1,31 +1,25 @@
 ---
 name: no-opus-subagents
 enabled: true
-event: bash
+event: task
 action: block
 conditions:
-  - field: command
-    operator: regex_match
-    pattern: (run_subagent|route_subagent|codeagent)
-  - field: command
+  - field: model
     operator: regex_match
     pattern: opus
-  - field: command
-    operator: regex_not_match
-    pattern: (strategic-planner|code-reviewer|research-analyst)
 ---
 
-**Opus model detected in non-reasoning sub-agent invocation.**
+**Opus sub-agent detected.**
 
-Opus is only allowed for **reasoning** sub-agents (planning, review, analysis). Research and execution agents must use lighter models.
+The main agent (Opus) handles planning, code review, and research synthesis directly. Opus sub-agents waste tokens by duplicating what the orchestrator already does.
 
-**Allowed Opus agents (reasoning tier):**
-- `strategic-planner` — implementation planning before complex changes
-- `code-reviewer` — deep code review for correctness and edge cases
-- `research-analyst` — synthesize findings from multiple research agents
+**Use instead:**
+- **`model: sonnet`** — research agents, code-writer, project-explorer
+- **`model: haiku`** — script-runner, simple command execution
 
-**Other agents must use:**
-- **Sonnet** — research requiring reasoning (game-source, smods-api, mod-pattern, lovely-patch)
-- **Haiku** — pure search, grep, command execution (script-runner)
+The main Opus agent should:
+- Plan implementation strategy directly (was: strategic-planner)
+- Review code and results directly (was: code-reviewer)
+- Synthesize research findings directly (was: research-analyst)
 
-Fix the `--backend` or `--model` parameter and retry.
+Change the `model` parameter to `sonnet` or `haiku` and retry.
