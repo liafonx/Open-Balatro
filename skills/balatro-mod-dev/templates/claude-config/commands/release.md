@@ -2,6 +2,7 @@
 description: Create release packages for distribution
 allowed-tools: Bash, Read
 argument-hint: [version]
+skill-version: 1.4.0
 ---
 
 # Create Release

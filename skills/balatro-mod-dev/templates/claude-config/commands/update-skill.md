@@ -2,6 +2,7 @@
 description: Update skill content based on new knowledge or instructions
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 argument-hint: [knowledge-file|instruction]
+skill-version: 1.4.0
 ---
 
 # Update Skill

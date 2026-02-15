@@ -8,6 +8,7 @@ arguments:
   - name: options
     description: "--preview to see changes without modifying, --recursive to include subdirectories"
     required: false
+skill-version: 1.4.0
 ---
 
 # Fix Sprites Command

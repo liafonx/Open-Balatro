@@ -2,6 +2,7 @@
 description: Initialize Balatro mod development for current repo
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: "[--force to skip detection]"
+skill-version: 1.4.0
 ---
 
 # Initialize Balatro Mod Development

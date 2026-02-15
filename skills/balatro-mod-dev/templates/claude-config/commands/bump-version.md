@@ -2,6 +2,7 @@
 description: Increment version and update changelogs
 allowed-tools: Bash, Read, Write, Edit
 argument-hint: [patch|minor|major]
+skill-version: 1.4.0
 ---
 
 # Bump Version

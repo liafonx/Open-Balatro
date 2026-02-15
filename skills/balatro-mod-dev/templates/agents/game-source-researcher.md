@@ -2,6 +2,7 @@
 name: game-source-researcher
 description: Researches Balatro game source code to find function implementations, data structures, and injection points. Use when needing to understand how something works in the game, find where to inject code, or locate specific game mechanics.
 model: sonnet
+skill-version: 1.4.0
 ---
 
 <role>

@@ -3,6 +3,7 @@ name: no-opus-subagents
 enabled: true
 event: task
 action: block
+skill-version: 1.4.0
 conditions:
   - field: model
     operator: regex_match

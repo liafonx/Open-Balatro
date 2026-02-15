@@ -2,6 +2,7 @@
 name: mod-pattern-researcher
 description: Researches how other Balatro mods implement specific features. Use when needing to see how existing mods solve a problem, find patterns for common functionality, or understand mod architecture approaches.
 model: sonnet
+skill-version: 1.4.0
 ---
 
 <role>

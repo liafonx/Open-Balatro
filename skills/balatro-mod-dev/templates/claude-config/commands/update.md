@@ -1,6 +1,7 @@
 ---
 description: Check if project config, scripts, hooks, commands, file placement, gitignore, and docs are up-to-date
 allowed-tools: Read, Bash, Glob, Grep, Edit
+skill-version: 1.4.0
 ---
 
 # Update Check (Health Audit)
@@ -15,72 +16,152 @@ Audit this mod repo for outdated scripts, hooks, commands, rules, file/dir struc
 
 ## Pre-flight: Self-Update Commands & Agents
 
-**Before auditing anything else, ensure THIS command and all other skill files are current.**
+**Before auditing anything else, ensure all deployed skill files are current.**
 
 The skill templates live at: `~/.claude/skills/balatro-mod-dev/`
+All deployable files have a `skill-version:` field in their YAML frontmatter (or `"skill_version"` in JSON).
 
-### 1. Check if commands are current
+### 0. Get current skill version
 
 ```bash
-# Compare each project command against skill template
+# Extract version from SKILL.md
+grep '^version:' ~/.claude/skills/balatro-mod-dev/SKILL.md | head -1 | sed 's/version: *//'
+```
+
+This is the **expected version**. All deployed files should match.
+
+### 1. Check deployed file versions
+
+For each deployed file, extract its `skill-version:` and compare against the expected version.
+
+```bash
+SKILL_VER=$(grep '^version:' ~/.claude/skills/balatro-mod-dev/SKILL.md | head -1 | sed 's/version: *//')
+echo "Skill version: $SKILL_VER"
+
+echo "--- Commands ---"
 for cmd in familiar init sync-mod bump-version release fix-sprites refactor debug draft-pr update update-docs update-skill knowledge; do
-  if [ ! -f ".claude/commands/${cmd}.md" ]; then
+  f=".claude/commands/${cmd}.md"
+  if [ ! -f "$f" ]; then
     echo "MISSING: ${cmd}.md"
-  elif ! diff -q ".claude/commands/${cmd}.md" ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/${cmd}.md >/dev/null 2>&1; then
-    echo "OUTDATED: ${cmd}.md"
+  else
+    v=$(grep '^skill-version:' "$f" | head -1 | sed 's/skill-version: *//')
+    if [ -z "$v" ]; then
+      echo "NO-VERSION: ${cmd}.md (pre-versioning file)"
+    elif [ "$v" != "$SKILL_VER" ]; then
+      echo "OUTDATED: ${cmd}.md (deployed: $v, current: $SKILL_VER)"
+    fi
+  fi
+done
+
+echo "--- Agents ---"
+for agent in game-source-researcher smods-api-researcher mod-pattern-researcher lovely-patch-researcher project-explorer script-runner code-writer; do
+  f=".claude/agents/${agent}.md"
+  if [ ! -f "$f" ]; then
+    echo "MISSING: ${agent}.md"
+  else
+    v=$(grep '^skill-version:' "$f" | head -1 | sed 's/skill-version: *//')
+    if [ -z "$v" ]; then
+      echo "NO-VERSION: ${agent}.md (pre-versioning file)"
+    elif [ "$v" != "$SKILL_VER" ]; then
+      echo "OUTDATED: ${agent}.md (deployed: $v, current: $SKILL_VER)"
+    fi
+  fi
+done
+
+echo "--- Hookify Rules ---"
+for rule in hookify.no-opus-subagents.local.md hookify.no-codeagent.local.md; do
+  f=".claude/${rule}"
+  if [ ! -f "$f" ]; then
+    echo "MISSING: ${rule}"
+  else
+    v=$(grep '^skill-version:' "$f" | head -1 | sed 's/skill-version: *//')
+    if [ -z "$v" ]; then
+      echo "NO-VERSION: ${rule} (pre-versioning file)"
+    elif [ "$v" != "$SKILL_VER" ]; then
+      echo "OUTDATED: ${rule} (deployed: $v, current: $SKILL_VER)"
+    fi
+  fi
+done
+
+echo "--- hooks.json ---"
+for hf in .claude/hooks.json .claude/hooks/hooks.json; do
+  if [ -f "$hf" ]; then
+    v=$(grep '"skill_version"' "$hf" | head -1 | sed 's/.*: *"\(.*\)".*/\1/')
+    if [ -z "$v" ]; then
+      echo "NO-VERSION: $hf (pre-versioning file)"
+    elif [ "$v" != "$SKILL_VER" ]; then
+      echo "OUTDATED: $hf (deployed: $v, current: $SKILL_VER)"
+    fi
+    break
   fi
 done
 ```
 
-### 2. Check if agents are current
+### 2. Remove obsolete files
+
+Files from previous skill versions that must be deleted:
 
 ```bash
-for agent in game-source-researcher smods-api-researcher mod-pattern-researcher lovely-patch-researcher project-explorer script-runner code-writer; do
-  if [ ! -f ".claude/agents/${agent}.md" ]; then
-    echo "MISSING: ${agent}.md"
-  elif ! diff -q ".claude/agents/${agent}.md" ~/.claude/skills/balatro-mod-dev/templates/agents/${agent}.md >/dev/null 2>&1; then
-    echo "OUTDATED: ${agent}.md"
-  fi
-done
-# Check for obsolete agents that should be removed
+# Obsolete agents (replaced by main agent direct handling in v1.4.0)
 for obsolete in strategic-planner code-reviewer research-analyst; do
   if [ -f ".claude/agents/${obsolete}.md" ]; then
-    echo "OBSOLETE: ${obsolete}.md (should be removed — main agent handles this directly)"
+    echo "DELETE: .claude/agents/${obsolete}.md (main agent handles this directly since v1.4.0)"
   fi
 done
+
+# Obsolete hookify rules (replaced in v1.4.0)
+if [ -f ".claude/hookify.subagent-routing.local.md" ]; then
+  echo "DELETE: .claude/hookify.subagent-routing.local.md (replaced by hookify.no-codeagent.local.md)"
+fi
+
+# Obsolete scripts (codeagent routing removed in v1.4.0)
+if [ -f "scripts/run_subagent.sh" ]; then
+  echo "DELETE: scripts/run_subagent.sh (codeagent routing deprecated in v1.4.0)"
+fi
 ```
 
-### 3. Check hookify rules
+### 3. Check for legacy config migration
 
 ```bash
-for rule in hookify.no-opus-subagents.local.md hookify.no-codeagent.local.md; do
-  if [ ! -f ".claude/${rule}" ]; then
-    echo "MISSING: ${rule}"
-  elif ! diff -q ".claude/${rule}" ~/.claude/skills/balatro-mod-dev/templates/claude-config/${rule} >/dev/null 2>&1; then
-    echo "OUTDATED: ${rule}"
+# Check if mod.config.json still has agent_backends (removed in v1.4.0)
+if [ -f "mod.config.json" ]; then
+  if grep -q '"agent_backends"' mod.config.json 2>/dev/null; then
+    echo "MIGRATE: mod.config.json still has agent_backends section (removed in v1.4.0 — main agent selects models directly)"
   fi
-done
-# Check for obsolete hookify rule
-if [ -f ".claude/hookify.subagent-routing.local.md" ]; then
-  echo "OBSOLETE: hookify.subagent-routing.local.md (replaced by hookify.no-codeagent.local.md)"
+fi
+
+# Check if INIT.md references run_subagent.sh (should reference Task tool instead)
+if [ -f "INIT.md" ]; then
+  if grep -q 'run_subagent' INIT.md 2>/dev/null; then
+    echo "MIGRATE: INIT.md still references run_subagent.sh (should use Task tool since v1.4.0)"
+  fi
 fi
 ```
 
 ### 4. Apply updates
 
-**If ANY files are missing or outdated:**
-1. Copy ALL missing/outdated files from skill templates to project
-2. Report what was updated
+**If ANY files are missing, outdated, no-version, or obsolete:**
+
+1. **Delete** all obsolete files found in step 2
+2. **Copy** all missing/outdated/no-version files from skill templates
+3. **Migrate** legacy config if needed (remove agent_backends from mod.config.json)
+4. Report what was changed
 
 ```bash
-# Example: copy all commands
+# Delete obsolete
+rm -f .claude/agents/strategic-planner.md .claude/agents/code-reviewer.md .claude/agents/research-analyst.md
+rm -f .claude/hookify.subagent-routing.local.md
+rm -f scripts/run_subagent.sh
+
+# Copy current templates
 mkdir -p .claude/commands .claude/agents
 cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/*.md .claude/commands/
 cp ~/.claude/skills/balatro-mod-dev/templates/agents/*.md .claude/agents/
 cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/hookify.*.local.md .claude/
+cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/hooks.json .claude/hooks.json
 ```
 
-**If update.md itself was outdated:** Inform the user: "The /update command was outdated and has been refreshed. This run continues with the previous version's instructions — re-run `/update` for the most accurate audit."
+**If update.md itself was outdated/no-version:** Inform the user: "The /update command was outdated and has been refreshed. This run continues with the previous version's instructions — re-run `/update` for the most accurate audit."
 
 **If everything is current:** Proceed to Step 0.
 
@@ -359,10 +440,13 @@ Ad-hoc logging: [N files with bare print/pcall — list them]
 ```
 === Mod Health Check ===
 
-Pre-flight: Self-Update
-- Commands: [all current ✅ / updated N ⚠️ / copied N new]
-- Agents: [all current ✅ / updated N ⚠️ / copied N new]
-- Hookify rules: [all current ✅ / updated N ⚠️ / copied N new]
+Pre-flight: Self-Update (skill v[X])
+- Commands: [N]/13 — [all v[X] ✅ / updated N from v[old] / copied N new / N no-version]
+- Agents: [N]/7 — [all v[X] ✅ / updated N / copied N new / N no-version]
+- Hookify rules: [N]/2 — [all v[X] ✅ / updated N]
+- hooks.json: v[X] ✅ / ⚠️ updated / ❌ missing
+- Obsolete files deleted: [list, or "none"]
+- Legacy migration: [list changes, or "none needed"]
 - update.md itself: [current ✅ / was outdated ⚠️ — re-run recommended]
 
 Step 0: Worktrees
@@ -383,7 +467,6 @@ Step 3: Commands, Hooks & Agents
 - Hooks: [N]/6 — ✅ / ❌ missing: [list each]
 - Hookify rules: [N]/2 — ✅ / ❌ missing: [list each]
 - Agents: [N]/7 — ✅ / ❌ missing: [list each]
-- Obsolete agents: [list any that should be removed]
 
 Step 4: File & Directory Structure
 - INIT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
