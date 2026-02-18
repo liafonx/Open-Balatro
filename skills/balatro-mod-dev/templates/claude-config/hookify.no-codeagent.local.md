@@ -3,7 +3,7 @@ name: no-codeagent
 enabled: true
 event: bash
 action: block
-skill-version: 1.4.0
+skill-version: 1.4.1
 conditions:
   - field: command
     operator: regex_match

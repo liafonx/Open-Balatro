@@ -1,7 +1,7 @@
 ---
 description: Review session work, surface new discoveries, and capture knowledge in the right place
 allowed-tools: Read, Grep, Glob, Bash, Edit
-skill-version: 1.4.0
+skill-version: 1.4.1
 ---
 
 # Capture Knowledge

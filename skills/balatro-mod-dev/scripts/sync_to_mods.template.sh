@@ -3,6 +3,7 @@
 # Reads all configuration from mod.config.json (single source of truth)
 #
 # Config Version: 2.0.1
+# skill-version: 1.4.1
 # Note: Uses zsh for macOS compatibility (bash 3.x lacks readarray)
 #
 # Usage:

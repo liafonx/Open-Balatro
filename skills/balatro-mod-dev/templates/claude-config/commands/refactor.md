@@ -2,7 +2,7 @@
 description: Review codebase for refactoring opportunities
 allowed-tools: Read, Grep, Glob, Bash
 argument-hint: [focus-area]
-skill-version: 1.4.0
+skill-version: 1.4.1
 ---
 
 # Refactor Code

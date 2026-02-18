@@ -1,7 +1,7 @@
 ---
 description: Check if project config, scripts, hooks, commands, file placement, gitignore, and docs are up-to-date
 allowed-tools: Read, Bash, Glob, Grep, Edit
-skill-version: 1.4.0
+skill-version: 1.4.1
 ---
 
 # Update Check (Health Audit)
@@ -95,6 +95,21 @@ for hf in .claude/hooks.json .claude/hooks/hooks.json; do
     break
   fi
 done
+
+echo "--- Scripts ---"
+for script in sync_to_mods.sh create_release.sh; do
+  f="scripts/${script}"
+  if [ ! -f "$f" ]; then
+    echo "MISSING: ${script}"
+  else
+    v=$(grep '^# skill-version:' "$f" | head -1 | sed 's/# skill-version: *//')
+    if [ -z "$v" ]; then
+      echo "NO-VERSION: ${script} (pre-versioning file)"
+    elif [ "$v" != "$SKILL_VER" ]; then
+      echo "OUTDATED: ${script} (deployed: $v, current: $SKILL_VER)"
+    fi
+  fi
+done
 ```
 
 ### 2. Remove obsolete files
@@ -159,6 +174,12 @@ cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/commands/*.md .claud
 cp ~/.claude/skills/balatro-mod-dev/templates/agents/*.md .claude/agents/
 cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/hookify.*.local.md .claude/
 cp ~/.claude/skills/balatro-mod-dev/templates/claude-config/hooks.json .claude/hooks.json
+
+# Copy current script templates
+mkdir -p scripts
+cp ~/.claude/skills/balatro-mod-dev/scripts/sync_to_mods.template.sh scripts/sync_to_mods.sh
+cp ~/.claude/skills/balatro-mod-dev/scripts/create_release.template.sh scripts/create_release.sh
+chmod +x scripts/*.sh
 ```
 
 **If update.md itself was outdated/no-version:** Inform the user: "The /update command was outdated and has been refreshed. This run continues with the previous version's instructions — re-run `/update` for the most accurate audit."
@@ -180,12 +201,16 @@ Record worktree paths. **Exclude them from ALL subsequent file checks.** If `ls`
 ## Step 1: Script Version Check
 
 Read `scripts/sync_to_mods.sh` and `scripts/create_release.sh`:
-- Look for `# Config Version:` line
-- Current template version is **2.0.1**
+- Look for `# Config Version:` line — current template version is **2.0.1**
+- Look for `# skill-version:` line — should match the skill version from SKILL.md
 - Flag if version is missing or older
 - Check scripts read from `mod.config.json` (not hardcoded `BASE_FILES`)
 
-**Report line:** `Scripts: [version found] — ✅ current / ⚠️ outdated / ❌ missing`
+**Report lines:**
+```
+sync_to_mods.sh: Config v[X], skill-version v[X] — ✅ current / ⚠️ outdated / ❌ missing
+create_release.sh: Config v[X], skill-version v[X] — ✅ current / ⚠️ outdated / ❌ missing
+```
 
 ---
 
@@ -445,6 +470,7 @@ Pre-flight: Self-Update (skill v[X])
 - Agents: [N]/7 — [all v[X] ✅ / updated N / copied N new / N no-version]
 - Hookify rules: [N]/2 — [all v[X] ✅ / updated N]
 - hooks.json: v[X] ✅ / ⚠️ updated / ❌ missing
+- Scripts: [N]/2 — [all v[X] ✅ / updated N / N no-version / N missing]
 - Obsolete files deleted: [list, or "none"]
 - Legacy migration: [list changes, or "none needed"]
 - update.md itself: [current ✅ / was outdated ⚠️ — re-run recommended]

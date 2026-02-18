@@ -1,7 +1,7 @@
 ---
 description: Draft a PR message for fork contributions
 allowed-tools: Bash, Read
-skill-version: 1.4.0
+skill-version: 1.4.1
 ---
 
 # Draft PR Message
