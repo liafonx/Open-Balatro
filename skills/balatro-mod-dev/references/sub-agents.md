@@ -32,14 +32,16 @@ Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
 
 ## Invocation
 
-All sub-agents are spawned via the Task tool with model selection.
+All sub-agents are spawned via the Task tool with **explicit model selection**.
+
+**CRITICAL: The `model` parameter is REQUIRED on every Task call.** Omitting `model` causes the sub-agent to inherit the parent model (Opus), which wastes tokens and violates the orchestrator architecture. Always specify `model: "sonnet"` or `model: "haiku"`.
 
 ### Single Research Agent
 
 ```
 Task(
   subagent_type="Explore",
-  model="sonnet",
+  model="sonnet",          # ← REQUIRED: must be "sonnet" or "haiku"
   prompt="[content from agent template]\n\n<task>\n[specific question]\n</task>"
 )
 ```
@@ -59,7 +61,7 @@ Task(subagent_type="Explore", model="sonnet", prompt="[mod patterns question]")
 ```
 Task(
   subagent_type="general-purpose",
-  model="sonnet",
+  model="sonnet",          # ← REQUIRED
   prompt="[code-writer template]\n\n<plan>\n[Opus's implementation plan]\n</plan>"
 )
 ```
@@ -69,7 +71,7 @@ Task(
 ```
 Task(
   subagent_type="Bash",
-  model="haiku",
+  model="haiku",           # ← REQUIRED
   prompt="Run this script and return the result: [script]"
 )
 ```
@@ -221,6 +223,7 @@ model: sonnet|haiku
 - Sub-agents cannot interact with users
 - Research agents and code-writer use `model: sonnet`
 - Script-runner uses `model: haiku`
+- The `model` parameter is REQUIRED — never omit it (omitting defaults to Opus)
 - Never use `model: opus` — the main agent IS Opus
 - All boundaries MUST be inline (not referenced from external files)
 - All agents MUST include the recap section in their output format

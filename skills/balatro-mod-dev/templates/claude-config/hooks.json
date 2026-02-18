@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Check if this Task tool call specifies model=opus (or model=\"opus\"). If so, respond with: 'BLOCK: Opus sub-agents are not allowed. Use model=sonnet or model=haiku. The main Opus agent handles planning, review, and synthesis directly.' Otherwise, respond with 'ALLOW'.",
+            "prompt": "Check this Task tool call's model parameter. ALLOW only if model is EXPLICITLY set to 'sonnet' or 'haiku'. BLOCK in ALL other cases: if model is 'opus', if model is omitted, if model is absent, if model is null, or if model is any other value. When blocking, respond with: 'BLOCK: All Task tool calls MUST include an explicit model parameter set to sonnet or haiku. Omitting the model parameter causes it to inherit the parent model (Opus), which is not allowed. Add model=sonnet (for research/code) or model=haiku (for scripts) and retry.'",
             "timeout": 10
           }
         ]

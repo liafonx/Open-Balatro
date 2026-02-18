@@ -1,7 +1,7 @@
 ---
 name: balatro-mod-dev
 description: Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, and debugging.
-version: 1.4.0
+version: 1.4.1
 ---
 
 # Balatro Mod Development
@@ -29,20 +29,23 @@ When researching or writing code, spawn the right sub-agent via the **Task tool*
 
 > **Sub-Agent Invocation**
 >
-> Use the **Task tool** with model selection to spawn sub-agents:
+> Use the **Task tool** with **explicit model selection** to spawn sub-agents:
 >
 > ```
-> # Research agent
+> # Research agent — model is REQUIRED
 > Task(subagent_type="Explore", model="sonnet", prompt="[agent template + task]")
 >
-> # Code writer
+> # Code writer — model is REQUIRED
 > Task(subagent_type="general-purpose", model="sonnet", prompt="[code-writer template + plan]")
 >
-> # Script runner
+> # Script runner — model is REQUIRED
 > Task(subagent_type="Bash", model="haiku", prompt="[script to run]")
 > ```
 >
-> **Never use `model: opus`** — the main agent IS Opus. Sub-agents return structured recaps.
+> **CRITICAL: The `model` parameter is REQUIRED on every Task call.**
+> - Omitting `model` causes the sub-agent to inherit the parent model (Opus) — this is the same as using Opus and is NOT allowed.
+> - You MUST always specify `model: "sonnet"` or `model: "haiku"` explicitly.
+> - The main agent IS Opus. Sub-agents return structured recaps.
 
 See `references/sub-agents.md` for boundaries, workflow patterns, recap protocol, and creating new agents.
 

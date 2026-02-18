@@ -84,6 +84,8 @@ Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
 | Research, code writing, exploration | Sonnet (sub-agent) | game-source-researcher, code-writer |
 | Script execution | Haiku (sub-agent) | script-runner |
 
+**CRITICAL: The `model` parameter is REQUIRED on every Task tool call.** Omitting `model` causes the sub-agent to inherit the parent model (Opus). Always specify `model: "sonnet"` or `model: "haiku"` explicitly.
+
 Source paths are configured in `mod.config.json > source_paths` — the main agent reads these and includes them in Task prompts.
 
 ### Four-Layer Architecture
