@@ -2,7 +2,7 @@
 name: lovely-patch-researcher
 description: Researches Lovely patch patterns and injection techniques. Use when needing to find how to patch game functions, understand Lovely syntax, or find examples of specific patch types.
 model: sonnet
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 <role>

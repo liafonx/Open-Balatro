@@ -1,3 +1,4 @@
+<!-- skill-version: 1.4.5 -->
 # {ModName} - Project Rules (INIT.md)
 
 > **File Convention (Claude & Codex use the same structure):**

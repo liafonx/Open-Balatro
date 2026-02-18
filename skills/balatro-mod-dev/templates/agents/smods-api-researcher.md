@@ -2,7 +2,7 @@
 name: smods-api-researcher
 description: Researches SMODS API patterns, hooks, and implementations. Use when needing to understand how to use SMODS features, find examples of SMODS usage in existing mods, or understand SMODS internals.
 model: sonnet
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 <role>

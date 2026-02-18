@@ -1,7 +1,7 @@
 ---
 description: Check if project config, scripts, hooks, commands, file placement, gitignore, and docs are up-to-date
 allowed-tools: Read, Bash, Glob, Grep, Edit
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Update Check (Health Audit)
@@ -110,6 +110,22 @@ for script in sync_to_mods.sh create_release.sh; do
     fi
   fi
 done
+
+echo "--- INIT.md ---"
+if [ ! -f "INIT.md" ]; then
+  echo "MISSING: INIT.md"
+else
+  v=$(grep '<!-- skill-version:' INIT.md | head -1 | sed 's/.*skill-version: *\([^ ]*\).*/\1/')
+  if [ -z "$v" ]; then
+    echo "NO-VERSION: INIT.md (pre-versioning file)"
+  elif [ "$v" != "$SKILL_VER" ]; then
+    echo "OUTDATED: INIT.md (deployed: $v, current: $SKILL_VER)"
+  fi
+  # Also check for legacy run_subagent references
+  if grep -q 'run_subagent' INIT.md 2>/dev/null; then
+    echo "STALE-RULES: INIT.md still references run_subagent.sh (must use Task tool since v1.4.0)"
+  fi
+fi
 ```
 
 ### 2. Remove obsolete files
@@ -145,12 +161,7 @@ if [ -f "mod.config.json" ]; then
   fi
 fi
 
-# Check if INIT.md references run_subagent.sh (should reference Task tool instead)
-if [ -f "INIT.md" ]; then
-  if grep -q 'run_subagent' INIT.md 2>/dev/null; then
-    echo "MIGRATE: INIT.md still references run_subagent.sh (should use Task tool since v1.4.0)"
-  fi
-fi
+# INIT.md legacy check moved to pre-flight step 1 (checks both version marker and run_subagent references)
 ```
 
 ### 4. Apply updates
@@ -181,6 +192,21 @@ cp ~/.claude/skills/balatro-mod-dev/scripts/sync_to_mods.template.sh scripts/syn
 cp ~/.claude/skills/balatro-mod-dev/scripts/create_release.template.sh scripts/create_release.sh
 chmod +x scripts/*.sh
 ```
+
+**If INIT.md is missing, no-version, outdated, or has stale rules:**
+
+INIT.md contains mod-specific content that cannot be wholesale-replaced. Refresh the rules while preserving customizations:
+
+1. Read the current template from `~/.claude/skills/balatro-mod-dev/templates/project-rules-template.md`
+2. Read the existing `INIT.md` from the project root
+3. Extract the mod-specific sections from the existing INIT.md (everything from `## Mod-Specific Context` through `## External References` to end of file)
+4. Build the new INIT.md:
+   - Copy the template content (which has `{ModName}` placeholders)
+   - Replace `{ModName}` with the mod name from `mod.config.json` (`jq -r '.mod_name' mod.config.json`)
+   - Replace everything from `## Mod-Specific Context` onward with the preserved mod-specific sections from step 3
+5. Write the merged content back to `INIT.md`
+
+If no existing `## Mod-Specific Context` section is found (pre-template INIT.md), keep the template's placeholder section — the user can fill it in later.
 
 **If update.md itself was outdated/no-version:** Inform the user: "The /update command was outdated and has been refreshed. This run continues with the previous version's instructions — re-run `/update` for the most accurate audit."
 
@@ -380,7 +406,7 @@ Read `.gitignore` and check for **each** required entry:
 | 1 | `INIT.md` | ☐ |
 | 2 | `AGENT.md` | ☐ |
 | 3 | `mod.config.json` | ☐ |
-| 4 | `docs/` | ☐ |
+| 4 | `docs/*` (with `!docs/description.md` and `!docs/NEXUSMODS_DESCRIPTION.txt` exceptions) | ☐ |
 | 5 | `.tmp/` | ☐ |
 | 6 | `.claude/` | ☐ |
 | 7 | `.codex/` | ☐ |
@@ -471,6 +497,7 @@ Pre-flight: Self-Update (skill v[X])
 - Hookify rules: [N]/2 — [all v[X] ✅ / updated N]
 - hooks.json: v[X] ✅ / ⚠️ updated / ❌ missing
 - Scripts: [N]/2 — [all v[X] ✅ / updated N / N no-version / N missing]
+- INIT.md: v[X] ✅ / ⚠️ refreshed (rules updated) / ❌ missing / ⚠️ no-version
 - Obsolete files deleted: [list, or "none"]
 - Legacy migration: [list changes, or "none needed"]
 - update.md itself: [current ✅ / was outdated ⚠️ — re-run recommended]

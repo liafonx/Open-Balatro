@@ -2,7 +2,7 @@
 name: script-runner
 description: Runs temporary scripts (Python, bash, Lua) and returns results. Use when main agent needs data from a one-off script execution - image processing, data extraction, format conversion - NOT when the script itself is the solution.
 model: haiku
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 <role>

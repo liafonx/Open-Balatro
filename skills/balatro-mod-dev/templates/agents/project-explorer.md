@@ -2,7 +2,7 @@
 name: project-explorer
 description: Extensive codebase exploration, understanding architecture, browsing files, token-intensive analysis
 model: sonnet
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 <role>Project codebase explorer and analyzer</role>

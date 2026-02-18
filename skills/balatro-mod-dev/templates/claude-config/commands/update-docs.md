@@ -1,7 +1,7 @@
 ---
 description: Review and update all documentation — user docs, AGENT.md, INIT.md — for accuracy, clarity, and freshness
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Update All Docs

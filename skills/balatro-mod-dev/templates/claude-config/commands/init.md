@@ -2,7 +2,7 @@
 description: Initialize Balatro mod development for current repo
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: "[--force to skip detection]"
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Initialize Balatro Mod Development
@@ -362,10 +362,14 @@ BASE_FILES=(
 INIT.md
 AGENT.md
 mod.config.json
-docs/
+docs/*
+!docs/description.md
+!docs/NEXUSMODS_DESCRIPTION.txt
 .tmp/
 release/
 ```
+
+**Note:** The `docs/*` pattern with `!` exceptions allows tracking user-facing docs while ignoring dev-only docs. Use the gitignore template from `~/.claude/skills/balatro-mod-dev/templates/gitignore-template` as the full reference.
 
 ## Step 5: Verify/Update AGENT.md
 

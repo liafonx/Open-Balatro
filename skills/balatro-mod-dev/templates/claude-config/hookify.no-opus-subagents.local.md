@@ -3,7 +3,7 @@ name: no-opus-subagents
 enabled: true
 event: all
 action: block
-skill-version: 1.4.1
+skill-version: 1.4.5
 conditions:
   - field: model
     operator: not_contains

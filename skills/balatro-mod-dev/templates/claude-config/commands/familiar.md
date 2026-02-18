@@ -1,7 +1,7 @@
 ---
 description: Get familiar with the current mod — what it does, how it works, key concepts
 allowed-tools: Read, Glob, Grep
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Get Familiar With This Mod

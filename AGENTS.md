@@ -60,13 +60,13 @@ The skill uses **absolute paths** to reference external resources. No setup need
 
 Both Claude and Codex use the same file structure in mod repos:
 
-| File | Purpose | Git |
-|------|---------|-----|
-| `INIT.md` | Project rules, constraints for AI agents | ignored |
-| `AGENT.md` | Mod-specific structure, functionality | ignored |
-| `mod.config.json` | File lists, source paths for sync/release/agents | ignored |
+| File | Purpose | Git | Version-tracked? |
+|------|---------|-----|-----------------|
+| `INIT.md` | Project rules, constraints for AI agents | ignored | Yes (`<!-- skill-version: X.Y.Z -->`) |
+| `AGENT.md` | Mod-specific structure, functionality | ignored | No (fully custom) |
+| `mod.config.json` | File lists, source paths for sync/release/agents | ignored | No (fully custom) |
 
-Both `INIT.md` and `AGENT.md` live at the **project root** and are git-ignored (dev-only, not shipped).
+All three live at the **project root** and are git-ignored (dev-only, not shipped). INIT.md is generated from `project-rules-template.md` and carries a version marker so `/update` can refresh its rules while preserving mod-specific sections.
 
 ### Opus Orchestrator Architecture
 
@@ -102,7 +102,7 @@ Layer 1: Skill (balatro-mod-dev)
 └── Script templates
 
 Layer 2: Hooks & Commands (per-mod)
-├── SessionStart: Load mod context
+├── SessionStart: Read INIT.md, inject delegation rules (Task tool + model selection)
 ├── PreToolUse: Protect AGENT.md, enforce delegation, block Opus sub-agents
 ├── PostToolUse: Suggest config updates
 └── Commands: /sync-mod, /release, /debug, /refactor, /fix-sprites
@@ -141,7 +141,23 @@ Layer 4: External References (read-only, accessed via sub-agents)
 1. **SKILL.md must have YAML frontmatter** with `name` and `description`
 2. **Keep SKILL.md under 500 lines** - use pattern/reference files for details
 3. **Update agents/openai.yaml** if changing skill name or description
-4. **Test changes** by using the skill in an actual mod repo
+4. **Bump `skill-version`** in all maintained files when releasing (see below)
+5. **Test changes** by using the skill in an actual mod repo
+
+### Version Tracking
+
+SKILL.md declares the canonical version. All **maintained files** (26 total) carry a matching `skill-version` marker so `/update` can detect stale deployments:
+
+| Category | Count | Marker format | Location |
+|---|---|---|---|
+| Commands | 13 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/claude-config/commands/*.md` |
+| Agents | 7 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/agents/*.md` |
+| Hookify rules | 2 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/claude-config/hookify.*.local.md` |
+| hooks.json | 1 | `"skill_version": "X.Y.Z"` (JSON field) | `templates/claude-config/hooks.json` |
+| Scripts | 2 | `# skill-version: X.Y.Z` (comment) | `scripts/*.template.sh` |
+| INIT.md template | 1 | `<!-- skill-version: X.Y.Z -->` (HTML comment) | `templates/project-rules-template.md` |
+
+**Scaffold templates** (gitignore, AGENT.md, mod-json, manifest-json, logger, docs) are one-time use and not version-tracked — `/update` never replaces them.
 
 ## Skill Design Principles
 

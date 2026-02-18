@@ -2,7 +2,7 @@
 description: Verify fix by extracting and analyzing Lovely logs after code changes
 allowed-tools: Bash, Read, Grep
 argument-hint:
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Debug / Verify Fix

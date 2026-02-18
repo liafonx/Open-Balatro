@@ -1,5 +1,5 @@
 {
-  "skill_version": "1.4.1",
+  "skill_version": "1.4.5",
   "description": "Balatro mod development hooks - Protect agent files, enforce delegation, validate completion",
   "hooks": {
     "SessionStart": [
@@ -8,7 +8,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "This is a Balatro mod repository. Check for INIT.md (project rules) and AGENT.md (repo docs). If found, remind the user: 'Loaded Balatro mod context. Use balatro-mod-dev skill for patterns and references.' If not found, suggest running /init-balatro-mod command.",
+            "prompt": "This is a Balatro mod repository. Read INIT.md (project rules) and AGENT.md (repo docs) at the project root. Follow ALL rules in INIT.md, especially Rule 9 (Sub-Agent Delegation): use the Task tool with model='sonnet' for research and code writing, model='haiku' for scripts. Never read external source directories directly — delegate to researcher sub-agents. If INIT.md or AGENT.md is missing, suggest running /init-balatro-mod command.",
             "timeout": 10
           }
         ]

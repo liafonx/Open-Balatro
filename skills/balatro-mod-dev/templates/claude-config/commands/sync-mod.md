@@ -1,7 +1,7 @@
 ---
 description: Start sync with watch mode (run once at session start)
 allowed-tools: Bash, Read
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 # Sync Mod to Game (Watch Mode)

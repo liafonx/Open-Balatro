@@ -2,7 +2,7 @@
 name: code-writer
 description: Executes implementation plans from the main agent. Use when Opus has a concrete plan and needs Sonnet to write the code — multi-file edits, new modules, refactoring.
 model: sonnet
-skill-version: 1.4.1
+skill-version: 1.4.5
 ---
 
 <role>
