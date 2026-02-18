@@ -34,7 +34,9 @@ logs/
 INIT.md
 AGENT.md
 mod.config.json
-docs/
+docs/*
+!docs/description.md
+!docs/NEXUSMODS_DESCRIPTION.txt
 
 # ========================================
 # Test Files
