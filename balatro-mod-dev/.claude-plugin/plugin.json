@@ -1,0 +1,11 @@
+{
+  "name": "balatro-mod-dev",
+  "version": "2.3.0",
+  "description": "Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, debugging, and sub-agent delegation.",
+  "author": {
+    "name": "liafonx"
+  },
+  "repository": "https://github.com/liafonx/Open-Balatro",
+  "license": "MIT",
+  "keywords": ["balatro", "modding", "steamodded", "lovely", "lua", "game-mod"]
+}

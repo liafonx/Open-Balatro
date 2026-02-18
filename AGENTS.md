@@ -1,52 +1,54 @@
 # Open-Balatro - Agent Guide
 
-This repository contains the `balatro-mod-dev` skill for AI-assisted Balatro mod development.
+This repository contains the `balatro-mod-dev` Claude Code plugin for AI-assisted Balatro mod development.
 
 ## Repository Structure
 
 ```
 Open-Balatro/
-├── skills/
-│   └── balatro-mod-dev/        # The main skill
-│       ├── SKILL.md            # Skill entry point
-│       ├── agents/openai.yaml  # Codex UI metadata
-│       ├── patterns/           # Lovely, SMODS, mobile, UI guides
-│       ├── references/         # Game file map, globals, sub-agent system
-│       ├── scripts/            # sync_to_mods, create_release, fix_sprites
-│       └── templates/          # Project setup templates
-│           ├── agents/         # Sub-agent templates (Task tool compatible)
-│           ├── docs/           # User doc templates
-│           └── claude-config/  # Hooks, commands
-├── .agents/skills/             # Shared agent skills
-└── .codex/skills/              # Codex skills
+├── balatro-mod-dev/                    # THE PLUGIN (distributable)
+│   ├── .claude-plugin/
+│   │   └── plugin.json                 # Manifest (name, version, description)
+│   ├── skills/balatro-mod-dev/
+│   │   ├── SKILL.md                    # Skill entry point
+│   │   ├── patterns/                   # Lovely, SMODS, mobile, UI guides
+│   │   └── references/                 # Game file map, globals, sub-agent system
+│   ├── agents/                         # 10 sub-agent templates
+│   ├── commands/                       # 13 command templates
+│   ├── hooks/
+│   │   ├── hooks.json                  # 8 hooks
+│   │   └── scripts/                   # Hook executor scripts (JS)
+│   ├── scripts/                        # Utility scripts (sync, release, fix-sprites)
+│   └── templates/                      # Project setup templates
+│       ├── rules/                      # Scaffolded to .claude/rules/ by /init
+│       └── docs/                       # User doc templates
+├── docs/                               # NOT part of plugin (longform guides, reference)
+│   ├── the-longform-guide.md
+│   ├── the-shortform-guide.md
+│   ├── claude-code-plugins/            # Sample plugins
+│   ├── hooks/                          # Hook examples
+│   └── rules/                          # Installable rules (separate from plugin)
+├── .claude/rules/                       # THIS repo's rules
+└── README.md                           # Repository documentation
 ```
 
 ## Installation
 
-### Using skill-installer (Codex)
-```
-$skill-installer install https://github.com/liafonx/Open-Balatro/tree/main/skills/balatro-mod-dev
-```
-
-### Using npx skills CLI
+### Plugin Directory (Local)
 ```bash
-npx skills add https://github.com/liafonx/Open-Balatro --skill balatro-mod-dev
+claude --plugin-dir ./balatro-mod-dev
 ```
 
-### Manual
+### Marketplace (when available)
 ```bash
-# Claude Code
-cp -r skills/balatro-mod-dev ~/.claude/skills/
-
-# Codex
-cp -r skills/balatro-mod-dev ~/.codex/skills/
+claude plugin install balatro-mod-dev
 ```
 
 ## Key Design Decisions
 
 ### No Symlinks Required
 
-The skill uses **absolute paths** to reference external resources. No setup needed.
+The plugin uses **absolute paths** to reference external resources. No setup needed.
 
 | Resource | macOS Path |
 |----------|------------|
@@ -58,42 +60,55 @@ The skill uses **absolute paths** to reference external resources. No setup need
 
 ### File Convention (mod repos)
 
-Both Claude and Codex use the same file structure in mod repos:
+| File | Purpose | Git |
+|------|---------|-----|
+| `INIT.md` | Project rules, constraints for AI agents | ignored |
+| `AGENT.md` | Mod-specific structure, functionality | ignored |
+| `mod.config.json` | File lists, source paths for sync/release/agents | ignored |
 
-| File | Purpose | Git | Version-tracked? |
-|------|---------|-----|-----------------|
-| `INIT.md` | Project rules, constraints for AI agents | ignored | Yes (`<!-- skill-version: X.Y.Z -->`) |
-| `AGENT.md` | Mod-specific structure, functionality | ignored | No (fully custom) |
-| `mod.config.json` | File lists, source paths for sync/release/agents | ignored | No (fully custom) |
+All three live at the **project root** and are git-ignored (dev-only, not shipped).
 
-All three live at the **project root** and are git-ignored (dev-only, not shipped). INIT.md is generated from `project-rules-template.md` and carries a version marker so `/update` can refresh its rules while preserving mod-specific sections.
+### Delegation Architecture
 
-### Opus Orchestrator Architecture
-
-The main agent (Opus) orchestrates all work. Sub-agents (Sonnet/Haiku) execute research, code writing, and script running via the built-in Task tool.
+The main agent (Sonnet) orchestrates all work. Sub-agents execute research, code writing, and script running via the built-in Task tool.
 
 ```
-Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
-     ↑                                                    │
-     └──────────────── recap ─────────────────────────────┘
+Main Agent (Sonnet)  →  Sonnet sub-agents (research, code writing)
+                     →  Opus sub-agents (code review, synthesis, planning)
+                     →  Haiku sub-agents (scripts)
+         ↑                    ↓
+         └──────── recap ─────┘
 ```
 
 | Role | Model | Examples |
 |------|-------|---------|
-| Orchestration, planning, review, synthesis | Opus (main) | Strategy, code review, decisions |
+| Orchestration, decisions, user interaction | Sonnet (main) | Planning, presenting results, small edits |
 | Research, code writing, exploration | Sonnet (sub-agent) | game-source-researcher, code-writer |
+| Code review, synthesis, strategic planning | Opus (sub-agent) | code-reviewer, research-analyst, strategic-planner |
 | Script execution | Haiku (sub-agent) | script-runner |
-
-**CRITICAL: The `model` parameter is REQUIRED on every Task tool call.** Omitting `model` causes the sub-agent to inherit the parent model (Opus). Always specify `model: "sonnet"` or `model: "haiku"` explicitly.
 
 Source paths are configured in `mod.config.json > source_paths` — the main agent reads these and includes them in Task prompts.
 
-### Four-Layer Architecture
+### Agent Roster (10 agents)
+
+| Agent | Model | Role |
+|-------|-------|------|
+| `game-source-researcher` | sonnet | Find game functions and injection points |
+| `smods-api-researcher` | sonnet | Find SMODS API patterns |
+| `mod-pattern-researcher` | sonnet | Find how other mods implement X |
+| `lovely-patch-researcher` | sonnet | Find Lovely patch syntax |
+| `project-explorer` | sonnet | Map mod architecture |
+| `code-writer` | sonnet | Execute implementation plans |
+| `script-runner` | haiku | Run temp scripts |
+| `code-reviewer` | opus | Review code (confidence ≥ 80 filter) |
+| `research-analyst` | opus | Synthesize multi-source research |
+| `strategic-planner` | opus | Plan complex implementations |
+
+### Plugin Architecture
 
 ```
-Layer 0: Workspace Setup
-├── Skill installed in ~/.claude/skills/ or ~/.codex/skills/
-└── MCP: Desktop Commander for file access
+Layer 0: Plugin Install
+└── Plugin auto-loads: 13 commands, 10 agents, 1 skill, 8 hooks
 
 Layer 1: Skill (balatro-mod-dev)
 ├── Resource paths, game file map
@@ -101,15 +116,16 @@ Layer 1: Skill (balatro-mod-dev)
 ├── Mobile/desktop differences
 └── Script templates
 
-Layer 2: Hooks & Commands (per-mod)
-├── SessionStart: Read INIT.md, inject delegation rules (Task tool + model selection)
-├── PreToolUse: Protect AGENT.md, enforce delegation, block Opus sub-agents
-├── PostToolUse: Suggest config updates
-└── Commands: /sync-mod, /release, /debug, /refactor, /fix-sprites
+Layer 2: Hooks & Commands (auto-loaded by plugin)
+├── SessionStart: Read INIT.md, inject delegation rules, load session state
+├── PreToolUse: Protect files, block legacy routing, block external reads
+├── PostToolUse: Suggest config updates, warn on bare print() in .lua
+└── Commands: /init, /familiar, /sync-mod, /release, /debug, /refactor, /fix-sprites, ...
 
 Layer 3: Per-Mod Config
 ├── AGENT.md: Mod-specific behavior
 ├── mod.config.json: File lists + source paths
+├── .claude/rules/: Lua rules (scaffolded by /init)
 └── scripts/*.sh: Utility scripts
 
 Layer 4: External References (read-only, accessed via sub-agents)
@@ -118,50 +134,31 @@ Layer 4: External References (read-only, accessed via sub-agents)
 └── Lovely logs
 ```
 
-### Workflow Components
+## Modifying This Plugin
 
-| Component | Purpose |
-|-----------|---------|
-| **Skill** | Static knowledge (patterns, references, paths) |
-| **Hooks** | Automated triggers (protect files, enforce delegation, suggest updates) |
-| **Commands** | User-initiated actions (/sync-mod, /release, /debug, /fix-sprites) |
-| **Sub-agents** | Research and code tasks via Task tool (model: sonnet/haiku) |
-| **mod.config.json** | Per-mod file lists, source paths |
-| **AGENT.md** | Per-mod specific behavior |
+1. **SKILL.md must stay under 300 lines** — use pattern/reference files for details
+2. **Version in `plugin.json`** is the single source of truth (no skill-version markers)
+3. **Test changes** by loading with `claude --plugin-dir ./balatro-mod-dev`
 
-### Repo Type Awareness
+### Verification
+```bash
+# Check no stale skill-version markers
+grep -r "skill-version\|skill_version" balatro-mod-dev/
 
-| Type | Description | Implications |
-|------|-------------|--------------|
-| `new` | My own mod from scratch | Full docs, Logger.lua, localization |
-| `fork` | Contributing to others' mod | Minimal changes, temp logs, follow existing patterns |
+# Check no Codex remnants
+grep -ri "codex\|openai\.yaml\.codex" balatro-mod-dev/ --include="*.md" --include="*.json"
 
-## Modifying This Skill
+# Verify agent count (should be 10)
+ls balatro-mod-dev/agents/*.md | wc -l
 
-1. **SKILL.md must have YAML frontmatter** with `name` and `description`
-2. **Keep SKILL.md under 500 lines** - use pattern/reference files for details
-3. **Update agents/openai.yaml** if changing skill name or description
-4. **Bump `skill-version`** in all maintained files when releasing (see below)
-5. **Test changes** by using the skill in an actual mod repo
+# Verify command count (should be 13)
+ls balatro-mod-dev/commands/*.md | wc -l
+```
 
-### Version Tracking
-
-SKILL.md declares the canonical version. All **maintained files** (26 total) carry a matching `skill-version` marker so `/update` can detect stale deployments:
-
-| Category | Count | Marker format | Location |
-|---|---|---|---|
-| Commands | 13 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/claude-config/commands/*.md` |
-| Agents | 7 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/agents/*.md` |
-| Hookify rules | 2 | `skill-version: X.Y.Z` (YAML frontmatter) | `templates/claude-config/hookify.*.local.md` |
-| hooks.json | 1 | `"skill_version": "X.Y.Z"` (JSON field) | `templates/claude-config/hooks.json` |
-| Scripts | 2 | `# skill-version: X.Y.Z` (comment) | `scripts/*.template.sh` |
-| INIT.md template | 1 | `<!-- skill-version: X.Y.Z -->` (HTML comment) | `templates/project-rules-template.md` |
-
-**Scaffold templates** (gitignore, AGENT.md, mod-json, manifest-json, logger, docs) are one-time use and not version-tracked — `/update` never replaces them.
-
-## Skill Design Principles
+## Plugin Design Principles
 
 - **Progressive Disclosure**: Metadata → SKILL.md → reference files
 - **Concise is Key**: Only add what AI doesn't already know
-- **Opus orchestrates, Sonnet/Haiku execute**
-- **No extraneous files** in skill folders
+- **Sonnet orchestrates; Opus for deep reasoning; Haiku for scripts**
+- **Explicit tool lists**: Read-only agents can't modify files
+- **Deterministic hooks**: Simple path matching uses JS scripts, not LLM tokens

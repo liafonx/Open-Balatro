@@ -1,59 +1,49 @@
 # Open-Balatro
 
-AI skill for Balatro mod development with Claude and Codex.
+Claude Code plugin for Balatro mod development with Steamodded, Lovely, and SMODS.
 
 ## What is This?
 
-A skill that teaches AI agents how to develop Balatro mods using:
+A plugin that teaches Claude how to develop Balatro mods using:
 - **Steamodded (SMODS)** - Mod loader and API
 - **Lovely** - Lua injection framework
 - **Malverk** - Texture pack API
 
 ## Installation
 
-### Using skill-installer (Codex)
-
-```
-$skill-installer install https://github.com/liafonx/Open-Balatro/tree/main/skills/balatro-mod-dev
-```
-
-### Using npx skills CLI
+### Plugin Directory (Local)
 
 ```bash
-npx skills add https://github.com/liafonx/Open-Balatro --skill balatro-mod-dev
+claude --plugin-dir ./balatro-mod-dev
 ```
 
-### Manual Installation
+### Marketplace (when available)
 
-**Claude Code:**
 ```bash
-cp -r skills/balatro-mod-dev ~/.claude/skills/
-```
-
-**Codex:**
-```bash
-cp -r skills/balatro-mod-dev ~/.codex/skills/
+claude plugin install balatro-mod-dev
 ```
 
 ## What's Included
 
-| Component | Purpose |
-|-----------|---------|
-| Pattern guides | Lovely patches, SMODS API, mobile compat, UI system |
-| Reference docs | Game file map, global variables, sub-agent system |
-| Script templates | Sync to mods, create release, fix sprites |
-| Project templates | INIT.md, AGENT.md, mod.config.json |
-| Commands | `/sync-mod`, `/release`, `/debug`, `/refactor`, `/fix-sprites`, etc. |
-| Sub-agents | Research game source, SMODS API, mod patterns, write code (via Task tool) |
+| Component | Count | Purpose |
+|-----------|-------|---------|
+| Skills | 1 | `balatro-mod-dev` — game knowledge, patterns, references |
+| Agents | 10 | Research, code writing, review (Sonnet + Opus + Haiku) |
+| Commands | 13 | `/familiar`, `/init`, `/sync-mod`, `/debug`, `/refactor`, etc. |
+| Hooks | 8 | Session init, file protection, print() warnings, session memory |
+| Script templates | 4 | Sync to mods, create release, fix sprites |
+| Project templates | 10+ | INIT.md, AGENT.md, mod.config.json, Lua rules |
 
 ## Architecture
 
-The main agent (Opus) orchestrates all work. Sub-agents (Sonnet/Haiku) handle research, code writing, and script execution via the built-in Task tool with model selection.
+The main agent (Sonnet) orchestrates all work. Sub-agents handle research, code writing, and specialized reasoning via the Task tool.
 
 ```
-Main Agent (Opus) → Task tool (model: sonnet|haiku) → Sub-agents
-     ↑                                                    │
-     └──────────────── recap ─────────────────────────────┘
+Main Agent (Sonnet)  →  Sonnet sub-agents (research, code writing)
+                     →  Opus sub-agents (code review, synthesis, planning)
+                     →  Haiku sub-agents (scripts)
+         ↑                    ↓
+         └──────── recap ─────┘
 ```
 
 Source paths are configured per-mod in `mod.config.json`:
@@ -70,22 +60,24 @@ Source paths are configured per-mod in `mod.config.json`:
 
 ```
 Open-Balatro/
-├── skills/
-│   └── balatro-mod-dev/        # The skill
-│       ├── SKILL.md            # Main entry point
-│       ├── agents/openai.yaml  # Codex UI metadata
-│       ├── patterns/           # Pattern guides
-│       ├── references/         # Game reference docs, sub-agent system
-│       ├── scripts/            # Script templates
-│       └── templates/          # Mod setup templates
-│           └── agents/         # Sub-agent templates (7 agents)
-├── .agents/skills/             # Shared agent skills
-└── .codex/skills/              # Codex skills
+├── balatro-mod-dev/            # THE PLUGIN (distributable)
+│   ├── .claude-plugin/
+│   │   └── plugin.json         # Manifest (name, version, description)
+│   ├── skills/balatro-mod-dev/ # Skill knowledge (patterns, references)
+│   ├── agents/                 # 10 sub-agent templates
+│   ├── commands/               # 13 command templates
+│   ├── hooks/                  # 8 hooks + JS scripts
+│   ├── scripts/                # Utility scripts (sync, release, fix-sprites)
+│   └── templates/              # Project setup templates
+│       └── rules/              # Scaffolded to .claude/rules/ by /init
+├── docs/                       # NOT part of plugin (longform guides, reference)
+├── .claude/rules/              # THIS repo's rules
+└── README.md
 ```
 
 ## Contributing
 
-See [contributing.md](contributing.md) for guidelines.
+See [AGENTS.md](AGENTS.md) for plugin architecture and development guidelines.
 
 ## License
 
