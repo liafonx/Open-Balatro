@@ -218,6 +218,20 @@ if [ ! -f .claude/rules/git-workflow.md ]; then
 fi
 ```
 
+## Step 4c: Scaffold Hookify Rules (if missing)
+
+These rules require the [Hookify plugin](https://github.com/anthropics/claude-plugins-official/tree/main/hookify). They provide Lua-specific warnings and legacy command blocking.
+
+```bash
+# Copy Hookify rules from plugin templates
+for rule in block-legacy-routing lua-print-warning lua-pitfall-check; do
+  if [ ! -f ".claude/hookify.${rule}.local.md" ]; then
+    cp "${CLAUDE_PLUGIN_ROOT}/templates/hookify/hookify.${rule}.local.md" .claude/
+    echo "Scaffolded: hookify.${rule}.local.md"
+  fi
+done
+```
+
 ## Step 5: Verify/Update AGENT.md
 
 **After init, if AGENT.md exists, verify it contains:**
@@ -241,6 +255,9 @@ Modified:
 
 Rules scaffolded:
 - [rule files copied to .claude/rules/]
+
+Hookify rules scaffolded:
+- [hookify rule files copied to .claude/]
 
 AGENT.md status:
 - [Created new / Updated existing / Already up-to-date]

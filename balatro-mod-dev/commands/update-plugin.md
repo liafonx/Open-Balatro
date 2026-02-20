@@ -27,11 +27,12 @@ ${CLAUDE_PLUGIN_ROOT}/
 ├── agents/                         # 10 agents
 ├── commands/                       # 15 commands
 ├── hooks/
-│   ├── hooks.json                  # 10 hooks
+│   ├── hooks.json                  # 7 command hooks
 │   └── scripts/                   # Hook executor scripts
 ├── scripts/                        # Utility scripts
 └── templates/                      # Mod setup templates
-    ├── rules/                      # Scaffolded to .claude/rules/ by /init
+    ├── hookify/                    # 3 Hookify rules (scaffolded to .claude/ by /init)
+    ├── rules/                      # 4 rules (scaffolded to .claude/rules/ by /init)
     └── docs/                       # User doc templates
 ```
 

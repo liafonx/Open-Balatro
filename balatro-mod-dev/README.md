@@ -14,7 +14,8 @@ When installed, Claude Code auto-discovers and loads:
 - **1 skill**: `balatro-mod-dev` — game knowledge (patterns, references, file maps)
 - **10 agents**: Research (4), code writing, script execution, review/synthesis/planning
 - **15 commands**: Init, sync, debug, test, refactor, release, help, and more
-- **10 hooks**: Session init, file protection, external read blocking, Lua warnings, pre-compact, session memory
+- **7 hooks**: Session init, file protection, external read blocking, pre-compact, session memory
+- **3 Hookify rules**: Legacy command blocking, Lua print warning, Lua pitfall detection
 
 ## Getting Started
 
@@ -61,20 +62,27 @@ Then use `/balatro-mod-dev:familiar` to orient Claude to your mod.
 | `research-analyst` | opus | Synthesize multi-source research |
 | `strategic-planner` | opus | Plan complex implementations |
 
-## Hooks
+## Hooks (7 plugin + 3 Hookify rules)
 
-| Hook | Type | When |
-|------|------|------|
-| SessionStart | prompt | Load INIT.md/AGENT.md context on session start |
-| PreToolUse Write/Edit | command | Block edits to protected files |
-| PreToolUse Read/Grep/Glob | command | Block reads from external game source |
-| PreToolUse Bash | command | Block legacy codeagent routing |
-| PostToolUse Write | prompt | Suggest mod.config.json updates |
-| PostToolUse Edit (print) | command | Warn on `print()` added to .lua files |
-| PostToolUse Edit (pitfall) | command | Warn on nil-unsafe patterns in .lua edits |
-| PreCompact | prompt | Save session state before context compaction |
-| Stop (PR) | prompt | Offer PR drafting for fork contributions |
-| Stop (session) | prompt | Save session state to .tmp/session-state.md |
+### Plugin Hooks (hooks.json — command type JS scripts)
+
+| Hook | When |
+|------|------|
+| SessionStart | Load INIT.md/AGENT.md context on session start |
+| PreToolUse Write/Edit | Block edits to protected files |
+| PreToolUse Read/Grep/Glob | Block reads from external game source |
+| PostToolUse Write | Suggest mod.config.json updates |
+| PreCompact | Save session state before context compaction |
+| Stop (PR) | Offer PR drafting for fork contributions |
+| Stop (session) | Save session state to .tmp/session-state.md |
+
+### Hookify Rules (scaffolded per-repo via `/init`)
+
+| Rule | Action | What |
+|------|--------|------|
+| `block-legacy-routing` | block | Block `codeagent`/`run_subagent`/`route_subagent` bash commands |
+| `lua-print-warning` | warn | Warn on bare `print()` in `.lua` files |
+| `lua-pitfall-check` | warn | Warn on `G.GAME` nil access, string concat nil, FFI cdata comparison |
 
 ## Templates
 

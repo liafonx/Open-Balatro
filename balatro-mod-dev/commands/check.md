@@ -62,7 +62,7 @@ Read `mod.config.json` and check:
 
 Look for hooks configuration at `.claude/hooks.json` or `.claude/hooks/hooks.json`.
 
-The plugin ships 10 hooks via `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json`. If hooks.json is missing at project level, it uses plugin defaults.
+The plugin ships 7 command hooks via `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json` plus 3 Hookify rules scaffolded per-repo. If hooks.json is missing at project level, it uses plugin defaults.
 
 **Report line:** `Plugin hooks: ✅ active via plugin / ⚠️ overridden at project level`
 
@@ -93,6 +93,47 @@ cp "${CLAUDE_PLUGIN_ROOT}/templates/rules/git-workflow.md" .claude/rules/ 2>/dev
 ```
 
 **Report line:** `Rules: [N]/4 installed — ✅ / ❌ missing: [list] (scaffolded from plugin templates)`
+
+---
+
+## Step 4b: Hookify Rules Check
+
+These Hookify rules provide Lua-specific warnings and legacy command blocking. They require the Hookify plugin.
+
+```bash
+ls .claude/hookify.*.local.md 2>/dev/null
+```
+
+| # | Rule file | Required? | Installed? |
+|---|-----------|-----------|------------|
+| 1 | `hookify.block-legacy-routing.local.md` | yes | ☐ |
+| 2 | `hookify.lua-print-warning.local.md` | yes | ☐ |
+| 3 | `hookify.lua-pitfall-check.local.md` | yes | ☐ |
+
+If any are missing, scaffold them:
+```bash
+for rule in block-legacy-routing lua-print-warning lua-pitfall-check; do
+  if [ ! -f ".claude/hookify.${rule}.local.md" ]; then
+    cp "${CLAUDE_PLUGIN_ROOT}/templates/hookify/hookify.${rule}.local.md" .claude/
+    echo "Scaffolded: hookify.${rule}.local.md"
+  fi
+done
+```
+
+If installed, check if they're outdated by comparing against plugin templates:
+```bash
+for rule in block-legacy-routing lua-print-warning lua-pitfall-check; do
+  local_file=".claude/hookify.${rule}.local.md"
+  template_file="${CLAUDE_PLUGIN_ROOT}/templates/hookify/hookify.${rule}.local.md"
+  if [ -f "$local_file" ] && [ -f "$template_file" ]; then
+    if ! diff -q "$local_file" "$template_file" > /dev/null 2>&1; then
+      echo "⚠️ hookify.${rule}.local.md differs from plugin template (may be customized or outdated)"
+    fi
+  fi
+done
+```
+
+**Report line:** `Hookify rules: [N]/3 installed — ✅ / ❌ missing: [list] / ⚠️ customized: [list]`
 
 ---
 
@@ -164,6 +205,11 @@ Step 4: Rules
 - mod-conventions.md: ✅ / ❌ (scaffolded)
 - delegation.md: ✅ / ❌ (scaffolded)
 - git-workflow.md: ✅ / ❌ (scaffolded)
+
+Step 4b: Hookify Rules
+- hookify.block-legacy-routing.local.md: ✅ / ❌ (scaffolded) / ⚠️ customized
+- hookify.lua-print-warning.local.md: ✅ / ❌ (scaffolded) / ⚠️ customized
+- hookify.lua-pitfall-check.local.md: ✅ / ❌ (scaffolded) / ⚠️ customized
 
 Step 5: File & Directory Structure
 - INIT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]

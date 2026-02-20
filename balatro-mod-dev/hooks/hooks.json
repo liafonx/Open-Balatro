@@ -5,8 +5,8 @@
         "matcher": "*",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "This is a Balatro mod repository. Read INIT.md (project rules) and AGENT.md (repo docs) at the project root. Follow ALL rules in INIT.md, especially the Sub-Agent Delegation rules: use the Task tool with model='sonnet' for research and code writing, model='haiku' for scripts, model='opus' for code review/synthesis/planning. Never read external source directories directly \u2014 delegate to researcher sub-agents. If INIT.md or AGENT.md is missing, suggest running /balatro-mod-dev:init. Also load .tmp/session-state.md if it exists \u2014 it contains session continuity context from the previous session.",
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-start.js\"",
             "timeout": 10
           }
         ]
@@ -32,16 +32,6 @@
             "timeout": 5
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/block-legacy-routing.js\"",
-            "timeout": 5
-          }
-        ]
       }
     ],
     "PostToolUse": [
@@ -49,23 +39,8 @@
         "matcher": "Write",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "A file was just created. Check if this is a Balatro mod source file (.lua, .toml, or a new directory). If the mod has a mod.config.json and this file should be included, suggest: 'Consider adding this file to mod.config.json include_files.' Otherwise, no action needed.",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/lua-print-warning.js\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/lua-pitfall-check.js\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/post-write-config-suggest.js\"",
             "timeout": 5
           }
         ]
@@ -76,9 +51,9 @@
         "matcher": "*",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Context is about to be compacted. Before compaction, save critical session state to .tmp/session-state.md using the template structure: Session date, Decisions Made (key choices and rationale), Key Findings (important discoveries), Current State (what's done, what's in progress), Unfinished Work (next steps with context). Keep under 50 lines. This preserves continuity across compaction boundaries.",
-            "timeout": 15
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pre-compact.js\"",
+            "timeout": 10
           }
         ]
       }
@@ -88,14 +63,14 @@
         "matcher": "*",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Before completing, verify: 1) If this is a fork and changes are ready, ask if user wants to draft a PR message. 2) If debugging failed 3+ times, suggest documenting in docs/knowledge-base.md. Return 'approve' to complete or suggest next action.",
-            "timeout": 15
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/stop-check.js\"",
+            "timeout": 10
           },
           {
-            "type": "prompt",
-            "prompt": "Save session state for continuity: Write a summary of this session to .tmp/session-state.md following the template structure from ${CLAUDE_PLUGIN_ROOT}/templates/session-state-template.md. Sections: Decisions Made (key choices + rationale), Key Findings (discoveries), Current State (completed + in progress), Unfinished Work (next steps with context), Files Modified, Notes. Keep under 50 lines. This file will be loaded at the start of the next session.",
-            "timeout": 15
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/stop-save-session.js\"",
+            "timeout": 10
           }
         ]
       }
