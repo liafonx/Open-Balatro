@@ -2,6 +2,15 @@
 
 All notable changes to the balatro-mod-dev plugin.
 
+## [2.4.0] - 2026-02-21
+
+Refined AGENT.md and INIT.md templates based on real-world usage across 4 mod repos.
+
+- **AGENT.md template:** Cut from 166→100 lines, removed Plugin Reference banner, API section, State Variables, Recent Changes, Open Tasks. Added High-Risk Files, Verification Checklist. Fork variant included as HTML comment block
+- **INIT.md template:** Cut from 312→75 lines, removed duplicated plugin content (Sub-Agent Delegation, Plan Mode Handoff, User Documentation, Localization, External References, Utility Scripts, Mod-Specific Context sections)
+- **Texture pack template:** Removed Plugin Reference banner, added High-Risk Files and Verification Checklist sections
+- **`/check` content validation:** Added Step 5b (AGENT.md section checks by repo type) and Step 5c (INIT.md required sections + stale content detection for old terminology, removed features, and bloated sections)
+
 ## [2.3.0] - 2026-02-19
 
 Gap analysis sweep: structural fixes, consistency audit, and cleanup.

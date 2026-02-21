@@ -136,6 +136,8 @@ local NaNProtection = require("NaNProtection")  -- NOT a global!
 
 **Note:** Currently only supports single-file modules.
 
+**IMPORTANT:** Every `require("ModuleName")` in your Lua code MUST have a corresponding `[[patches.module]]` entry in `lovely.toml`. If you add a new `.lua` file and `require()` it without adding the module entry, you get a `module '...' not found` runtime error. This is the most common wiring mistake when splitting code into new files.
+
 ### 4. Copy Patch (Append/Prepend)
 
 Append or prepend entire files to a target.
@@ -271,5 +273,6 @@ dump_lua = true  # Outputs patched file for inspection
 | `match_indent = true` in regex | Not supported | Remove from regex patches |
 | `\\(` in pattern | Matches literal backslash | Use `\(` |
 | Global module access | Modules aren't globals | Use `require("ModuleName")` |
+| Missing `[patches.module]` for new file | `require()` fails at runtime | Add `[[patches.module]]` entry in `lovely.toml` for every `require()`d file |
 | Pattern doesn't match | Whitespace/encoding differs | Check with `dump_lua = true` |
 | Hook never runs | Pattern failed silently | Add pcall print to verify |

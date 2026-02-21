@@ -69,7 +69,7 @@ Then use `/balatro-mod-dev:familiar` to orient Claude to your mod.
 | Hook | When |
 |------|------|
 | SessionStart | Load INIT.md/AGENT.md context on session start |
-| PreToolUse Write/Edit | Block edits to protected files |
+| PreToolUse Write/Edit | Warn on edits to protected files |
 | PreToolUse Read/Grep/Glob | Block reads from external game source |
 | PostToolUse Write | Suggest mod.config.json updates |
 | PreCompact | Save session state before context compaction |

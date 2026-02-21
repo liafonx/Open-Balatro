@@ -1,25 +1,15 @@
-# {ModName} - AI Development Guide
+# {ModName} - Agent Guide
 
-> **Plugin Reference:** Use the `balatro-mod-dev` plugin for:
-> - Game source paths and search recipes
-> - Lovely patch syntax (`patterns/lovely-patches.md`)
-> - SMODS API patterns (`patterns/smods-api.md`)
-> - Mobile compatibility (`patterns/mobile-compat.md`)
-> - UI architecture (`patterns/ui-system.md`)
-> - Global variables (`references/globals.md`)
-
----
-
-## 1. Big Picture
+## Scope
 
 [What this mod does in 2-3 sentences. What problem does it solve for players?]
 
 **Mod Type:** [Standalone / Framework / Texture Pack / Tool]
-**Dependencies:** [List dependencies, e.g., "Steamodded>=1.0.0~BETA-1221a", "Malverk"]
+**Dependencies:** [e.g., "Steamodded>=1.0.0~BETA-1221a", "Malverk"]
 
 ---
 
-## 2. Repository Structure
+## Architecture
 
 ```
 {ModName}/
@@ -38,36 +28,27 @@
 
 ### Key Files
 
-| File | Purpose | Key Exports/Functions |
-|------|---------|----------------------|
-| `main.lua` | Entry point, mod initialization | `{MOD_GLOBAL}` table |
-| `{ModName}.json` | Mod manifest (id, version, deps) | - |
-| [Add mod-specific files] | | |
+| File | Purpose |
+|------|---------|
+| `main.lua` | Entry point, mod initialization |
+| `{ModName}.json` | Mod manifest (id, version, deps) |
+| [Add mod-specific files with purpose and key exports] |
 
 ---
 
-## 3. Core Behavior
+## Core Behavior
 
-### 3.1 [Main Feature/System]
+### [Main Feature/System]
 
-[Explain the core logic that makes this mod work]
+[Explain the core logic. Include key data flows as numbered steps.]
 
-### 3.2 State Variables
-
-```lua
--- State stored in G.GAME for save compatibility
-G.GAME.{mod_name} = {
-    -- [describe each field]
-}
-```
-
-### 3.3 Key Functions
+### Key Functions
 
 | Function | Purpose | Location |
 |----------|---------|----------|
 | `function_name()` | What it does | `file.lua:line` |
 
-### 3.4 Hooks / Patches
+### Hooks / Patches
 
 | Hook/Patch | Target | Purpose |
 |------------|--------|---------|
@@ -75,37 +56,13 @@ G.GAME.{mod_name} = {
 
 ---
 
-## 4. API (if framework/library mod)
-
-### 4.1 Public API
-
-```lua
--- Example API usage
-MyMod.function_name(param1, param2)
-```
-
-### 4.2 Extension Points
-
-[How other mods can extend/use this mod]
-
----
-
-## 5. Constraints & Gotchas
-
-### 5.1 Critical Rules
+## Constraints & Gotchas
 
 - **DO NOT:** [Specific thing to avoid]
 - **ALWAYS:** [Required behavior]
 - **NEVER:** [Dangerous action]
 
-### 5.2 Platform Notes
-
-| Platform | Consideration |
-|----------|---------------|
-| Desktop | [Any desktop-specific notes] |
-| Mobile | [Touch handling, lang parameter, etc.] |
-
-### 5.3 Known Issues
+### Known Issues
 
 | Issue | Status | Workaround |
 |-------|--------|------------|
@@ -113,23 +70,38 @@ MyMod.function_name(param1, param2)
 
 ---
 
-## 6. Lessons Learned
+## High-Risk Files
 
-### 6.1 What Didn't Work
+Files that require extra care when modifying:
+
+| File | Risk | Why |
+|------|------|-----|
+| [file.lua] | [save compat / core logic / injection] | [explanation] |
+
+---
+
+## Verification Checklist
+
+Before committing changes, verify:
+
+1. [ ] [Key test scenario 1]
+2. [ ] [Key test scenario 2]
+3. [ ] [No save compatibility regression]
+4. [ ] Lovely logs show no errors
+
+---
+
+## Lessons Learned
 
 [Document failed approaches so they aren't repeated]
 
 1. **[Approach Name]**: [Why it failed]
 
-### 6.2 Key Insights
-
-- [Important discovery during development]
-
 ---
 
-## 7. Development
+## Development
 
-### 7.1 Scripts
+### Scripts
 
 ```bash
 ./scripts/sync_to_mods.sh        # Sync to game
@@ -137,29 +109,45 @@ MyMod.function_name(param1, param2)
 ./scripts/create_release.sh [ver] # Create release
 ```
 
-### 7.2 Testing
-
-| Scenario | Steps | Expected |
-|----------|-------|----------|
-| [Test case] | 1. Do X | Y happens |
-
-### 7.3 Debugging
+### Debugging
 
 - Lovely logs: `~/Library/Application Support/Balatro/Mods/lovely/log/` (macOS)
 - Windows: `%APPDATA%/Balatro/Mods/lovely/log/`
-- [Mod-specific debug tips]
 
 ---
 
-## 8. Recent Changes
+<!-- FOR FORK REPOS: Use this shorter format instead of the full template above.
 
-| Version | Change |
-|---------|--------|
-| v1.x.x | [Notable change] |
+# {ModName} - Fork Development
 
----
+| Field | Value |
+|-------|-------|
+| **Mod** | {ModName} (`{mod_id}`) |
+| **Author** | {OriginalAuthor} |
+| **Version** | {version} |
+| **Prefix** | {prefix} |
+| **Type** | [Standalone / Framework] |
+| **Dependencies** | [list] |
 
-## 9. Open Tasks
+## Description
 
-- [ ] [Unfinished feature]
-- [ ] [Known bug to fix]
+[What this mod does, what your fork changes]
+
+## Structure
+
+```
+{ModName}/
+├── [file tree with brief annotations]
+```
+
+## Key Implementation Details
+
+[How the mod works, what your changes affect, injection points]
+
+## Dev Commands
+
+```bash
+./scripts/sync_to_mods.sh --watch  # Auto-sync
+```
+
+END FORK TEMPLATE -->

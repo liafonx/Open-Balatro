@@ -206,3 +206,29 @@ main_menu(args)  -- clean rebuild
 **What `delete_run()` cleans up:** All CardArea objects (jokers, deck, hand, play), HUD/HUD_blind/HUD_tags, SPLASH elements, event queue, controller state. Sets `G.STATE = -1`.
 
 **When it matters:** Any mod that programmatically starts/ends runs (save generators, test harnesses, run replay).
+
+### 12. Pipeline teardown must handle in-flight items
+
+When cancelling an async pipeline (per-tick cooperative drain, `love.thread` queue, coroutine chain), items exist in three stages: **queued**, **in-flight** (dequeued but not confirmed), and **completed**. Simply nil-ing the state table only stops future ticks — in-flight items are orphaned and silently lost.
+
+```lua
+-- WRONG - orphans items already pushed to worker but not yet confirmed
+function M.cancel()
+   state = nil  -- in-flight items have no fallback path now
+end
+
+-- CORRECT - force-complete in-flight items before teardown
+function M.cancel()
+   local old_state = state
+   state = nil
+   if old_state and old_state.waiting then
+      for _, bucket in pairs(old_state.waiting) do
+         for _, item in ipairs(bucket) do
+            sync_write_fallback(item)  -- ensure data is persisted
+         end
+      end
+   end
+end
+```
+
+**When it matters:** Any mod using `love.thread` workers, cooperative per-tick drains, or deferred write queues where items leave the queue before confirmation arrives.

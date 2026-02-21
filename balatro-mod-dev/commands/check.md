@@ -165,6 +165,82 @@ Only these `.md` files belong in root:
 | 6 | `.claude/` | ☐ |
 | 7 | `.agents/` | ☐ |
 | 8 | `release/` | ☐ |
+| 9 | `scripts/` | ☐ |
+
+---
+
+## Step 5b: AGENT.md Content Check
+
+Read `AGENT.md` (if it exists) and verify required sections based on repo type.
+
+Determine repo type from `mod.config.json` or `INIT.md` Quick Reference section.
+
+### For own repos, verify these sections exist:
+
+| # | Section | Present? |
+|---|---------|----------|
+| 1 | Scope (or "Big Picture") | ☐ |
+| 2 | Architecture (or "Repository Structure") | ☐ |
+| 3 | High-Risk Files | ☐ |
+| 4 | Verification Checklist | ☐ |
+| 5 | Development (scripts/commands) | ☐ |
+
+### For fork repos, verify these sections exist:
+
+| # | Section | Present? |
+|---|---------|----------|
+| 1 | Mod Info (metadata table) or Description | ☐ |
+| 2 | Structure (file tree) | ☐ |
+| 3 | Key Implementation Details | ☐ |
+
+**Report line:**
+```
+AGENT.md content ([own/fork]):
+- Scope: ✅ / ❌ missing
+- Architecture: ✅ / ❌ missing
+- High-Risk Files: ✅ / ❌ missing
+- Verification Checklist: ✅ / ❌ missing
+- Development: ✅ / ❌ missing
+```
+
+---
+
+## Step 5c: INIT.md Content Check
+
+Read `INIT.md` (if it exists) and verify required sections and check for stale content.
+
+### Required sections (all repo types):
+
+| # | Section | Present? |
+|---|---------|----------|
+| 1 | Quick Reference (mod name, repo type) | ☐ |
+| 2 | Protected Files rule | ☐ |
+| 3 | File Change Protocol rule | ☐ |
+| 4 | Logging Standard rule | ☐ |
+
+### Stale content detection:
+
+Search INIT.md for these patterns. If found, flag as stale:
+
+| # | Pattern | Found? | Issue |
+|---|---------|--------|-------|
+| 1 | `"skill"` (not `"plugin"`) | ☐ | Old terminology — should be "plugin" |
+| 2 | `run_subagent.sh` | ☐ | Removed in v2.0.0 |
+| 3 | `codex` or `agent_backends` | ☐ | Legacy infrastructure references |
+| 4 | `## Sub-Agent Delegation` section | ☐ | Moved to `.claude/rules/delegation.md` |
+| 5 | `## External References` section | ☐ | Paths are in `mod.config.json` and plugin |
+| 6 | `## Localization` section (>10 lines) | ☐ | Reference info — belongs in plugin patterns |
+| 7 | `## User Documentation` section | ☐ | Reference info — belongs in `/update-docs` |
+
+**Report line:**
+```
+INIT.md content:
+- Quick Reference: ✅ / ❌ missing
+- Protected Files rule: ✅ / ❌ missing
+- File Change Protocol rule: ✅ / ❌ missing
+- Logging Standard rule: ✅ / ❌ missing
+- Stale content: ✅ none / ⚠️ found: [list]
+```
 
 ---
 
@@ -215,7 +291,17 @@ Step 5: File & Directory Structure
 - INIT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
 - AGENT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
 - Root .md files: ✅ / ⚠️ stray: [list]
-- Gitignore: [N]/8 entries — ✅ / ❌ missing: [list]
+- Gitignore: [N]/9 entries — ✅ / ❌ missing: [list]
+
+Step 5b: AGENT.md Content ([own/fork])
+- [section]: ✅ / ❌ missing  (for each required section)
+
+Step 5c: INIT.md Content
+- Quick Reference: ✅ / ❌
+- Protected Files rule: ✅ / ❌
+- File Change Protocol: ✅ / ❌
+- Logging Standard: ✅ / ❌
+- Stale content: ✅ none / ⚠️ [list]
 
 Step 6: Logging
 - Logger.lua: ✅ / ❌

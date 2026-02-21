@@ -187,6 +187,7 @@ docs/*
 !docs/NEXUSMODS_DESCRIPTION.txt
 .tmp/
 release/
+scripts/
 ```
 
 ## Step 4b: Scaffold Rules (if missing)

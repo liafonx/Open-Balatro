@@ -25,6 +25,7 @@ logs/
 .claude/
 .cursor/
 .vscode/
+scripts/
 *.code-workspace
 
 # ========================================

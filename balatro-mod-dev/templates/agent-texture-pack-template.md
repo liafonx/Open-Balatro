@@ -1,7 +1,6 @@
 # {ModName} - Texture Pack Development Guide
 
-> **Plugin Reference:** Use the `balatro-mod-dev` plugin for game source and patterns.
-> **Framework Dependency:** This texture pack uses [Malverk](https://github.com/Eremel/Malverk) for texture management.
+**Framework Dependency:** This texture pack uses [Malverk](https://github.com/Eremel/Malverk) for texture management.
 
 ---
 
@@ -178,7 +177,25 @@ img = Image.open("sprite.png").convert("RGBA")
 
 ---
 
-## 8. Open Tasks
+## 8. High-Risk Files
 
-- [ ] [Unfinished textures]
-- [ ] [Missing 2x versions]
+Files that require extra care when modifying:
+
+| File | Risk | Why |
+|------|------|-----|
+| `{mod_id}.lua` | Core definitions | All AltTexture/TexturePack objects defined here |
+| `localization/en-us.lua` | Display names | Mismatched keys cause invisible textures |
+| [Add spritesheet files that are hard to recreate] | Asset loss | [explanation] |
+
+---
+
+## 9. Verification Checklist
+
+Before committing changes, verify:
+
+1. [ ] All textures appear correctly in Settings → Textures
+2. [ ] 1x and 2x resolutions both work
+3. [ ] No grey borders on sprites (transparent pixel issue)
+4. [ ] Localization keys match AltTexture keys
+5. [ ] TexturePack includes all AltTextures
+6. [ ] Lovely logs show no errors

@@ -14,13 +14,14 @@ Open-Balatro/
 │   │   ├── patterns/                   # Lovely, SMODS, mobile, UI guides
 │   │   └── references/                 # Game file map, globals, sub-agent system
 │   ├── agents/                         # 10 sub-agent templates
-│   ├── commands/                       # 13 command templates
+│   ├── commands/                       # 15 command templates
 │   ├── hooks/
-│   │   ├── hooks.json                  # 8 hooks
+│   │   ├── hooks.json                  # 7 command hooks
 │   │   └── scripts/                   # Hook executor scripts (JS)
 │   ├── scripts/                        # Utility scripts (sync, release, fix-sprites)
 │   └── templates/                      # Project setup templates
-│       ├── rules/                      # Scaffolded to .claude/rules/ by /init
+│       ├── hookify/                    # 3 Hookify rules (scaffolded to .claude/ by /init)
+│       ├── rules/                      # 4 rules (scaffolded to .claude/rules/ by /init)
 │       └── docs/                       # User doc templates
 ├── docs/                               # NOT part of plugin (longform guides, reference)
 │   ├── the-longform-guide.md
@@ -28,9 +29,18 @@ Open-Balatro/
 │   ├── claude-code-plugins/            # Sample plugins
 │   ├── hooks/                          # Hook examples
 │   └── rules/                          # Installable rules (separate from plugin)
-├── .claude/rules/                       # THIS repo's rules
+├── .claude/rules/                       # THIS repo's rules (NOT part of plugin)
 └── README.md                           # Repository documentation
 ```
+
+### IMPORTANT: `.claude/` Is NOT Part of the Plugin
+
+`.claude/` belongs to **this repo** (Open-Balatro) only. It does NOT ship with the plugin.
+
+- Do NOT put plugin-specific content (hook tables, agent lists, etc.) in `.claude/rules/`
+- Plugin documentation belongs in `balatro-mod-dev/README.md`
+- `.claude/rules/` is for general coding/workflow rules that apply when working on this repo
+- The plugin scaffolds its own `.claude/rules/` into **target mod repos** via `/init` — that's a different `.claude/`
 
 ## Installation
 
@@ -108,7 +118,7 @@ Source paths are configured in `mod.config.json > source_paths` — the main age
 
 ```
 Layer 0: Plugin Install
-└── Plugin auto-loads: 13 commands, 10 agents, 1 skill, 8 hooks
+└── Plugin auto-loads: 15 commands, 10 agents, 1 skill, 7 hooks + 3 Hookify rules
 
 Layer 1: Skill (balatro-mod-dev)
 ├── Resource paths, game file map
@@ -151,7 +161,7 @@ grep -ri "codex\|openai\.yaml\.codex" balatro-mod-dev/ --include="*.md" --includ
 # Verify agent count (should be 10)
 ls balatro-mod-dev/agents/*.md | wc -l
 
-# Verify command count (should be 13)
+# Verify command count (should be 15)
 ls balatro-mod-dev/commands/*.md | wc -l
 ```
 
