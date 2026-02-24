@@ -9,12 +9,12 @@
  *   2 — block (external path, must delegate to researcher agent)
  */
 
-const BLOCKED_PATHS = [
-  'Balatro_src/',
-  'smods/src/',
-  'smods/lovely/',
-  'Application Support/Balatro/Mods/',
-  'lovely-injector/',
+const EXTERNAL_SOURCE_ROUTES = [
+  { pattern: 'Balatro_src/', agent: 'game-source-researcher' },
+  { pattern: 'smods/src/', agent: 'smods-api-researcher' },
+  { pattern: 'smods/lovely/', agent: 'lovely-patch-researcher' },
+  { pattern: 'lovely-injector/', agent: 'lovely-patch-researcher' },
+  { pattern: 'Application Support/Balatro/Mods/', agent: 'mod-pattern-researcher' },
 ];
 
 let data = '';
@@ -28,12 +28,14 @@ process.stdin.on('end', () => {
       input.tool_input?.pattern ||
       '';
 
-    if (BLOCKED_PATHS.some(b => target.includes(b))) {
-      process.stderr.write(
-        'BLOCK: Delegate external source searches to a research agent via Task tool. ' +
-          'Do not read external references directly \u2014 spawn a researcher sub-agent instead.'
-      );
-      process.exit(2);
+    for (const { pattern, agent } of EXTERNAL_SOURCE_ROUTES) {
+      if (target.includes(pattern)) {
+        process.stderr.write(
+          `BLOCK: Use Task(subagent_type="balatro-mod-dev:${agent}", model="sonnet") for this source. ` +
+            `Do not read external source directories directly — delegate to the researcher sub-agent.`
+        );
+        process.exit(2);
+      }
     }
 
     console.log(data);

@@ -28,9 +28,9 @@ claude plugin install balatro-mod-dev
 | Component | Count | Purpose |
 |-----------|-------|---------|
 | Skills | 1 | `balatro-mod-dev` — game knowledge, patterns, references |
-| Agents | 10 | Research, code writing, review (Sonnet + Opus + Haiku) |
-| Commands | 13 | `/familiar`, `/init`, `/sync-mod`, `/debug`, `/refactor`, etc. |
-| Hooks | 8 | Session init, file protection, print() warnings, session memory |
+| Agents | 11 | Research, debug inspection, code writing, review (Sonnet + Opus + Haiku) |
+| Commands | 16 | `/familiar`, `/init`, `/sync-mod`, `/debug`, `/refactor`, etc. |
+| Hooks | 9 | Session init, file protection, task model enforcement, session memory |
 | Script templates | 4 | Sync to mods, create release, fix sprites |
 | Project templates | 10+ | INIT.md, AGENT.md, mod.config.json, Lua rules |
 
@@ -64,9 +64,9 @@ Open-Balatro/
 │   ├── .claude-plugin/
 │   │   └── plugin.json         # Manifest (name, version, description)
 │   ├── skills/balatro-mod-dev/ # Skill knowledge (patterns, references)
-│   ├── agents/                 # 10 sub-agent templates
-│   ├── commands/               # 13 command templates
-│   ├── hooks/                  # 8 hooks + JS scripts
+│   ├── agents/                 # 11 sub-agent templates
+│   ├── commands/               # 16 command templates
+│   ├── hooks/                  # 9 hooks + JS scripts
 │   ├── scripts/                # Utility scripts (sync, release, fix-sprites)
 │   └── templates/              # Project setup templates
 │       └── rules/              # Scaffolded to .claude/rules/ by /init
@@ -77,7 +77,7 @@ Open-Balatro/
 
 ## Contributing
 
-See [AGENTS.md](AGENTS.md) for plugin architecture and development guidelines.
+See [AGENT.md](AGENT.md) for plugin architecture and development guidelines.
 
 ## License
 

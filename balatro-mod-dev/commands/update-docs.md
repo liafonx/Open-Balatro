@@ -38,15 +38,25 @@ Exclude worktree directories from all file scans below.
 ## Phase 1: Audit Current State
 
 ```bash
-# What changed since last documented state
+# Find last release tag
+git describe --tags --abbrev=0 2>/dev/null || echo "(no tags)"
+
+# All commits since last release (use the tag found above)
+git log <last-tag>..HEAD --oneline
+
+# Files changed since last release
+git diff <last-tag>..HEAD --stat
+
+# If no tags exist, fall back to last 20 commits
 git log --oneline -20
-git diff HEAD --stat
 ```
 
-Read all files listed above. For each, note:
-- Last meaningful update (does content match current code?)
+Read all files listed above AND the commit list. For each doc file, note:
+- Does it mention any feature, file, or function that was added/removed/renamed since the last release?
 - Any sections that reference removed/renamed files or functions
 - Any duplication across files
+
+**Treat the commit list as the source of truth for what changed** — docs should reflect every user-visible change.
 
 ## Phase 2: User Docs Consistency
 
@@ -77,6 +87,11 @@ Compare AGENT.md against the actual codebase:
 
 ```
 ## Docs Audit Report
+
+### Commits Since Last Release
+- Last tag: [tag or "(no tags)"]
+- Commits: [N commits — list user-visible changes]
+- Undocumented changes: [list anything not yet reflected in docs]
 
 ### User Docs
 - [file]: [status: OK / outdated / missing]

@@ -62,7 +62,7 @@ Read `mod.config.json` and check:
 
 Look for hooks configuration at `.claude/hooks.json` or `.claude/hooks/hooks.json`.
 
-The plugin ships 7 command hooks via `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json` plus 3 Hookify rules scaffolded per-repo. If hooks.json is missing at project level, it uses plugin defaults.
+The plugin ships 9 command hooks via `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json` plus 3 Hookify rules scaffolded per-repo. If hooks.json is missing at project level, it uses plugin defaults.
 
 **Report line:** `Plugin hooks: ✅ active via plugin / ⚠️ overridden at project level`
 
@@ -93,6 +93,46 @@ cp "${CLAUDE_PLUGIN_ROOT}/templates/rules/git-workflow.md" .claude/rules/ 2>/dev
 ```
 
 **Report line:** `Rules: [N]/4 installed — ✅ / ❌ missing: [list] (scaffolded from plugin templates)`
+
+---
+
+## Step 4c: Rules Content Check
+
+For each installed rule file, compare against the plugin template to detect outdated content:
+
+```bash
+for rule in lua-coding-style mod-conventions delegation git-workflow; do
+  local_file=".claude/rules/${rule}.md"
+  template_file="${CLAUDE_PLUGIN_ROOT}/templates/rules/${rule}.md"
+  if [ -f "$local_file" ] && [ -f "$template_file" ]; then
+    if ! diff -q "$local_file" "$template_file" > /dev/null 2>&1; then
+      echo "⚠️ ${rule}.md differs from plugin template"
+      diff "$local_file" "$template_file" | head -20
+    else
+      echo "✅ ${rule}.md — matches template"
+    fi
+  fi
+done
+```
+
+For `delegation.md` specifically, check for key content markers by version:
+
+```bash
+local_delegation=".claude/rules/delegation.md"
+if [ -f "$local_delegation" ]; then
+  grep -q "Commands vs Agents" "$local_delegation"   && echo "✅ delegation: Commands vs Agents section (v2.4.0+)" || echo "❌ delegation: missing Commands vs Agents section (pre-v2.4.0)"
+  grep -q "External Source Routing" "$local_delegation" && echo "✅ delegation: External Source Routing table (v2.4.0+)" || echo "❌ delegation: missing External Source Routing table (pre-v2.4.0)"
+  grep -q "debug-inspector" "$local_delegation"      && echo "✅ delegation: debug-inspector entry (v2.6.0+)" || echo "❌ delegation: missing debug-inspector entry (pre-v2.6.0)"
+fi
+```
+
+If a rule differs from the template, offer to re-scaffold it (which replaces it with the current template — any local customizations will be lost):
+
+```bash
+cp "${CLAUDE_PLUGIN_ROOT}/templates/rules/delegation.md" .claude/rules/
+```
+
+**Report line:** `Rules content: [rule]: ✅ current / ⚠️ differs (outdated or customized) / ❌ missing`
 
 ---
 
@@ -281,6 +321,12 @@ Step 4: Rules
 - mod-conventions.md: ✅ / ❌ (scaffolded)
 - delegation.md: ✅ / ❌ (scaffolded)
 - git-workflow.md: ✅ / ❌ (scaffolded)
+
+Step 4c: Rules Content
+- lua-coding-style.md: ✅ current / ⚠️ differs / ❌ missing
+- mod-conventions.md: ✅ current / ⚠️ differs / ❌ missing
+- delegation.md: ✅ current / ⚠️ differs (Commands vs Agents ✅/❌, External Source Routing ✅/❌, debug-inspector ✅/❌) / ❌ missing
+- git-workflow.md: ✅ current / ⚠️ differs / ❌ missing
 
 Step 4b: Hookify Rules
 - hookify.block-legacy-routing.local.md: ✅ / ❌ (scaffolded) / ⚠️ customized

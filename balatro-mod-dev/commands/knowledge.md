@@ -19,8 +19,8 @@ Exclude worktree directories from all file scans below.
 
 **Load session state (if available):**
 ```bash
-# Session memory saved by Stop hook
-cat .tmp/session-state.md 2>/dev/null && echo "Session state loaded" || echo "No session state found"
+# Session memory auto-saved by SessionEnd hook to ~/.claude/sessions/
+ls -t ~/.claude/sessions/*-session.tmp 2>/dev/null | head -1 | xargs cat 2>/dev/null && echo "Session state loaded" || echo "No session state found"
 ```
 
 **Review recent work:**

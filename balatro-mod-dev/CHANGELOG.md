@@ -2,6 +2,28 @@
 
 All notable changes to the balatro-mod-dev plugin.
 
+## [2.6.0] - 2026-02-24
+
+New `debug-inspector` agent for automated runtime diagnostics.
+
+- **New agent: `debug-inspector`** (sonnet, magenta) — three capabilities: (1) latest log extraction with 19 error pattern categories, (2) game dump analysis via `lovely/dump/*.lua.json` metadata showing which mods patched which lines, (3) mod compatibility conflict detection using overlap analysis on patch regions
+- **Updated `enforce-task-model.js`** — added `balatro-mod-dev:debug-inspector` → sonnet to RECOMMENDED_MODELS
+- **Updated `delegation.md` template** — added debug-inspector to external source routing table, delegation trigger list, and model selection table
+- Plugin agents now 11 total (was 10), commands and hooks unchanged
+
+## [2.5.0] - 2026-02-24
+
+Automated session persistence — replaces unreliable reminder-based hooks with programmatic transcript parsing.
+
+- **New hook: `session-end.js`** (SessionEnd) — parses JSONL transcript at session termination, extracts user messages, files modified, tools used, and writes structured summary to `~/.claude/sessions/{date}-{project}-session.tmp`
+- **Updated `session-start.js`** — loads most recent session from `~/.claude/sessions/` (within 7 days) instead of `.tmp/session-state.md`
+- **Updated `pre-compact.js`** — appends timestamped compaction marker to active session file in `~/.claude/sessions/`
+- **Removed `stop-save-session.js`** — replaced by automated SessionEnd hook (reminder-based approach never worked in practice)
+- Session state centralized at `~/.claude/sessions/` (cross-project, project name in filename)
+- `.tmp/` directory reserved for task artifacts only (plans, reviews, recovery files)
+- Updated `/compact` survival table, `/knowledge` session loading, README hook descriptions
+- Plugin hooks still 9 total (SessionEnd replaces Stop session hook), commands unchanged at 16
+
 ## [2.4.0] - 2026-02-21
 
 Refined AGENT.md and INIT.md templates based on real-world usage across 4 mod repos.
@@ -10,6 +32,12 @@ Refined AGENT.md and INIT.md templates based on real-world usage across 4 mod re
 - **INIT.md template:** Cut from 312→75 lines, removed duplicated plugin content (Sub-Agent Delegation, Plan Mode Handoff, User Documentation, Localization, External References, Utility Scripts, Mod-Specific Context sections)
 - **Texture pack template:** Removed Plugin Reference banner, added High-Risk Files and Verification Checklist sections
 - **`/check` content validation:** Added Step 5b (AGENT.md section checks by repo type) and Step 5c (INIT.md required sections + stale content detection for old terminology, removed features, and bloated sections)
+- **delegation.md:** Added "Commands vs Agents" section — clarifies Skill tool (commands) vs Task tool (agents) routing, prevents agent dispatch of slash commands
+- **delegation.md:** Model Selection now requires `model` parameter on every Task call — prevents Explore agents inheriting Opus from parent (20x cost). Added full subagent→model mapping table
+- **New hook: `enforce-task-model.js`** — PreToolUse hook on Task tool. Blocks if model is missing for known agent types, warns if opus used for non-opus agents
+- **New hook: `suggest-compact.js`** — PreToolUse hook on Edit|Write. Counts tool calls per session, suggests `/compact` at threshold (50) and every 25 calls after. Tailored to mod dev phase transitions
+- **New command: `/compact`** — Evaluates current workflow phase and recommends whether to compact. Includes decision guide (research→plan: yes, mid-implementation: no) and survival table (what persists vs what's lost)
+- Plugin hooks now 9 total, commands now 16 total
 
 ## [2.3.0] - 2026-02-19
 

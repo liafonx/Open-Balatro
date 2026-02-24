@@ -13,10 +13,10 @@ Open-Balatro/
 │   │   ├── SKILL.md                    # Skill entry point
 │   │   ├── patterns/                   # Lovely, SMODS, mobile, UI guides
 │   │   └── references/                 # Game file map, globals, sub-agent system
-│   ├── agents/                         # 10 sub-agent templates
-│   ├── commands/                       # 15 command templates
+│   ├── agents/                         # 11 sub-agent templates
+│   ├── commands/                       # 16 command templates
 │   ├── hooks/
-│   │   ├── hooks.json                  # 7 command hooks
+│   │   ├── hooks.json                  # 9 hook scripts (6 hook types)
 │   │   └── scripts/                   # Hook executor scripts (JS)
 │   ├── scripts/                        # Utility scripts (sync, release, fix-sprites)
 │   └── templates/                      # Project setup templates
@@ -99,7 +99,7 @@ Main Agent (Sonnet)  →  Sonnet sub-agents (research, code writing)
 
 Source paths are configured in `mod.config.json > source_paths` — the main agent reads these and includes them in Task prompts.
 
-### Agent Roster (10 agents)
+### Agent Roster (11 agents)
 
 | Agent | Model | Role |
 |-------|-------|------|
@@ -108,6 +108,7 @@ Source paths are configured in `mod.config.json > source_paths` — the main age
 | `mod-pattern-researcher` | sonnet | Find how other mods implement X |
 | `lovely-patch-researcher` | sonnet | Find Lovely patch syntax |
 | `project-explorer` | sonnet | Map mod architecture |
+| `debug-inspector` | sonnet | Inspect runtime logs, dumps, mod compatibility |
 | `code-writer` | sonnet | Execute implementation plans |
 | `script-runner` | haiku | Run temp scripts |
 | `code-reviewer` | opus | Review code (confidence ≥ 80 filter) |
@@ -118,7 +119,7 @@ Source paths are configured in `mod.config.json > source_paths` — the main age
 
 ```
 Layer 0: Plugin Install
-└── Plugin auto-loads: 15 commands, 10 agents, 1 skill, 7 hooks + 3 Hookify rules
+└── Plugin auto-loads: 16 commands, 11 agents, 1 skill, 9 hooks + 3 Hookify rules
 
 Layer 1: Skill (balatro-mod-dev)
 ├── Resource paths, game file map
@@ -127,9 +128,12 @@ Layer 1: Skill (balatro-mod-dev)
 └── Script templates
 
 Layer 2: Hooks & Commands (auto-loaded by plugin)
-├── SessionStart: Read INIT.md, inject delegation rules, load session state
-├── PreToolUse: Protect files, block legacy routing, block external reads
-├── PostToolUse: Suggest config updates, warn on bare print() in .lua
+├── SessionStart: Load INIT.md/AGENT.md context + previous session from ~/.claude/sessions/
+├── SessionEnd: Parse JSONL transcript, write session summary to ~/.claude/sessions/
+├── PreToolUse: Protect files, block external reads, enforce task model, suggest compact
+├── PostToolUse: Suggest config updates
+├── PreCompact: Append compaction marker to session file
+├── Stop: Offer PR drafting for fork contributions
 └── Commands: /init, /familiar, /sync-mod, /release, /debug, /refactor, /fix-sprites, ...
 
 Layer 3: Per-Mod Config
@@ -158,12 +162,22 @@ grep -r "skill-version\|skill_version" balatro-mod-dev/
 # Check no Codex remnants
 grep -ri "codex\|openai\.yaml\.codex" balatro-mod-dev/ --include="*.md" --include="*.json"
 
-# Verify agent count (should be 10)
+# Verify agent count (should be 11)
 ls balatro-mod-dev/agents/*.md | wc -l
 
-# Verify command count (should be 15)
+# Verify command count (should be 16)
 ls balatro-mod-dev/commands/*.md | wc -l
 ```
+
+### Doc Sync Checklist
+
+When adding agents, commands, or hooks — update **both** README files:
+
+| File | Counts to keep in sync |
+|------|------------------------|
+| `README.md` (root) | agents, commands, hooks in "What's Included" table + structure diagram |
+| `balatro-mod-dev/README.md` | agents table, commands table, hooks table |
+| `AGENT.md` → Layer 0 line | agent count in architecture diagram |
 
 ## Plugin Design Principles
 

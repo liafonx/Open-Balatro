@@ -9,6 +9,8 @@ Extract and analyze Lovely logs to verify if a fix worked, introduced new bugs, 
 
 **Context:** This command is called AFTER applying a fix or making changes. The goal is to verify the outcome.
 
+> **Proactive diagnostics?** Use `Task(subagent_type="balatro-mod-dev:debug-inspector", model="sonnet")` instead. It covers logs + dump metadata + mod compatibility in one pass. `/debug` is for post-fix verification only.
+
 ## Log Location
 
 macOS: `~/Library/Application Support/Balatro/Mods/lovely/log/`
@@ -103,11 +105,9 @@ Spawn the `research-analyst` agent (opus) to synthesize all debugging context:
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="balatro-mod-dev:research-analyst",
   model="opus",
-  prompt="[research-analyst template]
-
-<objective>We have been debugging this issue for 3+ attempts without success. Synthesize all findings and recommend a fundamentally different approach.</objective>
+  prompt="<objective>We have been debugging this issue for 3+ attempts without success. Synthesize all findings and recommend a fundamentally different approach.</objective>
 
 <task>
 Analyze the following debugging history and recommend a new approach.

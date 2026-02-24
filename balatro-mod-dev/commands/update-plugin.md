@@ -25,9 +25,9 @@ ${CLAUDE_PLUGIN_ROOT}/
 │   ├── patterns/                   # 4 pattern guides
 │   └── references/                 # 4 reference docs
 ├── agents/                         # 10 agents
-├── commands/                       # 15 commands
+├── commands/                       # 16 commands
 ├── hooks/
-│   ├── hooks.json                  # 7 command hooks
+│   ├── hooks.json                  # 9 command hooks
 │   └── scripts/                   # Hook executor scripts
 ├── scripts/                        # Utility scripts
 └── templates/                      # Mod setup templates
