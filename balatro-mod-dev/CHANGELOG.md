@@ -2,6 +2,23 @@
 
 All notable changes to the balatro-mod-dev plugin.
 
+## [2.7.0] - 2026-02-25
+
+Persistent agent memory and tightened source routing for mod project code.
+
+- **`delegation.md` template — Source Routing overhaul:**
+  - Renamed "External Source Routing" section to "Source Routing (CRITICAL)" to reflect that it covers all sources, not only external ones
+  - Added `project-explorer` as the first entry in the routing table — "Mod project code (UI, features, architecture, file search)" now has a dedicated agent rather than falling through to `Explore`
+  - Demoted `Explore` to last entry in the model selection table with explicit scope: "Quick targeted file searches only — when no researcher above matches"
+  - Added "Exploring mod project code" to the "When to Delegate" list
+  - Added prohibition note below model selection table: do not spawn `Plan` sub-agents (blocked by `enforce-task-model.js`); use `strategic-planner` instead
+- **Persistent memory (`memory: project`) added to 5 agents:**
+  - `project-explorer` — saves module dependency maps, project type, and key file purposes; invalidates on structural changes
+  - `code-reviewer` — saves project-specific anti-patterns (confidence ≥ 80), recurring Lua pitfalls, confirmed SMODS misuse; clears fixed entries
+  - `game-source-researcher` — saves function→file path mappings and data structure schemas with Balatro version stamp; treats all cached entries as unverified when version changes
+  - `research-analyst` — saves synthesis conclusions with Steamodded version stamp and source traceability; flags version-specific conclusions when SMODS updates
+  - `smods-api-researcher` — saves SMODS object type → required fields + callback signatures with version stamp; treats all cached API signatures as unverified when version changes
+
 ## [2.6.0] - 2026-02-24
 
 New `debug-inspector` agent for automated runtime diagnostics.

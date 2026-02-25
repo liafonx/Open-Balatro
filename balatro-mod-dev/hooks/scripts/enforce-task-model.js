@@ -2,16 +2,19 @@
  * PreToolUse hook for Task: Enforce model selection and agent routing.
  *
  * Checks:
- *   1. INJECT model if missing for known agent types (prevents opus inheritance)
- *   2. DENY if a blocked agent type is spawned (e.g., Plan)
- *   3. DENY if Explore/general-purpose targets external source paths or runtime content
- *   4. WARN via additionalContext if opus is used for a non-opus agent type
+ *   1. DENY if model is missing for a known agent type (Claude retries with correct model)
+ *   2. DENY if model is wrong for a known agent type (Claude retries with correct model)
+ *   3. DENY if a blocked agent type is spawned (e.g., Plan)
+ *   4. DENY if Explore/general-purpose targets external source paths or runtime content
  *
  * Output protocol: exit 0 + JSON stdout (hookSpecificOutput)
  *   - process.exit(2) does NOT reliably block Task tool calls (CC bug #26923)
  *   - permissionDecision "deny"  → blocks the tool call, reason shown to Claude
- *   - permissionDecision "allow" + updatedInput → silently patches missing model
  *   - permissionDecision "allow" + additionalContext → non-blocking warning to Claude
+ *
+ * Note: updatedInput injection (CC bug #15897) is unreliable when multiple PreToolUse
+ *   hooks run — the last hook's empty response overwrites earlier injections. Using
+ *   deny instead forces Claude to retry with the correct model explicitly.
  */
 
 // Agent types that should never be spawned as sub-agents
@@ -35,13 +38,11 @@ const RECOMMENDED_MODELS = {
   "balatro-mod-dev:code-writer": "sonnet",
   "balatro-mod-dev:script-runner": "haiku",
   "balatro-mod-dev:debug-inspector": "sonnet",
+  // Plugin opus agents (deep reasoning — code review, synthesis, planning)
+  "balatro-mod-dev:code-reviewer": "opus",
+  "balatro-mod-dev:research-analyst": "opus",
+  "balatro-mod-dev:strategic-planner": "opus",
 };
-
-const OPUS_AGENTS = new Set([
-  "balatro-mod-dev:code-reviewer",
-  "balatro-mod-dev:research-analyst",
-  "balatro-mod-dev:strategic-planner",
-]);
 
 // External source paths that must go to researcher agents, not Explore/general-purpose
 const EXTERNAL_SOURCE_ROUTES = [
@@ -118,30 +119,19 @@ function deny(reason) {
   process.exit(0);
 }
 
-function allowWithInjectedModel(toolInput, model) {
-  process.stdout.write(
-    JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "allow",
-        updatedInput: { ...toolInput, model },
-      },
-    }),
+function denyMissingModel(agentType, requiredModel) {
+  deny(
+    `Model not specified for Task(subagent_type="${agentType}"). ` +
+      `Retry with model="${requiredModel}". ` +
+      `All Task calls MUST include an explicit model parameter.`,
   );
-  process.exit(0);
 }
 
-function allowWithWarning(message) {
-  process.stdout.write(
-    JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "allow",
-        additionalContext: message,
-      },
-    }),
+function denyWrongModel(agentType, gotModel, requiredModel) {
+  deny(
+    `Wrong model for Task(subagent_type="${agentType}"): got "${gotModel}", expected "${requiredModel}". ` +
+      `Retry with model="${requiredModel}".`,
   );
-  process.exit(0);
 }
 
 let data = "";
@@ -168,12 +158,14 @@ process.stdin.on("end", () => {
 
     const recommended = RECOMMENDED_MODELS[agentType];
 
-    // Inject: model missing for a known agent type — silently fix rather than block
+    // Deny: model missing for a known agent type — force Claude to retry with correct model
     if (!model && recommended) {
-      allowWithInjectedModel(
-        toolInput,
-        recommended,
-      );
+      denyMissingModel(agentType, recommended);
+    }
+
+    // Deny: wrong model for a known agent type — force Claude to retry with correct model
+    if (model && recommended && model !== recommended) {
+      denyWrongModel(agentType, model, recommended);
     }
 
     // Deny: Explore/general-purpose targeting external source paths or runtime diagnostic content
@@ -197,15 +189,6 @@ process.stdin.on("end", () => {
           );
         }
       }
-    }
-
-    // Warn: opus used for a non-opus agent type
-    if (model === "opus" && recommended && !OPUS_AGENTS.has(agentType)) {
-      allowWithWarning(
-        `WARNING: Task(subagent_type="${agentType}") is using opus. ` +
-          `Recommended: model="${recommended}". Opus is ~20x more expensive for this task type. ` +
-          `Consider switching to ${recommended}.`,
-      );
     }
 
     // All checks passed — allow

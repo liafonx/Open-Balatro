@@ -119,4 +119,4 @@ This plugin targets **Balatro mod repos** using Steamodded/Lovely/SMODS. Build t
 
 ## Version
 
-Current: **2.6.0** — See `CHANGELOG.md` for history.
+Current: **2.7.0** — See `CHANGELOG.md` for history.
