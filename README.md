@@ -11,16 +11,26 @@ A plugin that teaches Claude how to develop Balatro mods using:
 
 ## Installation
 
-### Plugin Directory (Local)
+### Marketplace (Recommended)
+
+```bash
+# Add the marketplace (one-time)
+/plugin marketplace add liafonx/Open-Balatro
+
+# Install the plugin
+/plugin install balatro-mod-dev@open-balatro
+```
+
+Or via CLI:
+
+```bash
+claude plugin install balatro-mod-dev@open-balatro
+```
+
+### Plugin Directory (Local Dev)
 
 ```bash
 claude --plugin-dir ./balatro-mod-dev
-```
-
-### Marketplace (when available)
-
-```bash
-claude plugin install balatro-mod-dev
 ```
 
 ## What's Included
@@ -60,6 +70,8 @@ Source paths are configured per-mod in `mod.config.json`:
 
 ```
 Open-Balatro/
+├── .claude-plugin/
+│   └── marketplace.json        # Marketplace catalog (enables plugin discovery)
 ├── balatro-mod-dev/            # THE PLUGIN (distributable)
 │   ├── .claude-plugin/
 │   │   └── plugin.json         # Manifest (name, version, description)
