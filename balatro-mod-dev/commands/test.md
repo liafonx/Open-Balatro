@@ -14,7 +14,7 @@ $ARGUMENTS = optional scenario name to run (default: "all")
 
 ## Step 0: Gather Context
 
-1. Read `AGENT.md` for test scenarios (look for "Testing Scenarios" or "Test Cases" section)
+1. Read `AGENT.md` for test scenarios (look for "Verification Checklist", "Testing Scenarios", or "Test Cases" section)
 2. Read `mod.config.json` for `test_saves` configuration
 3. Determine mod key from manifest JSON
 

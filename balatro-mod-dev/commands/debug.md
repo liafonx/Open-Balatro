@@ -125,6 +125,9 @@ The research-analyst will synthesize findings and recommend a different approach
 
 ## Common Error Patterns
 
+> For machine-readable grep patterns (useful for scripted log extraction), see the `<error_patterns>` table in `agents/debug-inspector.md`.
+
+
 ### Lovely / Injection Errors
 
 | Pattern | Meaning | Diagnosis |

@@ -124,6 +124,8 @@ Use these grep patterns for log extraction:
 | Patch conflict | `Multiple patches conflict` |
 </error_patterns>
 
+<!-- After findings are returned, the main agent can run `/balatro-mod-dev:debug` for human-readable post-fix verification with outcome classification (WORKED / NEW_BUG / NO_CHANGE / CRASH). -->
+
 <output_format>
 ## Diagnostic Report
 

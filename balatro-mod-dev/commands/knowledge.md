@@ -113,12 +113,10 @@ Report all discoveries organized by classification:
 **Ask before updating:** "I found {N} project-specific discoveries to add to AGENT.md. Proceed?"
 
 If approved, update the appropriate sections:
-- §3 Core Behavior — new state variables, function behavior, hooks
-- §5 Constraints & Gotchas — new rules, platform notes, known issues
-- §6 Lessons Learned — failed approaches, key insights
-- §7 Development — new testing scenarios, debug tips
-- §8 Recent Changes — version/change log
-- §9 Open Tasks — unfinished work discovered
+- **Core Behavior** — new state variables, function behavior, hooks
+- **Constraints & Gotchas** — new rules, platform notes, known issues
+- **Lessons Learned** — failed approaches, key insights
+- **Development** — new testing scenarios, debug tips
 
 **Keep updates concise.** Add 1-3 lines per finding, not paragraphs.
 

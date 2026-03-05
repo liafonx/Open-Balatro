@@ -70,12 +70,10 @@ Read all files listed above AND the commit list. For each doc file, note:
 
 Compare AGENT.md against the actual codebase:
 
-- [ ] **§2 Repository Structure** — Does the file tree match reality?
-- [ ] **§3 Core Behavior** — Do documented functions, state variables, and hooks still exist?
-- [ ] **§5 Constraints & Gotchas** — Are known issues still open or already fixed?
-- [ ] **§6 Lessons Learned** — Any stale entries?
-- [ ] **§8 Recent Changes** — Does version history reflect actual changes?
-- [ ] **§9 Open Tasks** — Any completed tasks still listed?
+- [ ] **Architecture** section — Does the file tree match reality?
+- [ ] **Core Behavior** section — Do documented functions, state variables, and hooks still exist?
+- [ ] **Constraints & Gotchas** section — Are known issues still open or already fixed?
+- [ ] **Lessons Learned** section — Any stale entries?
 
 ## Phase 4: INIT.md Freshness
 

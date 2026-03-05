@@ -37,6 +37,7 @@ DOCUMENTATION
 
 MAINTENANCE
   /balatro-mod-dev:update-plugin Update plugin content from new knowledge
+  /balatro-mod-dev:compact       Evaluate whether to compact context now
   /balatro-mod-dev:help          Show this command reference
 ```
 
@@ -47,6 +48,7 @@ Also mention the available agents:
 ```
 === Agents (auto-invoked via Task tool) ===
 
+<!-- Agent list: also in SKILL.md and references/sub-agents.md -->
 RESEARCH (sonnet, read-only)
   game-source-researcher    Search game source for functions, injection points
   smods-api-researcher      Search SMODS API for patterns, hooks
@@ -62,4 +64,7 @@ DEEP REASONING (opus)
   code-reviewer             Review code with confidence scoring (>=80)
   research-analyst          Synthesize multi-source research findings
   strategic-planner         Plan complex feature implementations
+
+DIAGNOSTICS
+  debug-inspector (sonnet)  Inspect runtime logs, dumps, mod compatibility
 ```

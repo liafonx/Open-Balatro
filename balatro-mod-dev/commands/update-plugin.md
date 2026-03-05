@@ -24,7 +24,7 @@ ${CLAUDE_PLUGIN_ROOT}/
 │   ├── SKILL.md                    # Main entry (keep under 300 lines!)
 │   ├── patterns/                   # 4 pattern guides
 │   └── references/                 # 4 reference docs
-├── agents/                         # 10 agents
+├── agents/                         # 11 agents
 ├── commands/                       # 16 commands
 ├── hooks/
 │   ├── hooks.json                  # 9 command hooks
@@ -93,10 +93,10 @@ After updating:
 # Check SKILL.md line count
 wc -l "${CLAUDE_PLUGIN_ROOT}/skills/balatro-mod-dev/SKILL.md"
 
-# Verify agent count (should be 10)
+# Verify agent count (should be 11)
 ls "${CLAUDE_PLUGIN_ROOT}/agents/"*.md | wc -l
 
-# Verify command count (should be 15)
+# Verify command count (should be 16)
 ls "${CLAUDE_PLUGIN_ROOT}/commands/"*.md | wc -l
 
 # Check no Codex remnants
@@ -125,8 +125,8 @@ grep -r "skill-version\|skill_version" "${CLAUDE_PLUGIN_ROOT}/"
 
 ### Validation
 - SKILL.md line count: {N}/300
-- Agents: {N}/10
-- Commands: {N}/15
+- Agents: {N}/11
+- Commands: {N}/16
 - No Codex remnants: {OK | FOUND}
 - No skill-version markers: {OK | FOUND}
 

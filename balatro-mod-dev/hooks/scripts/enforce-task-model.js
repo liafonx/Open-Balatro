@@ -45,6 +45,7 @@ const RECOMMENDED_MODELS = {
 };
 
 // External source paths that must go to researcher agents, not Explore/general-purpose
+// Keep in sync with EXTERNAL_SOURCE_ROUTES in block-external-reads.js
 const EXTERNAL_SOURCE_ROUTES = [
   { pattern: "Balatro_src/", agent: "balatro-mod-dev:game-source-researcher" },
   { pattern: "balatro_src/", agent: "balatro-mod-dev:game-source-researcher" },

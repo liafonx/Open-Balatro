@@ -11,6 +11,7 @@ Create and debug Balatro mods with Steamodded, Lovely, and SMODS.
 
 When researching or writing code, spawn the right sub-agent via the **Task tool**:
 
+<!-- Agent table: also in references/sub-agents.md and commands/help.md -->
 | Need to find... | Use agent | Model | Search boundary |
 |-----------------|-----------|-------|----------------|
 | Game function implementation | `game-source-researcher` | sonnet | `Balatro_src/` only |
@@ -23,6 +24,7 @@ When researching or writing code, spawn the right sub-agent via the **Task tool*
 | Review code for correctness | `code-reviewer` | opus | Current project only |
 | Synthesize multi-source research | `research-analyst` | opus | Current project only |
 | Plan complex implementation | `strategic-planner` | opus | Current project only |
+| Inspect runtime logs, dumps, compat | `debug-inspector` | sonnet | Lovely logs/dumps only |
 
 **The main agent handles directly:** User interaction, small edits (<20 lines), presenting results.
 
@@ -158,7 +160,7 @@ Read these files for specific topics:
 └── docs/                    # Documentation
 ```
 
-## Available Commands (15 total — plugin-bundled, auto-loaded)
+## Available Commands (16 total — plugin-bundled, auto-loaded)
 
 - `/balatro-mod-dev:familiar` - Get familiar with this mod (reads AGENT.md, INIT.md, maps architecture)
 - `/balatro-mod-dev:init` - Initialize new mod
@@ -174,9 +176,10 @@ Read these files for specific topics:
 - `/balatro-mod-dev:update-docs` - Review all docs for accuracy, staleness, duplication, verbosity
 - `/balatro-mod-dev:update-plugin` - Update plugin based on new knowledge
 - `/balatro-mod-dev:knowledge` - Review session work, capture discoveries
+- `/balatro-mod-dev:compact` - Evaluate whether to compact context now
 - `/balatro-mod-dev:help` - List all available commands and agents
 
-## Sub-agents (10 total — plugin-bundled)
+## Sub-agents (11 total — plugin-bundled)
 
 - `game-source-researcher` - Find game functions and injection points (sonnet)
 - `smods-api-researcher` - Find SMODS API patterns and usage (sonnet)
@@ -188,6 +191,7 @@ Read these files for specific topics:
 - `code-reviewer` - Review code for correctness and edge cases (opus)
 - `research-analyst` - Synthesize findings from multiple researchers (opus)
 - `strategic-planner` - Plan implementation strategy for complex features (opus)
+- `debug-inspector` - Inspect runtime logs, dumps, mod compatibility (sonnet)
 
 ## Logging
 

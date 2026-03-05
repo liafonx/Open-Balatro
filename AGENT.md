@@ -29,6 +29,8 @@ Open-Balatro/
 │   ├── claude-code-plugins/            # Sample plugins
 │   ├── hooks/                          # Hook examples
 │   └── rules/                          # Installable rules (separate from plugin)
+├── .claude-plugin/
+│   └── marketplace.json               # Marketplace catalog (plugin discovery)
 ├── .claude/rules/                       # THIS repo's rules (NOT part of plugin)
 └── README.md                           # Repository documentation
 ```
@@ -134,7 +136,7 @@ Layer 2: Hooks & Commands (auto-loaded by plugin)
 ├── PostToolUse: Suggest config updates
 ├── PreCompact: Append compaction marker to session file
 ├── Stop: Offer PR drafting for fork contributions
-└── Commands: /init, /familiar, /sync-mod, /release, /debug, /refactor, /fix-sprites, ...
+└── Commands (16): /init, /familiar, /check, /sync-mod, /debug, /test, /refactor, /fix-sprites, /bump-version, /release, /draft-pr, /update-docs, /knowledge, /update-plugin, /compact, /help
 
 Layer 3: Per-Mod Config
 ├── AGENT.md: Mod-specific behavior
@@ -178,6 +180,7 @@ When adding agents, commands, or hooks — update **both** README files:
 | `README.md` (root) | agents, commands, hooks in "What's Included" table + structure diagram |
 | `balatro-mod-dev/README.md` | agents table, commands table, hooks table |
 | `AGENT.md` → Layer 0 line | agent count in architecture diagram |
+| `.claude/rules/agents.md` | plugin agent count reference (points to AGENT.md) |
 
 ## Plugin Design Principles
 

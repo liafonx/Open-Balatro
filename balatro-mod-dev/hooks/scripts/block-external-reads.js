@@ -9,8 +9,10 @@
  *   2 — block (external path, must delegate to researcher agent)
  */
 
+// Keep in sync with EXTERNAL_SOURCE_ROUTES in enforce-task-model.js
 const EXTERNAL_SOURCE_ROUTES = [
   { pattern: 'Balatro_src/', agent: 'game-source-researcher' },
+  { pattern: 'balatro_src/', agent: 'game-source-researcher' },
   { pattern: 'smods/src/', agent: 'smods-api-researcher' },
   { pattern: 'smods/lovely/', agent: 'lovely-patch-researcher' },
   { pattern: 'lovely-injector/', agent: 'lovely-patch-researcher' },

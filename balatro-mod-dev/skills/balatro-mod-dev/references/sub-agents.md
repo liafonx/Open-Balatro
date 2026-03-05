@@ -22,6 +22,7 @@ Main Agent (Sonnet)  →  Sonnet sub-agents (research, code writing)
 
 ## Agent Selection
 
+<!-- Agent table: also in SKILL.md and commands/help.md -->
 | Need to find... | Agent | Model | Search boundary |
 |-----------------|-------|-------|----------------|
 | Game function implementation | `game-source-researcher` | sonnet | `Balatro_src/` only |
@@ -34,8 +35,9 @@ Main Agent (Sonnet)  →  Sonnet sub-agents (research, code writing)
 | Review code for correctness | `code-reviewer` | opus | Current project only |
 | Synthesize multi-source research | `research-analyst` | opus | Current project only |
 | Plan complex implementation | `strategic-planner` | opus | Current project only |
+| Inspect runtime logs, dumps, compat | `debug-inspector` | sonnet | Lovely logs/dumps only |
 
-**Total: 10 agents**
+**Total: 11 agents**
 
 ## Invocation
 
@@ -283,5 +285,6 @@ tools: Glob, Grep, Read  # explicit tool whitelist
 | code-reviewer | `Read, Glob, Grep` |
 | research-analyst | `Read, Glob, Grep` |
 | strategic-planner | `Read, Glob, Grep` |
+| debug-inspector | `Bash, Glob, Grep, Read` |
 
 Research agents and reviewers are **read-only**. Only code-writer and script-runner can modify files.
