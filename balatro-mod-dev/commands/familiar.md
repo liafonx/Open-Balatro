@@ -6,9 +6,8 @@ allowed-tools: Read, Glob, Grep
 # Get Familiar With This Mod
 
 **Mandatory first reads — do these before anything else:**
-1. Read `AGENT.md` (root only — if found in `docs/`, flag as misplaced) — mod metadata, file structure, dependencies, dev status
-2. Read `INIT.md` (root only) — project rules, constraints, repo type
-3. Read `mod.config.json` — file lists, paths, backend config
+1. Read `AGENTS.md` (root only — if found in `docs/`, flag as misplaced) — Quick Reference, mod structure, dependencies, constraints
+2. Read `mod.config.json` — file lists, paths, backend config
 
 ## Step 0: Git Worktree Detection
 
@@ -20,7 +19,7 @@ Note any worktree directories and **exclude them** from all file exploration bel
 
 ## Step 1: Mod Identity
 
-From AGENT.md and manifests, report:
+From AGENTS.md Quick Reference table and manifests, report:
 ```
 Mod:         [name]
 ID:          [mod id from manifest]
@@ -71,7 +70,7 @@ Core/SomeModule.lua
 
 ## Step 5: Key Concepts & Gotchas
 
-From INIT.md, AGENT.md, and `docs/knowledge-base.md` (if exists), list:
+From AGENTS.md and `docs/knowledge-base.md` (if exists), list:
 
 1. **Mod-specific constraints** — things unique to this mod that could trip you up
 2. **Known issues** — documented bugs or workarounds

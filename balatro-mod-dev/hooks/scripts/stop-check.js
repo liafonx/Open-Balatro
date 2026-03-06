@@ -10,12 +10,13 @@ const path = require('path');
 const cwd = process.cwd();
 const lines = [];
 
-// Check if this is a fork by comparing git user vs mod author
-// (lightweight check — just look for INIT.md fork indicators)
+// Check if this is a fork by looking for fork indicator in AGENTS.md (current) or INIT.md (legacy)
 try {
+  const agentsPath = path.join(cwd, 'AGENTS.md');
   const initPath = path.join(cwd, 'INIT.md');
-  if (fs.existsSync(initPath)) {
-    const content = fs.readFileSync(initPath, 'utf8');
+  const filePath = fs.existsSync(agentsPath) ? agentsPath : (fs.existsSync(initPath) ? initPath : null);
+  if (filePath) {
+    const content = fs.readFileSync(filePath, 'utf8');
     if (/repo.?type.*fork/i.test(content)) {
       lines.push('This is a fork repo. If changes are ready, consider running /balatro-mod-dev:draft-pr.');
     }

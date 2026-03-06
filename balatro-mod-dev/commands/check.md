@@ -179,63 +179,65 @@ done
 
 ## Step 5: File & Directory Structure Check
 
-### 5a. INIT.md and AGENT.md Placement
+### 5a. AGENTS.md Placement
 
-Both MUST be at the **project root** and **git-ignored**.
+AGENTS.md MUST be at the **project root** and **git-ignored**. Also check for legacy files.
 
 ```bash
-ls -la INIT.md AGENT.md 2>/dev/null
-ls -la docs/INIT.md docs/AGENT.md 2>/dev/null
+ls -la AGENTS.md AGENT.md INIT.md 2>/dev/null
+ls -la docs/AGENTS.md docs/AGENT.md 2>/dev/null
 ```
 
 ### 5b. Root .md File Placement
 
 Only these `.md` files belong in root:
-`README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`, `AGENT.md`, `INIT.md`, `LICENSE.md`
+`README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md`, `AGENTS.md`, `LICENSE.md`
 
 ### 5c. .gitignore Validation
 
 | # | Entry | Present? |
 |---|-------|----------|
-| 1 | `INIT.md` | ☐ |
-| 2 | `AGENT.md` | ☐ |
-| 3 | `mod.config.json` | ☐ |
-| 4 | `docs/*` (with exceptions) | ☐ |
-| 5 | `.tmp/` | ☐ |
-| 6 | `.claude/` | ☐ |
-| 7 | `.agents/` | ☐ |
-| 8 | `release/` | ☐ |
-| 9 | `scripts/` | ☐ |
+| 1 | `AGENTS.md` | ☐ |
+| 2 | `mod.config.json` | ☐ |
+| 3 | `docs/*` (with exceptions) | ☐ |
+| 4 | `.tmp/` | ☐ |
+| 5 | `.claude/` | ☐ |
+| 6 | `.agents/` | ☐ |
+| 7 | `release/` | ☐ |
+| 8 | `scripts/` | ☐ |
 
 ---
 
-## Step 5b: AGENT.md Content Check
+## Step 5b: AGENTS.md Content Check
 
-Read `AGENT.md` (if it exists) and verify required sections based on repo type.
+Read `AGENTS.md` (if it exists) and verify required sections based on repo type.
 
-Determine repo type from `mod.config.json` or `INIT.md` Quick Reference section.
+Determine repo type from `mod.config.json` or the **Quick Reference** table in `AGENTS.md`.
 
 ### For own repos, verify these sections exist:
 
 | # | Section | Present? |
 |---|---------|----------|
-| 1 | Scope (or "Big Picture") | ☐ |
-| 2 | Architecture (or "Repository Structure") | ☐ |
-| 3 | High-Risk Files | ☐ |
-| 4 | Verification Checklist | ☐ |
-| 5 | Development (scripts/commands) | ☐ |
+| 1 | Quick Reference table (mod, repo type, dependencies) | ☐ |
+| 2 | Scope (or "Big Picture") | ☐ |
+| 3 | Architecture (or "Repository Structure") | ☐ |
+| 4 | High-Risk Files | ☐ |
+| 5 | Verification Checklist | ☐ |
+| 6 | Development (scripts/commands) | ☐ |
 
 ### For fork repos, verify these sections exist:
 
 | # | Section | Present? |
 |---|---------|----------|
-| 1 | Mod Info (metadata table) or Description | ☐ |
-| 2 | Structure (file tree) | ☐ |
-| 3 | Key Implementation Details | ☐ |
+| 1 | Quick Reference table | ☐ |
+| 2 | Description | ☐ |
+| 3 | Structure (file tree) | ☐ |
+| 4 | Key Implementation Details | ☐ |
 
 **Report line:**
 ```
-AGENT.md content ([own/fork]):
+AGENTS.md content ([own/fork]):
+- Quick Reference: ✅ / ❌ missing
 - Scope: ✅ / ❌ missing
 - Architecture: ✅ / ❌ missing
 - High-Risk Files: ✅ / ❌ missing
@@ -245,41 +247,41 @@ AGENT.md content ([own/fork]):
 
 ---
 
-## Step 5c: INIT.md Content Check
+## Step 5d: AGENTS.md Format Check (Migration)
 
-Read `INIT.md` (if it exists) and verify required sections and check for stale content.
+### Detect Current Format
 
-### Required sections (all repo types):
+```bash
+ls -la AGENTS.md AGENT.md INIT.md 2>/dev/null
+```
 
-| # | Section | Present? |
-|---|---------|----------|
-| 1 | Quick Reference (mod name, repo type) | ☐ |
-| 2 | Protected Files rule | ☐ |
-| 3 | File Change Protocol rule | ☐ |
-| 4 | Logging Standard rule | ☐ |
+| Found | Status | Action |
+|-------|--------|--------|
+| `AGENTS.md` only | ✅ Current | Skip |
+| `AGENTS.md` + old files | ⚠️ Mixed | Offer to delete old files |
+| `AGENT.md` + `INIT.md` only | ⚠️ Legacy | Offer to merge |
+| `AGENT.md` only (no INIT.md) | ⚠️ Partial | Offer to rename + add Quick Reference |
+| None | ❌ Missing | Note in report; suggest /init |
 
-### Stale content detection:
+### If Legacy Format → Merge
 
-Search INIT.md for these patterns. If found, flag as stale:
+**Ask user:** "Found legacy AGENT.md + INIT.md. Merge into AGENTS.md? (y/n)"
 
-| # | Pattern | Found? | Issue |
-|---|---------|--------|-------|
-| 1 | `"skill"` (not `"plugin"`) | ☐ | Old terminology — should be "plugin" |
-| 2 | `run_subagent.sh` | ☐ | Removed in v2.0.0 |
-| 3 | `codex` or `agent_backends` | ☐ | Legacy infrastructure references |
-| 4 | `## Sub-Agent Delegation` section | ☐ | Moved to `.claude/rules/delegation.md` |
-| 5 | `## External References` section | ☐ | Paths are in `mod.config.json` and plugin |
-| 6 | `## Localization` section (>10 lines) | ☐ | Reference info — belongs in plugin patterns |
-| 7 | `## User Documentation` section | ☐ | Reference info — belongs in `/update-docs` |
+If approved:
+
+1. Read both AGENT.md and INIT.md
+2. Create AGENTS.md:
+   - **Quick Reference table** — extract mod name from AGENT.md header, repo type from INIT.md Quick Reference
+   - **All AGENT.md sections** — copy in order (Scope/Architecture/Core Behavior/etc.)
+   - **Mod-Specific Constraints** from INIT.md → append as "### Mod-Specific" under Constraints & Gotchas
+   - **Drop** general rules from INIT.md (Protected Files, File Change Protocol, Logging, etc.) — these are in `.claude/rules/` already
+3. Update .gitignore: replace `AGENT.md` + `INIT.md` lines with `AGENTS.md`
+4. Delete AGENT.md and INIT.md
+5. Update `.claude/rules/mod-conventions.md` and `.claude/rules/git-workflow.md` if they reference old filenames
 
 **Report line:**
 ```
-INIT.md content:
-- Quick Reference: ✅ / ❌ missing
-- Protected Files rule: ✅ / ❌ missing
-- File Change Protocol rule: ✅ / ❌ missing
-- Logging Standard rule: ✅ / ❌ missing
-- Stale content: ✅ none / ⚠️ found: [list]
+AGENTS.md format: ✅ current / ⚠️ legacy → merged / ⚠️ legacy → user declined / ❌ missing
 ```
 
 ---
@@ -334,20 +336,15 @@ Step 4b: Hookify Rules
 - hookify.lua-pitfall-check.local.md: ✅ / ❌ (scaffolded) / ⚠️ customized
 
 Step 5: File & Directory Structure
-- INIT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
-- AGENT.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
+- AGENTS.md placement: [root ✅ / docs/ ❌ MISPLACED / ❌ missing]
 - Root .md files: ✅ / ⚠️ stray: [list]
-- Gitignore: [N]/9 entries — ✅ / ❌ missing: [list]
+- Gitignore: [N]/8 entries — ✅ / ❌ missing: [list]
 
-Step 5b: AGENT.md Content ([own/fork])
+Step 5b: AGENTS.md Content ([own/fork])
 - [section]: ✅ / ❌ missing  (for each required section)
 
-Step 5c: INIT.md Content
-- Quick Reference: ✅ / ❌
-- Protected Files rule: ✅ / ❌
-- File Change Protocol: ✅ / ❌
-- Logging Standard: ✅ / ❌
-- Stale content: ✅ none / ⚠️ [list]
+Step 5d: AGENTS.md Format
+- Format: ✅ current / ⚠️ legacy → [merged / user declined] / ❌ missing
 
 Step 6: Logging
 - Logger.lua: ✅ / ❌

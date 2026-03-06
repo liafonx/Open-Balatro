@@ -25,7 +25,7 @@
 - [ ] CHANGELOG_zh.md updated (if maintained)
 
 ### Testing
-- [ ] Test scenarios from AGENT.md verified
+- [ ] Test scenarios from AGENTS.md verified
 - [ ] No errors in Lovely logs related to this mod
 - [ ] SMODS objects register correctly
 - [ ] Mobile compatibility checked (if applicable)

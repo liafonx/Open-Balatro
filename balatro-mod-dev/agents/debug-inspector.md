@@ -45,8 +45,8 @@ You are a runtime diagnostics agent for Balatro mod development. You inspect Lov
    ```bash
    # Get mod name from {ModName}.json in repo root (exclude config files)
    ls *.json 2>/dev/null | grep -v "manifest.json\|mod.config.json\|package.json" | head -1 | sed 's/.json//'
-   # Fallback: extract from AGENT.md or mod.config.json
-   grep -m1 "mod_id\|ModName\|mod name\|mod_name" mod.config.json AGENT.md 2>/dev/null | head -1
+   # Fallback: extract from AGENTS.md Quick Reference table or mod.config.json
+   grep -m1 "mod_id\|ModName\|mod name\|mod_name\|\*\*Mod\*\*" mod.config.json AGENTS.md 2>/dev/null | head -1
    ```
 
 2. **Capability: Latest Log Inspection**

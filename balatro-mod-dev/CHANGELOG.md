@@ -2,6 +2,17 @@
 
 All notable changes to the balatro-mod-dev plugin.
 
+## [2.8.0] - 2026-03-06
+
+Merged AGENT.md + INIT.md into a single AGENTS.md file for all mod repos.
+
+- **New templates: `agents-md-template.md` and `agents-texture-pack-template.md`** — merged replacements for `agent-md-template.md`, `agent-texture-pack-template.md`, and `project-rules-template.md`. Both add a **Quick Reference** table (mod name, repo type, mod type, dependencies, rules pointer) and a **Mod-Specific** subsection under Constraints & Gotchas. General rules (Protected Files, File Change Protocol, Logging) are dropped — those live in `.claude/rules/` already
+- **Deleted old templates:** `agent-md-template.md`, `agent-texture-pack-template.md`, `project-rules-template.md`
+- **`/init` command** — now scaffolds a single `AGENTS.md` from `agents-md-template.md` (or `agents-texture-pack-template.md` for Malverk mods); fork variant is the HTML comment block at the bottom of the template
+- **`/check` command — Step 5d: AGENTS.md Format Check** — detects current vs legacy format; if legacy (AGENT.md + INIT.md), offers to merge: extracts Quick Reference from INIT.md, copies all AGENT.md sections, appends Mod-Specific constraints, updates .gitignore, deletes old files
+- **Hook backward compat:** All 4 hooks (`session-start.js`, `pre-compact.js`, `protected-file-check.js`, `stop-check.js`) check `AGENTS.md` first, fall back to `AGENT.md`/`INIT.md` — existing repos work until `/check` migrates them
+- **References updated (~24 files):** commands, agents, skill, templates, README, root AGENT.md all use `AGENTS.md`
+
 ## [2.7.0] - 2026-02-25
 
 Persistent agent memory and tightened source routing for mod project code.

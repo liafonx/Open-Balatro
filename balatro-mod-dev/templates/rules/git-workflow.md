@@ -31,7 +31,7 @@ asset: update joker atlas with new sprites
 ## Protected Files
 
 Do not modify without confirmation:
-- `AGENT.md`, `INIT.md`, `mod.config.json`
+- `AGENTS.md`, `mod.config.json`
 - `README.md`, `README_zh.md`, `CHANGELOG.md`, `CHANGELOG_zh.md` (use `/update-docs` or `/bump-version`)
 
 ## PR Conventions (Fork Contributions)

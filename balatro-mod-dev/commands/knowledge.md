@@ -33,9 +33,8 @@ git log --oneline -10
 ```
 
 **Read project state:**
-- Read `AGENT.md` (root only) for current documented state
+- Read `AGENTS.md` (root only) for current documented state, Quick Reference, and constraints
 - Read `docs/knowledge-base.md` if it exists
-- Read `INIT.md` for repo type and constraints
 
 **Identify what was worked on:**
 - What features were added or modified?
@@ -108,9 +107,9 @@ Report all discoveries organized by classification:
 
 ## Step 5: Apply Updates
 
-### For project-scope findings → Update AGENT.md
+### For project-scope findings → Update AGENTS.md
 
-**Ask before updating:** "I found {N} project-specific discoveries to add to AGENT.md. Proceed?"
+**Ask before updating:** "I found {N} project-specific discoveries to add to AGENTS.md. Proceed?"
 
 If approved, update the appropriate sections:
 - **Core Behavior** — new state variables, function behavior, hooks
@@ -134,8 +133,8 @@ If a bug took 3+ attempts to fix this session, add it to `docs/knowledge-base.md
 ```
 ## Knowledge Captured
 
-### AGENT.md Updates
-- [§section]: [what was added] ✅
+### AGENTS.md Updates
+- [section]: [what was added] ✅
 
 ### Plugin Updates Suggested (run /balatro-mod-dev:update-plugin)
 - [target file]: [finding summary]

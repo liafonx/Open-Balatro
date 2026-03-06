@@ -20,8 +20,7 @@ When installed, Claude Code auto-discovers and loads:
 ## Getting Started
 
 After installing the plugin, run `/balatro-mod-dev:init` in your mod repo to scaffold:
-- `INIT.md` — project rules for Claude
-- `AGENT.md` — mod-specific architecture notes
+- `AGENTS.md` — mod-specific architecture notes, constraints, and Quick Reference
 - `mod.config.json` — file lists, source paths
 - `.claude/rules/` — Lua coding style, mod conventions, delegation rules
 
@@ -31,7 +30,7 @@ Then use `/balatro-mod-dev:familiar` to orient Claude to your mod.
 
 | Command | Purpose |
 |---------|---------|
-| `/balatro-mod-dev:familiar` | Read AGENT.md/INIT.md and produce orientation briefing |
+| `/balatro-mod-dev:familiar` | Read AGENTS.md and produce orientation briefing |
 | `/balatro-mod-dev:init` | Scaffold new mod repo with templates and rules |
 | `/balatro-mod-dev:sync-mod` | Sync mod files to Balatro Mods directory |
 | `/balatro-mod-dev:debug` | Analyze Lovely logs and trace errors |
@@ -70,7 +69,7 @@ Then use `/balatro-mod-dev:familiar` to orient Claude to your mod.
 
 | Hook | When |
 |------|------|
-| SessionStart | Load INIT.md/AGENT.md context + previous session from `~/.claude/sessions/` |
+| SessionStart | Load AGENTS.md context + previous session from `~/.claude/sessions/` |
 | SessionEnd | Parse JSONL transcript, write session summary to `~/.claude/sessions/` |
 | PreToolUse Write/Edit | Warn on edits to protected files |
 | PreToolUse Read/Grep/Glob | Block reads from external game source |
@@ -92,9 +91,8 @@ Then use `/balatro-mod-dev:familiar` to orient Claude to your mod.
 
 | Template | Purpose |
 |----------|---------|
-| `agent-md-template.md` | AGENT.md scaffold for standard mods |
-| `agent-texture-pack-template.md` | AGENT.md scaffold for texture packs |
-| `project-rules-template.md` | INIT.md scaffold |
+| `agents-md-template.md` | AGENTS.md scaffold for standard mods |
+| `agents-texture-pack-template.md` | AGENTS.md scaffold for Malverk texture packs |
 | `mod-config-template.json` | mod.config.json with test_saves schema |
 | `manifest-json-template.json` | Mod manifest for packaging |
 | `mod-json-template.json` | Mod descriptor (name, version, author) |
@@ -119,4 +117,4 @@ This plugin targets **Balatro mod repos** using Steamodded/Lovely/SMODS. Build t
 
 ## Version
 
-Current: **2.7.0** — See `CHANGELOG.md` for history.
+Current: **2.8.0** — See `CHANGELOG.md` for history.

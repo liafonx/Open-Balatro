@@ -1,11 +1,20 @@
 # {ModName} - Agent Guide
 
+## Quick Reference
+
+| Field | Value |
+|-------|-------|
+| **Mod** | {ModName} (`{mod_id}`) |
+| **Repo Type** | `new` / `own` / `fork` |
+| **Mod Type** | [Standalone / Framework / Texture Pack / Tool] |
+| **Dependencies** | [e.g., "Steamodded>=1.0.0~BETA-1221a", "Malverk"] |
+| **Rules** | `.claude/rules/` — Lua style, mod conventions, delegation |
+
+---
+
 ## Scope
 
 [What this mod does in 2-3 sentences. What problem does it solve for players?]
-
-**Mod Type:** [Standalone / Framework / Texture Pack / Tool]
-**Dependencies:** [e.g., "Steamodded>=1.0.0~BETA-1221a", "Malverk"]
 
 ---
 
@@ -61,6 +70,10 @@
 - **DO NOT:** [Specific thing to avoid]
 - **ALWAYS:** [Required behavior]
 - **NEVER:** [Dangerous action]
+
+### Mod-Specific
+
+- [3-5 bullets: gotchas, things to avoid, key behaviors specific to this mod]
 
 ### Known Issues
 
@@ -120,14 +133,18 @@ Before committing changes, verify:
 
 # {ModName} - Fork Development
 
+## Quick Reference
+
 | Field | Value |
 |-------|-------|
 | **Mod** | {ModName} (`{mod_id}`) |
 | **Author** | {OriginalAuthor} |
+| **Repo Type** | `fork` |
 | **Version** | {version} |
 | **Prefix** | {prefix} |
-| **Type** | [Standalone / Framework] |
+| **Mod Type** | [Standalone / Framework] |
 | **Dependencies** | [list] |
+| **Rules** | `.claude/rules/` — Lua style, mod conventions, delegation |
 
 ## Description
 
@@ -143,6 +160,10 @@ Before committing changes, verify:
 ## Key Implementation Details
 
 [How the mod works, what your changes affect, injection points]
+
+## Constraints & Gotchas
+
+- [Key things to know when modifying this fork]
 
 ## Dev Commands
 

@@ -54,25 +54,22 @@ mod_author=$(jq -r '.author[0] // .author // ""' *.json 2>/dev/null | head -1 | 
 | `own` | Author matches git user | Full docs, standardize structure |
 | `fork` | Author differs from git user | Minimal changes, temp logs only |
 
-See `${CLAUDE_PLUGIN_ROOT}/templates/project-rules-template.md` for detailed rules per type.
-
 ## File Convention
 
 | File | Purpose | Git |
 |------|---------|-----|
-| `INIT.md` | Project rules, constraints for AI agents | ignored |
-| `AGENT.md` | Mod structure, functions, dependencies, dev status (for handover) | ignored |
+| `AGENTS.md` | Mod structure, functions, dependencies, constraints, Quick Reference (for AI agents) | ignored |
 | `mod.config.json` | File lists for sync/release scripts | ignored |
 | `docs/knowledge-base.md` | Issues & lessons learned | ignored |
 
-**AGENT.md Purpose:** Enable seamless handover between agents. Another agent should quickly understand mod structure, functions, dependencies, and current development status.
+**AGENTS.md Purpose:** Enable seamless handover between agents. Another agent should quickly understand mod structure, functions, dependencies, constraints, and repo type from a single file.
 
 ## File Placement Rules
 
 Only these `.md` files belong in root:
 - `README.md`, `README_zh.md`
 - `CHANGELOG.md`, `CHANGELOG_zh.md`
-- `AGENT.md`, `INIT.md`
+- `AGENTS.md`
 - `LICENSE.md`
 
 **ALL other `.md` files MUST go in `docs/`**
@@ -121,9 +118,8 @@ Read these files for specific topics:
 
 | File | Purpose |
 |------|---------|
-| `project-rules-template.md` | INIT.md template (rules) |
-| `agent-md-template.md` | AGENT.md template (repo docs) |
-| `agent-texture-pack-template.md` | AGENT.md for Malverk texture packs |
+| `agents-md-template.md` | AGENTS.md template for standard mods |
+| `agents-texture-pack-template.md` | AGENTS.md for Malverk texture packs |
 | `mod-config-template.json` | Script configuration |
 | `gitignore-template` | Standard .gitignore |
 | `logger-template.lua` | Centralized logging utility |
@@ -162,7 +158,7 @@ Read these files for specific topics:
 
 ## Available Commands (16 total — plugin-bundled, auto-loaded)
 
-- `/balatro-mod-dev:familiar` - Get familiar with this mod (reads AGENT.md, INIT.md, maps architecture)
+- `/balatro-mod-dev:familiar` - Get familiar with this mod (reads AGENTS.md, maps architecture)
 - `/balatro-mod-dev:init` - Initialize new mod
 - `/balatro-mod-dev:sync-mod` - Start sync with watch mode (run once at start)
 - `/balatro-mod-dev:bump-version [patch|minor|major]` - Increment version, update changelogs

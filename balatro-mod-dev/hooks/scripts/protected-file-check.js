@@ -11,6 +11,9 @@ const fs = require("fs");
 const path = require("path");
 
 const PROTECTED_FILES = [
+  "AGENTS.md",
+  "docs/AGENTS.md",
+  // Legacy names kept for backward compat with unreleased repos
   "AGENT.md",
   "docs/AGENT.md",
   "INIT.md",

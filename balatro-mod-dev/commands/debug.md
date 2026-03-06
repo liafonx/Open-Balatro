@@ -30,8 +30,8 @@ else
   echo "Error: No mod JSON found in repository root (*.json)" >&2
 fi
 
-# Or extract from AGENT.md if it contains mod name
-grep -m1 "mod_id\|ModName\|mod name" AGENT.md
+# Or extract from AGENTS.md Quick Reference table
+grep -m1 "mod_id\|ModName\|mod name\|\*\*Mod\*\*" AGENTS.md
 ```
 
 ### 2. Find Latest Log

@@ -31,7 +31,7 @@ You may read any project file to understand context, but only modify files speci
 
 <workflow>
 0. Read the `<objective>` section to understand WHY these changes are being made
-1. **Read `AGENT.md` (root)** — understand mod structure, functions, dependencies before writing code
+1. **Read `AGENTS.md` (root)** — understand mod structure, functions, dependencies, constraints before writing code
 2. **Read the plan** provided in the `<plan>` section of your task
 3. **Read existing files** that the plan modifies — understand current state
 4. **Execute each step** in the plan's order:

@@ -1,19 +1,26 @@
-# {ModName} - Texture Pack Development Guide
+# {ModName} - Agent Guide
 
 **Framework Dependency:** This texture pack uses [Malverk](https://github.com/Eremel/Malverk) for texture management.
 
+## Quick Reference
+
+| Field | Value |
+|-------|-------|
+| **Mod** | {ModName} (`{mod_id}`) |
+| **Repo Type** | `new` / `own` / `fork` |
+| **Mod Type** | Texture Pack |
+| **Dependencies** | `malverk` |
+| **Rules** | `.claude/rules/` — Lua style, mod conventions, delegation |
+
 ---
 
-## 1. Big Picture
+## Scope
 
 [What textures this pack provides. Theme or inspiration.]
 
-**Mod Type:** Texture Pack
-**Dependencies:** `malverk`
-
 ---
 
-## 2. Repository Structure
+## Repository Structure
 
 ```
 {ModName}/
@@ -37,9 +44,9 @@
 
 ---
 
-## 3. Textures Provided
+## Textures Provided
 
-### 3.1 Retextured Objects
+### Retextured Objects
 
 | Category | Objects Changed | Spritesheet |
 |----------|-----------------|-------------|
@@ -48,7 +55,7 @@
 | Planets | [list planet keys] | `Planets.png` |
 | [etc.] | | |
 
-### 3.2 Special Features
+### Special Features
 
 - [ ] Custom rename/retype via localization
 - [ ] Animated sprites (frames parameter)
@@ -57,9 +64,9 @@
 
 ---
 
-## 4. Malverk Integration
+## Malverk Integration
 
-### 4.1 AltTexture Definitions
+### AltTexture Definitions
 
 ```lua
 -- Example from this mod
@@ -72,7 +79,7 @@ AltTexture({
 })
 ```
 
-### 4.2 TexturePack Definition
+### TexturePack Definition
 
 ```lua
 TexturePack({
@@ -84,7 +91,7 @@ TexturePack({
 })
 ```
 
-### 4.3 Localization Keys
+### Localization Keys
 
 ```lua
 -- localization/en-us.lua
@@ -95,7 +102,7 @@ return {
             -- ... for each AltTexture
         },
         texture_packs = {
-            texpack_{prefix}_pack = { 
+            texpack_{prefix}_pack = {
                 name = "Pack Name",
                 text = {"Description line 1"}
             }
@@ -106,16 +113,16 @@ return {
 
 ---
 
-## 5. Asset Guidelines
+## Asset Guidelines
 
-### 5.1 Spritesheet Format
+### Spritesheet Format
 
 - **1x folder**: Standard resolution (71x95 per card typically)
 - **2x folder**: Double resolution (142x190 per card)
 - **Naming**: Both folders must have identical filenames
 - **Format**: PNG with transparency
 
-### 5.2 Vanilla Sheet Alignment
+### Vanilla Sheet Alignment
 
 If replacing vanilla objects, use `original_sheet = true` to match vanilla positioning.
 
@@ -125,7 +132,7 @@ If creating new layouts:
 
 ---
 
-## 6. Fallback Without Malverk
+## Fallback Without Malverk
 
 ```lua
 MALVERK_ACTIVE = rawget(_G, 'Malverk') ~= nil
@@ -143,16 +150,17 @@ end
 
 ---
 
-## 7. Development
+## Constraints & Gotchas
 
-### 7.1 Testing
+- **DO NOT:** [Specific thing to avoid]
+- **ALWAYS:** [Required behavior]
+- **NEVER:** [Dangerous action]
 
-1. Enable pack in Settings → Textures
-2. Verify each texture appears correctly
-3. Check 1x and 2x resolutions
-4. Test priority with other texture packs
+### Mod-Specific
 
-### 7.2 Common Issues
+- [3-5 bullets: gotchas, things to avoid, key behaviors specific to this texture pack]
+
+### Common Issues
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
@@ -163,7 +171,7 @@ end
 | Sprite not loading | Wrong atlas dimensions | Verify image is exactly (tiles × px) wide |
 | DeckSkin not appearing | pos_style mismatch | Use 'collab' for 3-column J/Q/K layouts |
 
-### 7.3 Grey Border Fix (Transparent Pixel Issue)
+### Grey Border Fix (Transparent Pixel Issue)
 
 When transparent pixels have RGB values of (0,0,0,0) instead of edge-bled colors, bilinear filtering causes grey borders.
 
@@ -177,7 +185,7 @@ img = Image.open("sprite.png").convert("RGBA")
 
 ---
 
-## 8. High-Risk Files
+## High-Risk Files
 
 Files that require extra care when modifying:
 
@@ -189,7 +197,7 @@ Files that require extra care when modifying:
 
 ---
 
-## 9. Verification Checklist
+## Verification Checklist
 
 Before committing changes, verify:
 
@@ -199,3 +207,27 @@ Before committing changes, verify:
 4. [ ] Localization keys match AltTexture keys
 5. [ ] TexturePack includes all AltTextures
 6. [ ] Lovely logs show no errors
+
+---
+
+## Development
+
+### Testing
+
+1. Enable pack in Settings → Textures
+2. Verify each texture appears correctly
+3. Check 1x and 2x resolutions
+4. Test priority with other texture packs
+
+### Scripts
+
+```bash
+./scripts/sync_to_mods.sh        # Sync to game
+./scripts/sync_to_mods.sh --watch # Auto-sync
+./scripts/create_release.sh [ver] # Create release
+```
+
+### Debugging
+
+- Lovely logs: `~/Library/Application Support/Balatro/Mods/lovely/log/` (macOS)
+- Windows: `%APPDATA%/Balatro/Mods/lovely/log/`

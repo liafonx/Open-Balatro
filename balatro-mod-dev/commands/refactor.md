@@ -21,8 +21,7 @@ git worktree list 2>/dev/null
 Exclude worktree directories from all scans below.
 
 ### 1. Gather Context
-- Read `AGENT.md` (root only) for repo structure and mod functionality
-- Read `INIT.md` for project rules and constraints
+- Read `AGENTS.md` (root only) for repo structure, mod functionality, and constraints
 - If focus area provided, prioritize files related to $ARGUMENTS
 - Otherwise, scan all Lua files in the mod (excluding worktree paths)
 

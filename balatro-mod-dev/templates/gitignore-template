@@ -31,8 +31,7 @@ scripts/
 # ========================================
 # AI Agent Files (local only)
 # ========================================
-INIT.md
-AGENT.md
+AGENTS.md
 mod.config.json
 docs/*
 !docs/description.md

@@ -1,11 +1,11 @@
 ---
-description: Review and update all documentation — user docs, AGENT.md, INIT.md — for accuracy, clarity, and freshness
+description: Review and update all documentation — user docs, AGENTS.md — for accuracy, clarity, and freshness
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Update All Docs
 
-Review and update **all** documentation: user-facing docs, AI agent docs (AGENT.md, INIT.md), and meta files.
+Review and update **all** documentation: user-facing docs, AI agent docs (AGENTS.md), and meta files.
 
 ## Files to Review
 
@@ -20,8 +20,7 @@ Review and update **all** documentation: user-facing docs, AI agent docs (AGENT.
 - `docs/NEXUSMODS_DESCRIPTION.txt` — BBCode format for NexusMods
 
 ### AI Agent Docs (Root, git-ignored)
-- `AGENT.md` — Mod structure, functions, dependencies, dev status
-- `INIT.md` — Project rules, constraints, repo type
+- `AGENTS.md` — Mod structure, functions, dependencies, dev status, constraints
 
 ### Meta Files
 - `{ModName}.json` — Check version number
@@ -66,20 +65,15 @@ Read all files listed above AND the commit list. For each doc file, note:
 - [ ] docs/description.md reflects current README
 - [ ] NexusMods description has current features
 
-## Phase 3: AGENT.md Freshness
+## Phase 3: AGENTS.md Freshness
 
-Compare AGENT.md against the actual codebase:
+Compare AGENTS.md against the actual codebase:
 
+- [ ] **Quick Reference** table — Is repo type, mod type, dependencies still accurate?
 - [ ] **Architecture** section — Does the file tree match reality?
 - [ ] **Core Behavior** section — Do documented functions, state variables, and hooks still exist?
 - [ ] **Constraints & Gotchas** section — Are known issues still open or already fixed?
 - [ ] **Lessons Learned** section — Any stale entries?
-
-## Phase 4: INIT.md Freshness
-
-- [ ] **Repo type** — Still accurate (new/own/fork)?
-- [ ] **Rule references** — Do rules reference correct file paths, script names, agent names?
-- [ ] **External paths** — Are macOS/Windows paths still correct?
 
 ## Phase 5: Present Findings
 
@@ -94,11 +88,8 @@ Compare AGENT.md against the actual codebase:
 ### User Docs
 - [file]: [status: OK / outdated / missing]
 
-### AGENT.md
+### AGENTS.md
 - [section]: [status: OK / outdated / stale / verbose / duplicate]
-
-### INIT.md
-- [section]: [status: OK / outdated / stale]
 
 ### Meta Files
 - Version consistency: [OK / mismatch: {details}]
@@ -111,7 +102,7 @@ Compare AGENT.md against the actual codebase:
 For each approved change:
 1. Make the edit
 2. Keep changes minimal — fix what's wrong, don't rewrite what's fine
-3. For AGENT.md/INIT.md: prefer concise tables over long prose
+3. For AGENTS.md: prefer concise tables over long prose
 4. Remove outdated content entirely (don't comment it out)
 
 ## Phase 7: Summary

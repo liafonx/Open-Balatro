@@ -13,7 +13,7 @@ You are setting up a Balatro mod development environment. **Auto-detect everythi
 When creating `.md` or `.txt` files, only these belong in root:
 - `README.md`, `README_zh.md`
 - `CHANGELOG.md`, `CHANGELOG_zh.md`
-- `AGENT.md`, `INIT.md`
+- `AGENTS.md`
 - `LICENSE`, `LICENSE.md`
 
 **ALL other `.md`/`.txt` files MUST go in `docs/`**
@@ -61,8 +61,7 @@ echo "Mod author: $mod_author"
 - [ ] Move extra `.md` files to `docs/`
 
 **Dev files (add if missing):**
-- [ ] AGENT.md
-- [ ] INIT.md
+- [ ] AGENTS.md
 - [ ] mod.config.json
 - [ ] scripts/sync_to_mods.sh
 - [ ] .gitignore with agent folders
@@ -90,8 +89,7 @@ Full evaluation - check and fix:
 ### Additional for FORK Repository
 
 Minimal changes - respect their structure:
-- [ ] AGENT.md should be lightweight
-- [ ] INIT.md uses fork-mode rules
+- [ ] AGENTS.md should be lightweight (use fork variant)
 - [ ] Do NOT add: create_release.sh, Logger.lua, localization/
 
 ---
@@ -122,12 +120,10 @@ After confirmation, create/update files:
 
 ### File Templates
 
-**AGENT.md** (for new/own repos):
-Use `${CLAUDE_PLUGIN_ROOT}/templates/agent-md-template.md`, fill with detected metadata.
-
-**INIT.md** (varies by repo type):
-- New/Own: Full template from `${CLAUDE_PLUGIN_ROOT}/templates/project-rules-template.md`
-- Fork: Lightweight version
+**AGENTS.md** (varies by repo type):
+- Standard mod (new/own): Use `${CLAUDE_PLUGIN_ROOT}/templates/agents-md-template.md`, fill with detected metadata
+- Standard mod (fork): Use fork variant from `${CLAUDE_PLUGIN_ROOT}/templates/agents-md-template.md` (HTML comment block at bottom)
+- Malverk texture pack: Use `${CLAUDE_PLUGIN_ROOT}/templates/agents-texture-pack-template.md`
 
 **mod.config.json** (FOLLOW THIS STRUCTURE EXACTLY):
 ```json
@@ -179,8 +175,7 @@ Use `${CLAUDE_PLUGIN_ROOT}/templates/agent-md-template.md`, fill with detected m
 .agents/
 .claude/
 .cursor/
-INIT.md
-AGENT.md
+AGENTS.md
 mod.config.json
 docs/*
 !docs/description.md
@@ -233,10 +228,10 @@ for rule in block-legacy-routing lua-print-warning lua-pitfall-check; do
 done
 ```
 
-## Step 5: Verify/Update AGENT.md
+## Step 5: Verify/Update AGENTS.md
 
-**After init, if AGENT.md exists, verify it contains:**
-- [ ] Accurate mod metadata (name, id, version, prefix)
+**After init, if AGENTS.md exists, verify it contains:**
+- [ ] Accurate Quick Reference table (mod name, id, repo type, mod type, dependencies)
 - [ ] Current file structure (list actual files)
 - [ ] Key functions and their purposes
 - [ ] Dependencies (SMODS version, other mods)
@@ -260,7 +255,7 @@ Rules scaffolded:
 Hookify rules scaffolded:
 - [hookify rule files copied to .claude/]
 
-AGENT.md status:
+AGENTS.md status:
 - [Created new / Updated existing / Already up-to-date]
 
 Next steps:

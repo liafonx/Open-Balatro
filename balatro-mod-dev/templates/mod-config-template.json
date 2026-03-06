@@ -44,7 +44,7 @@
   "_test_saves_schema": "Array of { save_name: string, description: string, test_scenario: string }. Save files stored in .test-saves/ directory.",
 
   "protected_files": [],
-  "_protected_files_schema": "Additional files to protect from edits (merged with plugin defaults: AGENT.md, INIT.md, mod.config.json, README.md, etc.)",
+  "_protected_files_schema": "Additional files to protect from edits (merged with plugin defaults: AGENTS.md, mod.config.json, README.md, etc.)",
 
   "source_paths": {
     "game_desktop": "~/Development/GitWorkspace/Balatro_src/desktop",

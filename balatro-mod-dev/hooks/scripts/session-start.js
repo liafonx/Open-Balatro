@@ -1,8 +1,8 @@
 /**
  * SessionStart hook: Output session context instructions.
  *
- * Prints instructions for Claude to read INIT.md, AGENT.md, and loads
- * the most recent session summary from ~/.claude/sessions/.
+ * Prints instructions for Claude to read AGENTS.md (or legacy AGENT.md/INIT.md),
+ * and loads the most recent session summary from ~/.claude/sessions/.
  */
 
 const fs = require("fs");
@@ -12,9 +12,10 @@ const os = require("os");
 const cwd = process.cwd();
 const lines = [];
 
-// Check which project files exist
-const hasInit = fs.existsSync(path.join(cwd, "INIT.md"));
+// Check which project files exist (AGENTS.md is current; AGENT.md/INIT.md are legacy fallbacks)
+const hasAgents = fs.existsSync(path.join(cwd, "AGENTS.md"));
 const hasAgent = fs.existsSync(path.join(cwd, "AGENT.md"));
+const hasInit = fs.existsSync(path.join(cwd, "INIT.md"));
 
 // Always output model requirement rule — enforce-task-model.js blocks on every session
 lines.push(
@@ -31,13 +32,18 @@ lines.push(
     "Never use Explore or general-purpose for runtime diagnostics or external source directories.",
 );
 
-if (hasInit || hasAgent) {
+if (hasAgents || hasAgent || hasInit) {
   lines.push("This is a Balatro mod repository.");
-  if (hasInit)
-    lines.push(
-      "Read INIT.md (project rules) at the project root. Follow ALL rules, especially Sub-Agent Delegation.",
-    );
-  if (hasAgent) lines.push("Read AGENT.md (repo docs) at the project root.");
+  if (hasAgents)
+    lines.push("Read AGENTS.md (agent guide) at the project root.");
+  else {
+    // Legacy fallback for repos not yet migrated — run /balatro-mod-dev:check to migrate
+    if (hasInit)
+      lines.push(
+        "Read INIT.md (project rules) at the project root. Follow ALL rules, especially Sub-Agent Delegation.",
+      );
+    if (hasAgent) lines.push("Read AGENT.md (repo docs) at the project root.");
+  }
   lines.push(
     "Never read external source directories directly — delegate to researcher sub-agents.",
   );
@@ -72,7 +78,7 @@ if (hasInit || hasAgent) {
   } catch (_) {}
 } else {
   lines.push(
-    "This appears to be a Balatro mod repository but INIT.md and AGENT.md are missing.",
+    "This appears to be a Balatro mod repository but AGENTS.md is missing.",
   );
   lines.push(
     "Suggest running /balatro-mod-dev:init to scaffold the development environment.",

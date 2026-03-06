@@ -10,7 +10,7 @@
       "name": "balatro-mod-dev",
       "source": "./balatro-mod-dev",
       "description": "Develop Balatro mods with Steamodded, Lovely, and SMODS. Includes game source navigation, mobile compat, debugging, and sub-agent delegation.",
-      "version": "2.7.1",
+      "version": "2.8.0",
       "author": {
         "name": "liafonx"
       },

@@ -74,11 +74,10 @@ The plugin uses **absolute paths** to reference external resources. No setup nee
 
 | File | Purpose | Git |
 |------|---------|-----|
-| `INIT.md` | Project rules, constraints for AI agents | ignored |
-| `AGENT.md` | Mod-specific structure, functionality | ignored |
+| `AGENTS.md` | Mod-specific structure, functionality, constraints, Quick Reference (for AI agents) | ignored |
 | `mod.config.json` | File lists, source paths for sync/release/agents | ignored |
 
-All three live at the **project root** and are git-ignored (dev-only, not shipped).
+Both live at the **project root** and are git-ignored (dev-only, not shipped).
 
 ### Delegation Architecture
 

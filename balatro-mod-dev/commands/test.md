@@ -14,7 +14,7 @@ $ARGUMENTS = optional scenario name to run (default: "all")
 
 ## Step 0: Gather Context
 
-1. Read `AGENT.md` for test scenarios (look for "Verification Checklist", "Testing Scenarios", or "Test Cases" section)
+1. Read `AGENTS.md` for test scenarios (look for "Verification Checklist", "Testing Scenarios", or "Test Cases" section)
 2. Read `mod.config.json` for `test_saves` configuration
 3. Determine mod key from manifest JSON
 
@@ -87,7 +87,7 @@ grep -n "SMODS.*$MOD_KEY\|Registered.*$MOD_KEY" "$LATEST_LOG"
 
 ## Step 5: Evaluate Test Scenarios
 
-For each test scenario from AGENT.md:
+For each test scenario from AGENTS.md:
 
 | Check | Method | Pass Criteria |
 |-------|--------|---------------|
@@ -110,7 +110,7 @@ For each test scenario from AGENT.md:
 | # | Scenario | Status | Evidence |
 |---|----------|--------|----------|
 | 1 | Mod loads without errors | PASS/FAIL | [log evidence] |
-| 2 | [scenario from AGENT.md] | PASS/FAIL | [evidence] |
+| 2 | [scenario from AGENTS.md] | PASS/FAIL | [evidence] |
 ...
 
 ### Errors Found
@@ -123,7 +123,7 @@ For each test scenario from AGENT.md:
 
 ### Recommendations
 [If failures: suggest fixes referencing /debug command]
-[If all pass: suggest adding more test scenarios to AGENT.md]
+[If all pass: suggest adding more test scenarios to AGENTS.md]
 ```
 
 ## Test Save Schema

@@ -11,7 +11,9 @@ const os = require('os');
 
 const cwd = process.cwd();
 
-if (fs.existsSync(path.join(cwd, 'INIT.md')) || fs.existsSync(path.join(cwd, 'AGENT.md'))) {
+// Check for AGENTS.md (current format) or legacy AGENT.md/INIT.md (fallback)
+const isModRepo = fs.existsSync(path.join(cwd, 'AGENTS.md')) || fs.existsSync(path.join(cwd, 'AGENT.md')) || fs.existsSync(path.join(cwd, 'INIT.md'));
+if (isModRepo) {
   // Append compaction marker to most recent session file
   const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
   try {

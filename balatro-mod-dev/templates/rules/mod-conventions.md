@@ -1,7 +1,7 @@
 # Balatro Mod Conventions
 
 ## File Placement
-- Root only: README*.md, CHANGELOG*.md, AGENT.md, INIT.md, LICENSE
+- Root only: README*.md, CHANGELOG*.md, AGENTS.md, LICENSE
 - Everything else: appropriate subdirectory (docs/, Utils/, localization/, assets/)
 
 ## SMODS Registration
@@ -20,5 +20,5 @@
 - See the plugin's `patterns/mobile-compat.md` for details
 
 ## Protected Files
-- AGENT.md, INIT.md, mod.config.json: confirm before modifying
+- AGENTS.md, mod.config.json: confirm before modifying
 - README*.md, CHANGELOG*.md: update via /balatro-mod-dev:update-docs, not directly

@@ -35,7 +35,7 @@ Determine which workflow phase the session is in:
 
 | Persists After Compact | Lost After Compact |
 |------------------------|-------------------|
-| INIT.md / AGENT.md (reloaded by SessionStart hook) | Intermediate reasoning and analysis |
+| AGENTS.md (reloaded by SessionStart hook) | Intermediate reasoning and analysis |
 | TodoWrite task list | File contents previously read |
 | `~/.claude/sessions/` (compaction marker appended by PreCompact hook) | Multi-step conversation context |
 | Git state (commits, branches) | Tool call history and counts |

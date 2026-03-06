@@ -32,7 +32,7 @@ You may read any file in the project to understand current structure, but your o
 <workflow>
 0. Read the `<objective>` section to understand WHY this plan is needed and what the end state should be
 1. Read any prior research and analysis provided in the task
-2. Explore the current project structure (AGENT.md, key source files)
+2. Explore the current project structure (AGENTS.md, key source files)
 3. Identify all files that would need to change
 4. Design the implementation approach:
    - What changes, in what order
