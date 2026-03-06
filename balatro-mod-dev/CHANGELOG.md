@@ -13,6 +13,18 @@ Merged AGENT.md + INIT.md into a single AGENTS.md file for all mod repos.
 - **Hook backward compat:** All 4 hooks (`session-start.js`, `pre-compact.js`, `protected-file-check.js`, `stop-check.js`) check `AGENTS.md` first, fall back to `AGENT.md`/`INIT.md` — existing repos work until `/check` migrates them
 - **References updated (~24 files):** commands, agents, skill, templates, README, root AGENT.md all use `AGENTS.md`
 
+## [2.7.1] - 2026-03-06
+
+Docs/rules alignment and minor fixes.
+
+- **Section references in commands fixed** (`update-docs`, `knowledge`, `test`) — replaced §N numeric anchors with named section headings; removed stale §8 (Recent Changes) and §9 (Open Tasks) that were cut in v2.4.0
+- **`smods-api.md`** — collapsed redundant Lua gotchas block into a single pointer to `references/lua-gotchas.md` (avoids drift between the two copies)
+- **`block-external-reads.js`** — added lowercase `balatro_src/` pattern alongside `Balatro_src/` for case-insensitive path matching
+- **`/help` command** — added `debug-inspector` to DIAGNOSTICS group; added `/compact` to MAINTENANCE group (was missing)
+- **`debug-inspector.md`** — added cross-reference comment pointing to `/debug` for human-readable post-fix verification
+- **`/debug` command** — added pointer to `debug-inspector.md` error patterns table for scripted extraction
+- **SKILL.md, sub-agents.md, update-plugin.md** — updated agent count 10→11 and command count 15→16 to reflect `debug-inspector` and `/compact` added in v2.6.0/v2.4.0
+
 ## [2.7.0] - 2026-02-25
 
 Persistent agent memory and tightened source routing for mod project code.
